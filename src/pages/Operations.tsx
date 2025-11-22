@@ -57,13 +57,25 @@ const Operations = () => {
   useEffect(() => {
     fetchProductRecipes();
   }, []);
-
+ 
   // Refetch recipes when dialog closes (after saving)
   useEffect(() => {
     if (!showDialog && selectedProduct) {
       fetchProductRecipes();
     }
-  }, [showDialog]);
+  }, [showDialog, selectedProduct]);
+ 
+  // Load existing materials into the form whenever we open the dialog
+  // or when the existing materials for the selected product finish loading
+  useEffect(() => {
+    if (showDialog && selectedProduct && existingMaterials) {
+      const materialMap: Record<string, number> = {};
+      existingMaterials.forEach((em) => {
+        materialMap[em.raw_material_id] = em.quantity_grams;
+      });
+      setSelectedMaterials(materialMap);
+    }
+  }, [showDialog, selectedProduct, existingMaterials]);
 
   const fetchProductRecipes = async () => {
     try {
@@ -88,17 +100,13 @@ const Operations = () => {
   };
 
   const handleDescribeClick = (product: any) => {
+    // When we open the dialog for a product, first set the product
+    // and clear any previously selected materials. Once the
+    // existingMaterials query finishes, the useEffect above will
+    // repopulate selectedMaterials for this product.
     setSelectedProduct(product);
+    setSelectedMaterials({});
     setShowDialog(true);
-    
-    // Load existing materials for this product
-    if (existingMaterials) {
-      const materialMap: Record<string, number> = {};
-      existingMaterials.forEach(em => {
-        materialMap[em.raw_material_id] = em.quantity_grams;
-      });
-      setSelectedMaterials(materialMap);
-    }
   };
 
   const handleCheckboxChange = (materialId: string, checked: boolean) => {
