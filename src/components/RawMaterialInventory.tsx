@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +42,16 @@ const RawMaterialInventory = () => {
   const { data: groupedMaterials, isLoading, error, refetch } = useGroupedRawMaterials();
   const updateMaterial = useUpdateRawMaterial();
   const addUsage = useAddRawMaterialUsage();
+
+  // Listen for inventory updates and refetch
+  useEffect(() => {
+    const handleInventoryUpdate = () => {
+      refetch();
+    };
+    
+    window.addEventListener('inventoryUpdated', handleInventoryUpdate);
+    return () => window.removeEventListener('inventoryUpdated', handleInventoryUpdate);
+  }, [refetch]);
 
   const stockForm = useForm<StockUpdateForm>();
   const usageForm = useForm<UsageForm>({

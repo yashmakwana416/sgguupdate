@@ -24,6 +24,8 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { SalesInvoice } from '@/types/billing';
 import { printThermalReceipt } from '@/utils/thermalPrint';
+import { useUserRole } from '@/hooks/useUserRole';
+import { supabase } from '@/integrations/supabase/client';
 interface InvoiceItem {
   id: string;
   productId: string;
@@ -57,6 +59,7 @@ const CreateInvoice = () => {
   const [createdInvoice, setCreatedInvoice] = useState<SalesInvoice | null>(null);
   const [createdInvoiceParty, setCreatedInvoiceParty] = useState<any>(null);
   const [isPrinting, setIsPrinting] = useState(false);
+  const { isSuperAdmin } = useUserRole();
   const {
     products
   } = useProducts();
@@ -224,6 +227,28 @@ const CreateInvoice = () => {
     };
     try {
       const result = await createInvoice.mutateAsync(invoiceData);
+      
+      // Deduct raw materials inventory if user is superadmin
+      if (isSuperAdmin()) {
+        try {
+          const { error: deductError } = await supabase.rpc('deduct_inventory_for_invoice', {
+            invoice_id: result.id
+          });
+          
+          if (deductError) {
+            console.error('Error deducting inventory:', deductError);
+            toast({
+              title: "Warning",
+              description: "Invoice created but inventory deduction failed. Please check raw materials manually.",
+              variant: "destructive"
+            });
+          } else {
+            console.log('Raw materials deducted successfully for invoice:', result.id);
+          }
+        } catch (deductError) {
+          console.error('Error calling deduct_inventory_for_invoice:', deductError);
+        }
+      }
       
       // Store created invoice and party info for preview
       setCreatedInvoice(result);
