@@ -14,12 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      bluetooth_printers: {
+        Row: {
+          connection_count: number | null
+          created_at: string
+          device_id: string | null
+          id: string
+          is_primary: boolean | null
+          last_connected: number
+          printer_name: string
+          service_uuids: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connection_count?: number | null
+          created_at?: string
+          device_id?: string | null
+          id?: string
+          is_primary?: boolean | null
+          last_connected: number
+          printer_name: string
+          service_uuids?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connection_count?: number | null
+          created_at?: string
+          device_id?: string | null
+          id?: string
+          is_primary?: boolean | null
+          last_connected?: number
+          printer_name?: string
+          service_uuids?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       distributor_settings: {
         Row: {
           address: string | null
           company_name: string | null
           created_at: string
           mobile_number: string | null
+          signature_header: string | null
+          signature_name: string | null
+          tagline: string | null
           updated_at: string
           user_id: string
         }
@@ -28,6 +70,9 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           mobile_number?: string | null
+          signature_header?: string | null
+          signature_name?: string | null
+          tagline?: string | null
           updated_at?: string
           user_id: string
         }
@@ -36,6 +81,9 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           mobile_number?: string | null
+          signature_header?: string | null
+          signature_name?: string | null
+          tagline?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -494,6 +542,56 @@ export type Database = {
           },
         ]
       }
+      raw_material_stock_transactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          material_id: string
+          notes: string | null
+          quantity: number
+          reference_number: string | null
+          total_value: number | null
+          transaction_date: string | null
+          transaction_type: string
+          unit_price: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          material_id: string
+          notes?: string | null
+          quantity: number
+          reference_number?: string | null
+          total_value?: number | null
+          transaction_date?: string | null
+          transaction_type: string
+          unit_price?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          material_id?: string
+          notes?: string | null
+          quantity?: number
+          reference_number?: string | null
+          total_value?: number | null
+          transaction_date?: string | null
+          transaction_type?: string
+          unit_price?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "raw_material_stock_transactions_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "raw_materials_inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       raw_material_usage: {
         Row: {
           created_at: string
@@ -603,6 +701,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      raw_materials_inventory: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          current_stock: number | null
+          description: string | null
+          id: string
+          last_restocked_at: string | null
+          material_code: string | null
+          material_name: string
+          maximum_stock_level: number | null
+          minimum_stock_level: number | null
+          storage_location: string | null
+          supplier_contact: string | null
+          supplier_name: string | null
+          unit_of_measurement: string
+          unit_price: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          current_stock?: number | null
+          description?: string | null
+          id?: string
+          last_restocked_at?: string | null
+          material_code?: string | null
+          material_name: string
+          maximum_stock_level?: number | null
+          minimum_stock_level?: number | null
+          storage_location?: string | null
+          supplier_contact?: string | null
+          supplier_name?: string | null
+          unit_of_measurement: string
+          unit_price?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          current_stock?: number | null
+          description?: string | null
+          id?: string
+          last_restocked_at?: string | null
+          material_code?: string | null
+          material_name?: string
+          maximum_stock_level?: number | null
+          minimum_stock_level?: number | null
+          storage_location?: string | null
+          supplier_contact?: string | null
+          supplier_name?: string | null
+          unit_of_measurement?: string
+          unit_price?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       replacement_items: {
         Row: {
@@ -815,43 +973,43 @@ export type Database = {
       }
       user_printers: {
         Row: {
+          connection_metadata: Json | null
+          created_at: string | null
           id: string
-          user_id: string
-          printer_name: string
-          printer_mac: string
+          is_default: boolean | null
+          last_connected: string | null
           printer_device_id: string | null
-          last_connected: string
-          status: boolean
-          is_default: boolean
-          connection_metadata: Json
-          created_at: string
-          updated_at: string
+          printer_mac: string
+          printer_name: string
+          status: boolean | null
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
+          connection_metadata?: Json | null
+          created_at?: string | null
           id?: string
-          user_id: string
-          printer_name: string
-          printer_mac: string
+          is_default?: boolean | null
+          last_connected?: string | null
           printer_device_id?: string | null
-          last_connected?: string
-          status?: boolean
-          is_default?: boolean
-          connection_metadata?: Json
-          created_at?: string
-          updated_at?: string
+          printer_mac: string
+          printer_name: string
+          status?: boolean | null
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
+          connection_metadata?: Json | null
+          created_at?: string | null
           id?: string
-          user_id?: string
-          printer_name?: string
-          printer_mac?: string
+          is_default?: boolean | null
+          last_connected?: string | null
           printer_device_id?: string | null
-          last_connected?: string
-          status?: boolean
-          is_default?: boolean
-          connection_metadata?: Json
-          created_at?: string
-          updated_at?: string
+          printer_mac?: string
+          printer_name?: string
+          status?: boolean | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -945,116 +1103,116 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-  | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-  : never = never,
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
-  ? R
-  : never
+    ? R
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])
-  ? (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-      Row: infer R
-    }
-  ? R
-  : never
-  : never
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
+      Insert: infer I
+    }
+    ? I
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
-  : never
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Update: infer U
-  }
-  ? U
-  : never
+      Update: infer U
+    }
+    ? U
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Update: infer U
-  }
-  ? U
-  : never
-  : never
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-  | keyof DefaultSchema["Enums"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-  : never
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-  | keyof DefaultSchema["CompositeTypes"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-  : never
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {

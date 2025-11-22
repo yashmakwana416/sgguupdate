@@ -7,12 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Edit, Plus, ChefHat, TrendingDown, TrendingUp, Package } from 'lucide-react';
+import { Edit, Plus, ChefHat, TrendingDown, TrendingUp, Package, Trash2 } from 'lucide-react';
 import { useGroupedRawMaterials, useUpdateRawMaterial, useAddRawMaterialUsage, GroupedMaterial } from '@/hooks/useRawMaterials';
 import { useForm } from 'react-hook-form';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useUserRole } from '@/hooks/useUserRole';
+import { supabase } from '@/integrations/supabase/client';
 
 interface StockUpdateForm {
   current_stock_kg: number | string;
@@ -33,10 +35,11 @@ interface UsageForm {
 
 const RawMaterialInventory = () => {
   const { t } = useTranslation();
+  const { isSuperAdmin } = useUserRole();
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [editingMaterial, setEditingMaterial] = useState<any>(null);
   const [showUsageDialog, setShowUsageDialog] = useState(false);
-  const { data: groupedMaterials, isLoading, error } = useGroupedRawMaterials();
+  const { data: groupedMaterials, isLoading, error, refetch } = useGroupedRawMaterials();
   const updateMaterial = useUpdateRawMaterial();
   const addUsage = useAddRawMaterialUsage();
 
@@ -132,6 +135,35 @@ const RawMaterialInventory = () => {
     usageForm.setValue('raw_material_id', variant.id);
     usageForm.setValue('raw_material_name', variant.name);
     setShowUsageDialog(true);
+  };
+
+  const handleDelete = async (variantId: string, variantName: string) => {
+    if (!confirm(`Are you sure you want to delete "${variantName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('raw_materials')
+        .delete()
+        .eq('id', variantId);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Success',
+        description: 'Raw material deleted successfully',
+      });
+      
+      refetch();
+    } catch (error: any) {
+      console.error('Error deleting material:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to delete raw material',
+        variant: 'destructive',
+      });
+    }
   };
 
   if (isLoading) {
@@ -379,6 +411,15 @@ const RawMaterialInventory = () => {
                             >
                               <Plus className="h-4 w-4" />
                             </Button>
+                            {isSuperAdmin() && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDelete(selectedVariant.id, selectedVariant.name)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
