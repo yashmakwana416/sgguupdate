@@ -240,6 +240,48 @@ export type Database = {
         }
         Relationships: []
       }
+      product_raw_materials: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity_grams: number
+          raw_material_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity_grams?: number
+          raw_material_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity_grams?: number
+          raw_material_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_raw_materials_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_raw_materials_raw_material_id_fkey"
+            columns: ["raw_material_id"]
+            isOneToOne: false
+            referencedRelation: "raw_materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           created_at: string
