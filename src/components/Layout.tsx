@@ -77,14 +77,15 @@ export function Layout({
     isAdmin,
     isDistributor,
     isSuperAdmin,
-    hasAccessToPage
+    hasAccessToPage,
+    loading: roleLoading
   } = useUserRole();
   const {
     t
   } = useTranslation();
 
-  // Clean loading state
-  if (loading) {
+  // Clean loading state - wait for both auth and role to load
+  if (loading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="glass-card p-8 text-center max-w-sm w-full mx-4">
