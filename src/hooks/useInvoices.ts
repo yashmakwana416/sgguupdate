@@ -51,7 +51,7 @@ const transformInvoiceFromDB = (dbInvoice: SalesInvoiceDB, items: SalesInvoiceIt
     const dueDate = new Date(dbInvoice.due_date);
     today.setHours(0, 0, 0, 0);
     dueDate.setHours(0, 0, 0, 0);
-    
+
     if (today > dueDate) {
       status = 'overdue';
     }
@@ -176,6 +176,7 @@ export const useInvoices = () => {
         .single();
 
       if (invoiceError) throw invoiceError;
+      if (!invoice) throw new Error('Failed to create invoice record');
 
       // Create invoice items
       let createdItems: SalesInvoiceItemDB[] = [];
@@ -197,7 +198,20 @@ export const useInvoices = () => {
           .select();
 
         if (itemsError) throw itemsError;
-        createdItems = items as SalesInvoiceItemDB[];
+        createdItems = (items || []) as SalesInvoiceItemDB[];
+
+        // AUTOMATIC RAW MATERIAL DEDUCTION via RPC
+        try {
+          const { error: rpcError } = await supabase.rpc('deduct_inventory_for_invoice', {
+            invoice_id: invoice.id
+          });
+
+          if (rpcError) {
+            console.error('Error calling deduct_inventory_for_invoice RPC:', rpcError);
+          }
+        } catch (err) {
+          console.error('Unexpected error calling inventory deduction RPC:', err);
+        }
       }
 
       return transformInvoiceFromDB(invoice as SalesInvoiceDB, createdItems);
@@ -205,9 +219,11 @@ export const useInvoices = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['raw-materials'] });
+      queryClient.invalidateQueries({ queryKey: ['grouped-raw-materials'] });
       toast({
         title: "Success",
-        description: `Invoice ${data.invoiceNumber} created successfully! Product stock updated.`,
+        description: `Invoice ${data.invoiceNumber} created successfully! Inventory updated.`,
       });
     },
     onError: (error: any) => {
@@ -235,6 +251,7 @@ export const useInvoices = () => {
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error('Failed to update invoice');
       return data;
     },
     onSuccess: () => {
@@ -270,7 +287,7 @@ export const useInvoices = () => {
         title: "Success",
         description: "Invoice deleted successfully! Product stock restored.",
       });
-      
+
       // Auto-dismiss after 0.5 seconds
       setTimeout(() => {
         toastInstance.dismiss();

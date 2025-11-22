@@ -29,6 +29,13 @@ export default defineConfig(({ mode }) => ({
           { src: '/splogo.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
         ],
       },
+      workbox: {
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api/],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+      },
     }),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
