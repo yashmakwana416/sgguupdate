@@ -1,0 +1,315 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Off-white glassmorphism - Elegant warm theme */
+    --background: 45 15% 96%;
+    --background-glass: 45 15% 97% / 0.85;
+    --foreground: 30 8% 15%;
+
+    /* Warm off-white glass cards with subtle contrast */
+    --card: 45 25% 98% / 0.7;
+    --card-foreground: 30 8% 15%;
+    --glass-border: 45 20% 88% / 0.4;
+
+    /* Primary - Warm terracotta/coral accent */
+    --primary: 15 75% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glass: 15 75% 65% / 0.12;
+
+    /* Secondary - Soft warm gray */
+    --secondary: 45 12% 92%;
+    --secondary-foreground: 15 65% 55%;
+    --secondary-glass: 45 12% 94% / 0.8;
+
+    /* Accent - Warm sage green for positive actions */
+    --accent: 95 25% 65%;
+    --accent-foreground: 45 15% 96%;
+    --accent-glass: 95 25% 65% / 0.12;
+
+    /* Muted - Perfect balance for secondary text */
+    --muted: 45 10% 90%;
+    --muted-foreground: 30 6% 45%;
+    --muted-glass: 45 10% 92% / 0.6;
+
+    /* Destructive - Warm red for warnings */
+    --destructive: 5 70% 62%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-glass: 5 70% 62% / 0.12;
+
+    /* Enhanced borders and inputs for glass effect */
+    --border: 45 15% 85% / 0.3;
+    --input: 45 20% 94% / 0.6;
+    --ring: 15 65% 55%;
+
+    /* Elegant popover styling */
+    --popover: 45 20% 97% / 0.95;
+    --popover-foreground: 30 8% 15%;
+
+    --radius: 1.2rem;
+
+    /* Enhanced glassmorphism effects */
+    --glass-shadow: 0 8px 32px 0 rgba(45, 35, 30, 0.1);
+    --glass-border-radius: 1.2rem;
+    --glass-backdrop-filter: blur(16px);
+
+    /* Sophisticated warm gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(15 75% 65% / 0.15), hsl(95 25% 65% / 0.1));
+    --gradient-card: linear-gradient(135deg, hsl(45 25% 98% / 0.7), hsl(45 15% 96% / 0.5));
+
+    /* Elegant sidebar styling */
+    --sidebar-background: 45 15% 96% / 0.95;
+    --sidebar-foreground: 30 8% 15%;
+    --sidebar-primary: 15 65% 55%;
+    --sidebar-primary-foreground: 45 15% 96%;
+    --sidebar-accent: 45 20% 94% / 0.6;
+    --sidebar-accent-foreground: 30 8% 15%;
+    --sidebar-border: 45 15% 85% / 0.3;
+    --sidebar-ring: 15 65% 55%;
+  }
+
+  .dark {
+    /* Dark theme variation with off-white accents */
+    --background: 30 8% 8%;
+    --background-glass: 30 8% 10% / 0.85;
+    --foreground: 45 15% 96%;
+
+    /* Dark glass cards with off-white hints */
+    --card: 30 8% 12% / 0.6;
+    --card-foreground: 45 15% 96%;
+    --glass-border: 45 15% 85% / 0.1;
+
+    /* Primary in dark mode - softer terracotta */
+    --primary: 15 65% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glass: 15 65% 58% / 0.15;
+
+    /* Secondary in dark */
+    --secondary: 30 8% 14%;
+    --secondary-foreground: 15 55% 65%;
+    --secondary-glass: 30 8% 16% / 0.8;
+
+    /* Accent in dark */
+    --accent: 95 20% 55%;
+    --accent-foreground: 30 8% 8%;
+    --accent-glass: 95 20% 55% / 0.15;
+
+    /* Muted in dark */
+    --muted: 30 8% 12%;
+    --muted-foreground: 45 8% 65%;
+    --muted-glass: 30 8% 14% / 0.6;
+
+    /* Destructive in dark */
+    --destructive: 5 65% 58%;
+    --destructive-foreground: 45 15% 96%;
+    --destructive-glass: 5 65% 58% / 0.15;
+
+    /* Borders and inputs in dark */
+    --border: 45 15% 85% / 0.08;
+    --input: 45 15% 85% / 0.04;
+    --ring: 15 55% 65%;
+
+    /* Popover in dark */
+    --popover: 30 8% 10% / 0.95;
+    --popover-foreground: 45 15% 96%;
+
+    /* Dark gradients with off-white touches */
+    --gradient-primary: linear-gradient(135deg, hsl(15 55% 58% / 0.25), hsl(95 20% 55% / 0.15));
+    --gradient-card: linear-gradient(135deg, hsl(30 8% 12% / 0.6), hsl(30 8% 8% / 0.4));
+
+    /* Dark sidebar with off-white accents */
+    --sidebar-background: 30 8% 8% / 0.95;
+    --sidebar-foreground: 45 15% 96%;
+    --sidebar-primary: 15 55% 65%;
+    --sidebar-primary-foreground: 30 8% 8%;
+    --sidebar-accent: 30 8% 12% / 0.6;
+    --sidebar-accent-foreground: 45 15% 96%;
+    --sidebar-border: 45 15% 85% / 0.08;
+    --sidebar-ring: 15 55% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-medium;
+    background: linear-gradient(135deg, hsl(45 15% 96%), hsl(45 20% 93%));
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    letter-spacing: 0.01em;
+  }
+
+  .dark body {
+    background: linear-gradient(135deg, hsl(30 8% 8%), hsl(30 8% 12%));
+  }
+}
+
+@layer components {
+  /* Solid backgrounds for smooth performance */
+  .glass-card {
+    @apply bg-white rounded-2xl border border-border shadow-sm;
+  }
+
+  .glass-button {
+    @apply rounded-xl border border-border transition-all duration-200 hover:shadow-md hover:bg-accent/50;
+  }
+
+  .glass-input {
+    @apply rounded-xl border border-border bg-white transition-all duration-200 focus:ring-2 focus:ring-primary/30 focus:border-primary/40;
+  }
+
+  .glass-nav {
+    @apply bg-white border-b border-border;
+  }
+
+  .glass-sidebar {
+    @apply bg-white border-r border-border;
+  }
+
+  /* Enhanced hover effects with warm colors */
+  .glass-hover {
+    @apply transition-all duration-200 hover:bg-primary/5 hover:border-primary/40 hover:shadow-sm;
+  }
+
+  .glass-active {
+    @apply bg-primary/10 border-primary/40 text-primary shadow-sm;
+  }
+  
+  .dark .glass-card {
+    @apply bg-card border-border;
+  }
+  
+  .dark .glass-button {
+    @apply bg-card border-border;
+  }
+  
+  .dark .glass-input {
+    @apply bg-card border-border;
+  }
+  
+  .dark .glass-nav {
+    @apply bg-background border-border;
+  }
+  
+  .dark .glass-sidebar {
+    @apply bg-background border-border;
+  }
+
+  /* Text enhancements with warm tones */
+  .text-elegant {
+    @apply text-foreground tracking-wide leading-relaxed;
+  }
+
+  .text-subtle {
+    @apply text-muted-foreground tracking-normal;
+  }
+
+  /* Mobile-responsive spacing */
+  .spacing-elegant {
+    @apply p-4 sm:p-6 space-y-4 sm:space-y-6;
+  }
+
+  .spacing-compact {
+    @apply p-3 sm:p-4 space-y-3 sm:space-y-4;
+  }
+
+  /* Mobile-responsive typography */
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl md:text-2xl lg:text-3xl;
+  }
+
+  .text-responsive-base {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-responsive-sm {
+    @apply text-xs sm:text-sm;
+  }
+
+  /* Mobile-first card layouts */
+  .mobile-card {
+    @apply glass-card p-4 sm:p-6 space-y-3 sm:space-y-4;
+  }
+
+  .mobile-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6;
+  }
+
+  .mobile-stats-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6;
+  }
+
+  /* Touch-friendly interactions */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  .mobile-button {
+    @apply touch-target px-4 py-2 text-sm sm:text-base font-medium rounded-xl;
+  }
+
+  /* Mobile table alternatives */
+  .mobile-table-card {
+    @apply block sm:hidden glass-card p-4 space-y-3;
+  }
+
+  .desktop-table {
+    @apply hidden sm:block;
+  }
+
+  /* Mobile navigation enhancements */
+  .mobile-nav-item {
+    @apply touch-target rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200;
+  }
+
+  /* Additional off-white theme specific utilities */
+  .warm-shadow {
+    box-shadow: 0 4px 20px 0 rgba(45, 35, 30, 0.08);
+  }
+
+  .warm-border {
+    @apply border-primary/20;
+  }
+
+  .warm-text {
+    @apply text-primary/80;
+  }
+
+  .warm-bg {
+    @apply bg-primary-glass;
+  }
+
+  /* Custom scrollbar styles */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-muted/20 rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full hover:bg-primary/50;
+  }
+
+  /* Mobile-optimized input styles */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}

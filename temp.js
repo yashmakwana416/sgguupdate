@@ -1,0 +1,1 @@
+const fs = require("fs"); const data = JSON.parse(fs.readFileSync("d:\sggu\src\i18n\locales\hi.json", "utf8")); const unique = {}; for (const key in data) { if (!unique.hasOwnProperty(key)) { unique[key] = data[key]; } } fs.writeFileSync("d:\sggu\src\i18n\locales\hi.json", JSON.stringify(unique, null, 2));
