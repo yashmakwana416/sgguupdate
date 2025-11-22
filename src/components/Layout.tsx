@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Link, useLocation, Navigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Users, Truck, Package, FileText, ShoppingCart, Receipt, BarChart3, CreditCard, Calculator, BarChart, Menu, X, Building2, LogOut, User, RotateCcw, Shield, Settings, ChefHat } from 'lucide-react';
+import { Users, Truck, Package, FileText, ShoppingCart, Receipt, BarChart3, CreditCard, Calculator, BarChart, Menu, X, Building2, LogOut, User, RotateCcw, Shield, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,15 +17,7 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-interface NavigationItem {
-  name: string;
-  href: string;
-  icon: any;
-  adminOnly?: boolean;
-  superAdminOnly?: boolean;
-}
-
-const allNavigation: NavigationItem[] = [{
+const allNavigation = [{
   name: 'dashboard',
   href: '/',
   icon: BarChart3
@@ -45,7 +37,7 @@ const allNavigation: NavigationItem[] = [{
 }, {
   name: 'operations',
   href: '/operations',
-  icon: ChefHat,
+  icon: Settings,
   superAdminOnly: true
 }, {
   name: 'createInvoice',
@@ -95,7 +87,7 @@ export function Layout({
   // Clean loading state - wait for both auth and role to load
   if (loading || roleLoading) {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="glass-card p-8 text-center max-w-sm w-full mx-4">
           <div className="animate-spin rounded-full h-8 w-8 border-2 border-transparent border-t-primary mx-auto mb-4"></div>
           <p className="text-sm text-muted-foreground">Loading...</p>
@@ -110,9 +102,9 @@ export function Layout({
   }
 
   // Check if user has access to current page (superadmin always allowed)
-  // if (!isSuperAdmin() && !hasAccessToPage(location.pathname)) {
-  //   return <Navigate to="/" replace />;
-  // }
+  if (!isSuperAdmin() && !hasAccessToPage(location.pathname)) {
+    return <Navigate to="/" replace />;
+  }
 
   // Filter navigation based on user role
   const navigation = allNavigation.filter(item => {
@@ -164,9 +156,9 @@ export function Layout({
     <div className="min-h-screen bg-background">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden transition-opacity duration-200"
-          onClick={() => setSidebarOpen(false)}
+        <div 
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden transition-opacity duration-200" 
+          onClick={() => setSidebarOpen(false)} 
         />
       )}
 
@@ -187,10 +179,10 @@ export function Layout({
               <p className="text-xs text-muted-foreground">Gruh Udhyog</p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden h-8 w-8"
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="lg:hidden h-8 w-8" 
             onClick={() => setSidebarOpen(false)}
           >
             <X className="h-4 w-4" />
@@ -209,8 +201,8 @@ export function Layout({
                     to={item.href}
                     className={cn(
                       'group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
-                      isActive
-                        ? 'bg-primary/10 text-primary'
+                      isActive 
+                        ? 'bg-primary/10 text-primary' 
                         : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
                     )}
                     onClick={() => setSidebarOpen(false)}
@@ -237,15 +229,15 @@ export function Layout({
         <header className="glass-nav sticky top-0 z-30 h-16 border-b border-border/30">
           <div className="flex h-full items-center justify-between px-6">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden h-8 w-8"
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="lg:hidden h-8 w-8" 
                 onClick={() => setSidebarOpen(true)}
               >
                 <Menu className="h-4 w-4" />
               </Button>
-
+              
               <div className="hidden md:block">
                 <h2 className="text-lg font-semibold text-foreground capitalize">
                   {t(navigation.find(item => item.href === location.pathname)?.name || 'dashboard')}
@@ -255,12 +247,12 @@ export function Layout({
 
             <div className="flex items-center gap-4">
               <div className="hidden sm:block text-sm text-muted-foreground">
-                {new Date().toLocaleDateString('en-US', {
+                {new Date().toLocaleDateString('en-US', { 
                   month: 'short',
                   day: 'numeric'
                 })}
               </div>
-
+              
               {/* Clean User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -270,8 +262,8 @@ export function Layout({
                         <div className="text-sm font-medium text-foreground">
                           {getUserDisplayName()}
                         </div>
-                        <Badge
-                          variant="secondary"
+                        <Badge 
+                          variant="secondary" 
                           className={cn("text-xs text-white border-0", getRoleColor())}
                         >
                           {getRoleName()}
@@ -280,18 +272,18 @@ export function Layout({
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
-
+                
                 <DropdownMenuContent align="end" className="glass-card w-48">
                   <div className="px-3 py-2 border-b border-border/30">
                     <p className="text-sm font-medium text-foreground">{getUserDisplayName()}</p>
                     <p className="text-xs text-muted-foreground">{user?.email}</p>
                   </div>
-
+                  
                   <DropdownMenuItem className="cursor-pointer hover:bg-muted/40 transition-colors duration-150">
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-
+                  
                   {(isSuperAdmin() || isAdmin()) && (
                     <DropdownMenuItem asChild className="cursor-pointer hover:bg-muted/40 transition-colors duration-150">
                       <Link to="/admin-panel" className="w-full flex items-center">
@@ -300,7 +292,7 @@ export function Layout({
                       </Link>
                     </DropdownMenuItem>
                   )}
-
+                  
                   {isSuperAdmin() && (
                     <DropdownMenuItem asChild className="cursor-pointer hover:bg-muted/40 transition-colors duration-150">
                       <Link to="/distributors-data" className="w-full flex items-center">
@@ -309,17 +301,17 @@ export function Layout({
                       </Link>
                     </DropdownMenuItem>
                   )}
-
+                  
                   <DropdownMenuItem asChild className="cursor-pointer hover:bg-muted/40 transition-colors duration-150">
                     <Link to="/settings" className="w-full flex items-center">
                       <Building2 className="mr-2 h-4 w-4" />
                       Settings
                     </Link>
                   </DropdownMenuItem>
-
+                  
                   <div className="border-t border-border/30 my-1"></div>
-
-                  <DropdownMenuItem
+                  
+                  <DropdownMenuItem 
                     onClick={handleSignOut}
                     onTouchEnd={handleSignOut}
                     className="cursor-pointer text-destructive hover:bg-destructive/10 transition-colors duration-150 active:bg-destructive/20"

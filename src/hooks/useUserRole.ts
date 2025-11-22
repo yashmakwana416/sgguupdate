@@ -36,7 +36,7 @@ export const useUserRole = () => {
         .maybeSingle();
 
       if (error) throw error;
-
+      
       // If no role found, user is pending approval (null)
       // Only set a role if one exists in the database
       setUserRole(data?.role || null);
@@ -67,7 +67,7 @@ export const useUserRole = () => {
       '/',
       '/dashboard',
       '/parties',
-      '/products',
+      '/products', 
       '/create-invoice',
       '/invoices',
       '/returns',

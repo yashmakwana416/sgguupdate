@@ -32,9 +32,7 @@ import {
 } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Package, Loader2, ChefHat } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { useMemo } from 'react';
+import { Package, Loader2 } from 'lucide-react';
 
 const Operations = () => {
   const { t } = useTranslation();
@@ -45,33 +43,12 @@ const Operations = () => {
   const { products, isLoading: productsLoading } = useProducts();
   const { data: groupedMaterials, isLoading: materialsLoading } = useGroupedRawMaterials();
   const { data: existingMaterials, isLoading: existingLoading } = useProductRawMaterials(selectedProduct?.id);
-  const { data: allRecipes } = useProductRawMaterials();
   const saveMaterials = useSaveProductRawMaterials();
-
-  const rawMaterialMap = useMemo(() => {
-    const map: Record<string, string> = {};
-    groupedMaterials?.forEach(group => {
-      group.variants.forEach(variant => {
-        map[variant.id] = variant.display_name || variant.name;
-      });
-    });
-    return map;
-  }, [groupedMaterials]);
-
-  const recipesByProduct = useMemo(() => {
-    if (!allRecipes) return {};
-    const map: Record<string, typeof allRecipes> = {};
-    allRecipes.forEach(r => {
-      if (!map[r.product_id]) map[r.product_id] = [];
-      map[r.product_id].push(r);
-    });
-    return map;
-  }, [allRecipes]);
 
   const handleDescribeClick = (product: any) => {
     setSelectedProduct(product);
     setShowDialog(true);
-
+    
     // Load existing materials for this product
     if (existingMaterials) {
       const materialMap: Record<string, number> = {};
@@ -188,65 +165,6 @@ const Operations = () => {
             </Table>
           </CardContent>
         </Card>
-
-        {Object.keys(recipesByProduct).length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ChefHat className="h-5 w-5" />
-                Saved Recipes
-              </CardTitle>
-              <CardDescription>
-                Current raw material requirements for products
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Ingredients (per unit)</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Object.entries(recipesByProduct).map(([productId, materials]) => {
-                    const product = products?.find(p => p.id === productId);
-                    if (!product) return null;
-
-                    return (
-                      <TableRow key={productId}>
-                        <TableCell className="font-medium">
-                          <div>{product.name}</div>
-                          <div className="text-sm text-muted-foreground">{product.sku}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-2">
-                            {materials.map(m => (
-                              <Badge key={m.id} variant="secondary" className="flex gap-1">
-                                <span>{rawMaterialMap[m.raw_material_id] || 'Unknown Material'}</span>
-                                <span className="font-semibold">({m.quantity_grams}g)</span>
-                              </Badge>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDescribeClick(product)}
-                          >
-                            Edit
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        )}
       </div>
 
       <Dialog open={showDialog} onOpenChange={handleDialogClose}>

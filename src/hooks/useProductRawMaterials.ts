@@ -28,7 +28,7 @@ export const useProductRawMaterials = (productId?: string) => {
       if (error) throw error;
       return data as ProductRawMaterial[];
     },
-    enabled: true,
+    enabled: !!productId,
   });
 };
 
