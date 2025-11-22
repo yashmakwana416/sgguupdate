@@ -1118,6 +1118,14 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_product_recipes: {
+        Args: never
+        Returns: {
+          product_id: string
+          recipe_count: number
+          recipe_details: string
+        }[]
+      }
       get_user_department_role: { Args: { dept_id: string }; Returns: string }
       has_role: {
         Args: {
