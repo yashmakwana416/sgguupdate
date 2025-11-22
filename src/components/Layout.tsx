@@ -101,8 +101,8 @@ export function Layout({
     return <Navigate to="/auth" replace />;
   }
 
-  // Check if user has access to current page
-  if (!hasAccessToPage(location.pathname)) {
+  // Check if user has access to current page (superadmin always allowed)
+  if (!isSuperAdmin() && !hasAccessToPage(location.pathname)) {
     return <Navigate to="/" replace />;
   }
 
