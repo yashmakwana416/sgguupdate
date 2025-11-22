@@ -73,6 +73,14 @@ export const useUserRole = () => {
       '/returns',
       '/settings'
     ];
+    
+    // Superadmin-only pages
+    const superAdminPages = [
+      '/inventory',
+      '/operations',
+      '/distributors-data',
+      '/admin-panel'
+    ];
 
     // Distributor has access to specific pages only
     if (isDistributor()) {
