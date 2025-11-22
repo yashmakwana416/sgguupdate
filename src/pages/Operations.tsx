@@ -67,48 +67,23 @@ const Operations = () => {
 
   const fetchProductRecipes = async () => {
     try {
-      const { data, error } = await supabase.rpc('get_product_recipes' as any);
+      const { data, error } = await supabase.rpc('get_product_recipes');
       
-      if (error) {
-        // Fallback: query directly if RPC doesn't exist
-        const { data: recipeData, error: recipeError } = await supabase
-          .from('product_raw_materials')
-          .select(`
-            product_id,
-            quantity_grams,
-            raw_materials!inner(name)
-          `);
+      if (error) throw error;
 
-        if (recipeError) throw recipeError;
-
-        // Group by product
-        const grouped: Record<string, ProductRecipe> = {};
-        recipeData?.forEach((item: any) => {
-          if (!grouped[item.product_id]) {
-            grouped[item.product_id] = {
-              product_id: item.product_id,
-              recipe_count: 0,
-              recipe_details: '',
-            };
-          }
-          grouped[item.product_id].recipe_count++;
-          const detail = `${item.raw_materials.name} (${item.quantity_grams}g)`;
-          grouped[item.product_id].recipe_details = grouped[item.product_id].recipe_details
-            ? `${grouped[item.product_id].recipe_details}, ${detail}`
-            : detail;
-        });
-
-        setProductRecipes(grouped);
-      } else {
-        // Format RPC data
-        const formatted: Record<string, ProductRecipe> = {};
-        data?.forEach((recipe: any) => {
-          formatted[recipe.product_id] = recipe;
-        });
-        setProductRecipes(formatted);
-      }
+      // Format RPC data into a map for easy lookup
+      const formatted: Record<string, ProductRecipe> = {};
+      data?.forEach((recipe: any) => {
+        formatted[recipe.product_id] = {
+          product_id: recipe.product_id,
+          recipe_count: Number(recipe.recipe_count),
+          recipe_details: recipe.recipe_details,
+        };
+      });
+      setProductRecipes(formatted);
     } catch (err) {
       console.error('Error fetching recipes:', err);
+      // Silently fail - recipes will show as "No recipe" which is fine
     }
   };
 
