@@ -4,6 +4,7 @@ import { Settings as SettingsIcon, Package, BarChart, FileText, Receipt, BarChar
 import { AdminPanelButton } from '@/components/AdminPanelButton';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { BluetoothDevicesSettings } from '@/components/BluetoothDevicesSettings';
+import { DistributorSettings } from '@/components/DistributorSettings';
 import { useTranslation } from 'react-i18next';
 
 const Settings = () => {
@@ -103,6 +104,9 @@ const Settings = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Distributor Settings */}
+        <DistributorSettings />
 
         {/* Bluetooth Printer Settings */}
         <BluetoothDevicesSettings />

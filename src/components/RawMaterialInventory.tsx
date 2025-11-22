@@ -56,7 +56,7 @@ const RawMaterialInventory = () => {
   const getStockStatus = (currentKg: number, currentGrams: number, minKg: number, minGrams: number) => {
     const currentTotal = currentKg * 1000 + currentGrams;
     const minTotal = minKg * 1000 + minGrams;
-    
+
     if (currentTotal <= 0) return { status: t('outOfStock'), color: 'destructive' };
     if (currentTotal <= minTotal) return { status: t('lowStock'), color: 'secondary' };
     return { status: t('inStock'), color: 'default' };
@@ -87,7 +87,7 @@ const RawMaterialInventory = () => {
 
   const handleUpdateStock = (data: StockUpdateForm) => {
     if (!editingMaterial) return;
-    
+
     // Convert empty strings to 0 for submission
     const updates = {
       current_stock_kg: data.current_stock_kg === '' ? 0 : Number(data.current_stock_kg),
@@ -96,7 +96,7 @@ const RawMaterialInventory = () => {
       minimum_stock_grams: data.minimum_stock_grams === '' ? 0 : Number(data.minimum_stock_grams),
       unit_cost_per_kg: data.unit_cost_per_kg === '' ? 0 : Number(data.unit_cost_per_kg),
     };
-    
+
     updateMaterial.mutate({
       id: editingMaterial.id,
       updates,
@@ -190,8 +190,8 @@ const RawMaterialInventory = () => {
 
   // Calculate stats from all variants
   const allVariants = groupedMaterials?.flatMap(material => material.variants) || [];
-  const totalValue = allVariants.reduce((sum, variant) => 
-    sum + (variant.current_stock_kg * variant.unit_cost_per_kg) + 
+  const totalValue = allVariants.reduce((sum, variant) =>
+    sum + (variant.current_stock_kg * variant.unit_cost_per_kg) +
     ((variant.current_stock_grams / 1000) * variant.unit_cost_per_kg), 0);
 
   const lowStockItems = allVariants.filter(variant => {
@@ -320,7 +320,7 @@ const RawMaterialInventory = () => {
                       selectedVariant.minimum_stock_kg,
                       selectedVariant.minimum_stock_grams
                     );
-                    const totalValue = (selectedVariant.current_stock_kg * selectedVariant.unit_cost_per_kg) + 
+                    const totalValue = (selectedVariant.current_stock_kg * selectedVariant.unit_cost_per_kg) +
                       ((selectedVariant.current_stock_grams / 1000) * selectedVariant.unit_cost_per_kg);
 
                     return (
@@ -340,8 +340,8 @@ const RawMaterialInventory = () => {
                                     size="sm"
                                     className={cn(
                                       "rounded-full text-xs h-7 px-3 transition-all",
-                                      selectedVariant.id === variant.id 
-                                        ? "bg-primary text-primary-foreground shadow-md" 
+                                      selectedVariant.id === variant.id
+                                        ? "bg-primary text-primary-foreground shadow-md"
                                         : "bg-background hover:bg-muted border-muted-foreground/20"
                                     )}
                                     onClick={() => handleVariantSelect(material.base_material_name, variant.id)}
@@ -425,8 +425,8 @@ const RawMaterialInventory = () => {
                                   size="sm"
                                   className={cn(
                                     "rounded-full text-xs h-6 px-2",
-                                    selectedVariant.id === variant.id 
-                                      ? "bg-primary text-primary-foreground" 
+                                    selectedVariant.id === variant.id
+                                      ? "bg-primary text-primary-foreground"
                                       : "bg-background hover:bg-muted border-muted-foreground/20"
                                   )}
                                   onClick={() => handleVariantSelect(material.base_material_name, variant.id)}
@@ -469,11 +469,11 @@ const RawMaterialInventory = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('currentStock')} (kg)</FormLabel>
-                      <FormControl> 
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          {...field} 
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          {...field}
                           onChange={e => field.onChange(e.target.value)}
                           placeholder={t('enterKg')}
                         />
@@ -489,32 +489,32 @@ const RawMaterialInventory = () => {
                     <FormItem>
                       <FormLabel>{t('currentStock')} (grams)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          max="999" 
-                          {...field} 
+                        <Input
+                          type="number"
+                          min="0"
+                          max="999"
+                          {...field}
                           onChange={e => field.onChange(e.target.value)}
                           placeholder={t('enterGrams')}
                         />
                       </FormControl>
-                      <FormMessage />   
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <FormField    
+                <FormField
                   control={stockForm.control}
                   name="minimum_stock_kg"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('minimumStock')} (kg)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          {...field} 
+                        <Input
+                          type="number"
+                          min="0"
+                          {...field}
                           onChange={e => field.onChange(e.target.value)}
                           placeholder={t('enterKg')}
                         />
@@ -530,11 +530,11 @@ const RawMaterialInventory = () => {
                     <FormItem>
                       <FormLabel>{t('minimumStock')} (grams)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          max="999" 
-                          {...field} 
+                        <Input
+                          type="number"
+                          min="0"
+                          max="999"
+                          {...field}
                           onChange={e => field.onChange(e.target.value)}
                           placeholder={t('enterGrams')}
                         />
@@ -551,11 +551,11 @@ const RawMaterialInventory = () => {
                   <FormItem>
                     <FormLabel>{t('unitCostPerKg')}</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        min="0" 
-                        step="0.01" 
-                        {...field} 
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        {...field}
                         onChange={e => field.onChange(e.target.value)}
                         placeholder={t('enterCost')}
                       />
@@ -606,12 +606,12 @@ const RawMaterialInventory = () => {
                     <FormItem>
                       <FormLabel>{t('usedKg')}</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          step="0.01" 
-                          value={field.value || ''} 
-                          onChange={e => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} 
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={field.value || ''}
+                          onChange={e => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
                           placeholder={t('enterKgUsed')}
                         />
                       </FormControl>
@@ -626,12 +626,12 @@ const RawMaterialInventory = () => {
                     <FormItem>
                       <FormLabel>{t('usedGrams')}</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          max="999" 
-                          value={field.value || ''} 
-                          onChange={e => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} 
+                        <Input
+                          type="number"
+                          min="0"
+                          max="999"
+                          value={field.value || ''}
+                          onChange={e => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
                           placeholder={t('enterGramsUsed')}
                         />
                       </FormControl>

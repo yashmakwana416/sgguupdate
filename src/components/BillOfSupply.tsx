@@ -20,10 +20,11 @@ interface BillOfSupplyProps {
     pincode: string;
     mobile: string;
     tagline?: string;
+    signature_name?: string;
   };
 }
 
-export const BillOfSupply: React.FC<BillOfSupplyProps> = ({ 
+export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
   invoice,
   party,
   companyDetails = {
@@ -34,16 +35,17 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
     state: "Gujarat",
     pincode: "",
     mobile: "9624985555",
-    tagline: "આપણો વિશ્વાસુ"
+    tagline: "આપણો વિશ્વાસુ",
+    signature_name: "પ્રજાપતિ મહેશ"
   }
 }) => {
   const { t } = useTranslation();
-  
+
   const convertAmountToWords = (amount: number): string => {
     const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
     const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
     const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-    
+
     if (amount === 0) return 'Zero';
     if (amount < 10) return ones[amount];
     if (amount < 20) return teens[amount - 10];
@@ -51,31 +53,35 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
     if (amount < 1000) return ones[Math.floor(amount / 100)] + ' Hundred' + (amount % 100 !== 0 ? ' ' + convertAmountToWords(amount % 100) : '');
     if (amount < 100000) return convertAmountToWords(Math.floor(amount / 1000)) + ' Thousand' + (amount % 1000 !== 0 ? ' ' + convertAmountToWords(amount % 1000) : '');
     if (amount < 1000000) return convertAmountToWords(Math.floor(amount / 100000)) + ' Lakh' + (amount % 100000 !== 0 ? ' ' + convertAmountToWords(amount % 100000) : '');
-    
+
     return 'Rupees Only';
   };
 
   return (
     <div className="max-w-4xl mx-auto bg-white text-gray-900 shadow-lg print:shadow-none font-sans border border-gray-200 rounded-lg overflow-hidden print:text-[10px] print:leading-tight">
-      
+
       {/* Clean Header - Minimal */}
       <div className="bg-purple-100 border-b border-purple-200 p-1 print:p-0.5">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-1">
           <div className="flex-1">
             <h1 className="text-sm font-bold text-purple-900 print:text-[11px] print:mb-0">
-              શ્રી ગણેશ ગૃહ ઉદ્યોગ
+              {companyDetails.name}
             </h1>
             <div className="text-purple-700 text-[10px] print:text-[9px] leading-none">
-              <div>{companyDetails.address}</div>
-              <div>{companyDetails.landmark}</div>
-              <div>{companyDetails.city}, {companyDetails.state} {companyDetails.pincode}</div>
+              {companyDetails.address && <div>{companyDetails.address}</div>}
+              {companyDetails.landmark && <div>{companyDetails.landmark}</div>}
+              {(companyDetails.city || companyDetails.state || companyDetails.pincode) && (
+                <div>
+                  {[companyDetails.city, companyDetails.state, companyDetails.pincode].filter(Boolean).join(', ')}
+                </div>
+              )}
               <div className="flex items-center gap-1">
                 <span>Mobile:</span>
                 <span className="font-medium">{companyDetails.mobile}</span>
               </div>
             </div>
           </div>
-          
+
           <div className="text-right">
             <div className="bg-white rounded p-1 border border-purple-200 print:p-0.5">
               <div className="text-[9px] text-gray-600 print:text-[8px]">ORIGINAL FOR RECIPIENT</div>
@@ -138,7 +144,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
               <th className="px-0.5 py-0.5 text-right text-[10px] font-bold text-purple-900 uppercase print:text-[9px]">RATE</th>
               <th className="px-0.5 py-0.5 text-right text-[10px] font-bold text-purple-900 uppercase print:text-[9px]">AMOUNT</th>
             </tr>
-          </thead>
+          </thead >
           <tbody className="bg-white">
             {invoice.items.map((item, index) => (
               <tr key={index} className="border-b border-gray-100">
@@ -150,7 +156,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
                 <td className="px-0.5 py-0.5 text-[10px] text-gray-900 text-right font-medium print:text-[9px]">{item.amount.toFixed(0)}</td>
               </tr>
             ))}
-            
+
             {/* Empty rows for minimum height - minimal */}
             {Array.from({ length: Math.max(0, 2 - invoice.items.length) }, (_, i) => (
               <tr key={`empty-${i}`} className="border-b border-gray-100">
@@ -174,7 +180,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
               <td className="px-0.5 py-0.5 print:py-0"></td>
               <td className="px-0.5 py-0.5 text-[10px] font-bold text-right text-purple-900 print:text-[9px]">₹ {invoice.subtotal.toFixed(0)}</td>
             </tr>
-            
+
             {/* Discount Row - only show if discount > 0 */}
             {invoice.discount && invoice.discount > 0 && (
               <tr className="bg-purple-50">
@@ -186,7 +192,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
                 <td className="px-0.5 py-0.5 text-[10px] font-semibold text-right text-red-600 print:text-[9px]">- ₹ {invoice.discount.toFixed(0)}</td>
               </tr>
             )}
-            
+
             {/* Other Charges Row - only show if other charges > 0 */}
             {invoice.otherCharges && invoice.otherCharges > 0 && (
               <tr className="bg-purple-50">
@@ -198,7 +204,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
                 <td className="px-0.5 py-0.5 text-[10px] font-semibold text-right text-purple-900 print:text-[9px]">₹ {invoice.otherCharges.toFixed(0)}</td>
               </tr>
             )}
-            
+
             {/* Tax Row - only show if tax amount > 0 */}
             {invoice.taxAmount > 0 && (
               <tr className="bg-purple-50">
@@ -211,13 +217,13 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
-      </div>
+        </table >
+      </div >
 
       {/* Totals Section - Minimal */}
-      <div className="bg-white border-t border-purple-100">
+      < div className="bg-white border-t border-purple-100" >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1 p-1 print:p-0.5">
-          
+
           {/* Left side - Amount in words */}
           <div>
             <div className="text-[10px] font-semibold text-purple-900 print:text-[9px]">Total Amount (in words)</div>
@@ -234,33 +240,35 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </div >
 
       {/* Footer with Signature - Minimal */}
-      <div className="bg-purple-100 border-t border-purple-200 p-1 text-center print:p-0.5">
+      < div className="bg-purple-100 border-t border-purple-200 p-1 text-center print:p-0.5" >
         <div className="bg-purple-200 rounded p-0.5 inline-block">
           <div className="text-[10px] font-bold text-purple-900 print:text-[9px]">
             {companyDetails.tagline}
           </div>
           <div className="text-[10px] font-medium text-purple-800 print:text-[9px]">
-            પ્રજાપતિ મહેશ
+            {companyDetails.signature_name || "પ્રજાપતિ મહેશ"}
           </div>
         </div>
         <div className="text-[9px] text-purple-700 print:text-[8px]">
-          Authorised Signature for શ્રી ગણેશ ગૃહ ઉદ્યોગ
+          Authorised Signature for {companyDetails.name}
         </div>
-      </div>
+      </div >
 
       {/* Notes Section - Minimal */}
-      {invoice.notes && (
-        <div className="bg-gray-50 border-t border-gray-200 p-0.5 print:p-0">
-          <div className="text-[9px] text-gray-700 print:text-[8px]">
-            <strong>Notes:</strong> {invoice.notes}
+      {
+        invoice.notes && (
+          <div className="bg-gray-50 border-t border-gray-200 p-0.5 print:p-0">
+            <div className="text-[9px] text-gray-700 print:text-[8px]">
+              <strong>Notes:</strong> {invoice.notes}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-    </div>
+    </div >
   );
 };
 
