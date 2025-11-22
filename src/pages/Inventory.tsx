@@ -36,10 +36,17 @@ const Inventory = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const kg = Number(formData.current_stock_kg) || 0;
+      const grams = Number(formData.current_stock_grams) || 0;
+      
+      // Calculate total_stock_grams = (kg * 1000) + grams
+      const totalStockGrams = (kg * 1000) + grams;
+      
       const materialData = {
         name: formData.name,
-        current_stock_kg: Number(formData.current_stock_kg) || 0,
-        current_stock_grams: Number(formData.current_stock_grams) || 0,
+        current_stock_kg: kg,
+        current_stock_grams: grams,
+        total_stock_grams: totalStockGrams,
         minimum_stock_kg: Number(formData.minimum_stock_kg) || 0,
         minimum_stock_grams: Number(formData.minimum_stock_grams) || 0,
         unit_cost_per_kg: Number(formData.unit_cost_per_kg) || 0
@@ -58,7 +65,10 @@ const Inventory = () => {
 
       setShowAddDialog(false);
       resetForm();
-      window.location.reload();
+      
+      // Trigger a re-render of the RawMaterialInventory component
+      // by using a key or forcing a remount
+      window.dispatchEvent(new Event('inventoryUpdated'));
     } catch (error: any) {
       console.error('Error saving material:', error);
       toast({

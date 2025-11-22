@@ -1078,6 +1078,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      deduct_inventory_for_invoice: {
+        Args: { invoice_id: string }
+        Returns: undefined
+      }
       get_distributor_invoice_items: {
         Args: { p_invoice_id: string }
         Returns: {
