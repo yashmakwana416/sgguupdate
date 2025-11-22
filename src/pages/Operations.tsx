@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout';
 import { useProducts } from '@/hooks/useProducts';
-import { useRawMaterials } from '@/hooks/useRawMaterials';
+import { useGroupedRawMaterials } from '@/hooks/useRawMaterials';
 import { useProductRawMaterials, useSaveProductRawMaterials } from '@/hooks/useProductRawMaterials';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,7 +41,7 @@ const Operations = () => {
   const [selectedMaterials, setSelectedMaterials] = useState<Record<string, number>>({});
 
   const { products, isLoading: productsLoading } = useProducts();
-  const { data: rawMaterials, isLoading: materialsLoading } = useRawMaterials();
+  const { data: groupedMaterials, isLoading: materialsLoading } = useGroupedRawMaterials();
   const { data: existingMaterials, isLoading: existingLoading } = useProductRawMaterials(selectedProduct?.id);
   const saveMaterials = useSaveProductRawMaterials();
 
@@ -184,50 +184,68 @@ const Operations = () => {
             </div>
           ) : (
             <ScrollArea className="h-[400px] pr-4">
-              <div className="space-y-4">
-                {rawMaterials?.map((material) => {
-                  const isChecked = material.id in selectedMaterials;
-                  const quantity = selectedMaterials[material.id] || 0;
+              <div className="space-y-6">
+                {groupedMaterials?.map((group) => (
+                  <div key={group.material_id} className="space-y-2">
+                    <h3 className="font-semibold text-sm text-muted-foreground">
+                      {group.base_material_name}
+                    </h3>
+                    <div className="space-y-2">
+                      {group.variants.map((variant) => {
+                        const isChecked = variant.id in selectedMaterials;
+                        const quantity = selectedMaterials[variant.id] || 0;
 
-                  return (
-                    <div
-                      key={material.id}
-                      className="flex items-center gap-4 p-3 border rounded-lg"
-                    >
-                      <Checkbox
-                        id={`material-${material.id}`}
-                        checked={isChecked}
-                        onCheckedChange={(checked) =>
-                          handleCheckboxChange(material.id, checked as boolean)
-                        }
-                      />
-                      <div className="flex-1">
-                        <Label
-                          htmlFor={`material-${material.id}`}
-                          className="font-medium cursor-pointer"
-                        >
-                          {material.display_name || material.name}
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
-                          Available: {material.current_stock_kg} kg {material.current_stock_grams}g
-                        </p>
-                      </div>
-                      <div className="w-32">
-                        <Input
-                          type="number"
-                          placeholder="Grams"
-                          value={quantity || ''}
-                          onChange={(e) =>
-                            handleQuantityChange(material.id, e.target.value)
-                          }
-                          disabled={!isChecked}
-                          min="0"
-                          step="0.01"
-                        />
-                      </div>
+                        return (
+                          <div
+                            key={variant.id}
+                            className="flex items-center gap-4 p-3 border rounded-lg bg-card"
+                          >
+                            <Checkbox
+                              id={`material-${variant.id}`}
+                              checked={isChecked}
+                              onCheckedChange={(checked) =>
+                                handleCheckboxChange(variant.id, checked as boolean)
+                              }
+                            />
+                            <div className="flex-1">
+                              <Label
+                                htmlFor={`material-${variant.id}`}
+                                className="font-medium cursor-pointer"
+                              >
+                                {variant.display_name || variant.name}
+                                {variant.variant_name && (
+                                  <span className="ml-2 text-sm text-muted-foreground">
+                                    ({variant.variant_type}: {variant.variant_name})
+                                  </span>
+                                )}
+                              </Label>
+                              <p className="text-sm text-muted-foreground">
+                                Available: {variant.current_stock_kg} kg {variant.current_stock_grams}g
+                              </p>
+                            </div>
+                            <div className="w-40 flex items-center gap-2">
+                              <Input
+                                type="number"
+                                placeholder="Quantity"
+                                value={quantity || ''}
+                                onChange={(e) =>
+                                  handleQuantityChange(variant.id, e.target.value)
+                                }
+                                disabled={!isChecked}
+                                min="0"
+                                step="0.01"
+                                className="flex-1"
+                              />
+                              <span className="text-sm text-muted-foreground whitespace-nowrap">
+                                grams
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </ScrollArea>
           )}
