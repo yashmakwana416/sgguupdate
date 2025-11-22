@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Link, useLocation, Navigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Users, Truck, Package, FileText, ShoppingCart, Receipt, BarChart3, CreditCard, Calculator, BarChart, Menu, X, Building2, LogOut, User, RotateCcw, Shield } from 'lucide-react';
+import { Users, Truck, Package, FileText, ShoppingCart, Receipt, BarChart3, CreditCard, Calculator, BarChart, Menu, X, Building2, LogOut, User, RotateCcw, Shield, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -34,6 +34,11 @@ const allNavigation = [{
   href: '/inventory',
   icon: BarChart,
   adminOnly: true
+}, {
+  name: 'operations',
+  href: '/operations',
+  icon: Settings,
+  superAdminOnly: true
 }, {
   name: 'createInvoice',
   href: '/create-invoice',
