@@ -532,8 +532,9 @@ const RawMaterialInventory = () => {
                         <Input
                           type="number"
                           min="0"
-                          {...field}
-                          onChange={e => field.onChange(e.target.value)}
+                          step="0.001"
+                          value={field.value}
+                          onChange={e => field.onChange(e.target.value === '' ? '' : e.target.value)}
                           placeholder={t('enterKg')}
                         />
                       </FormControl>
@@ -552,8 +553,8 @@ const RawMaterialInventory = () => {
                           type="number"
                           min="0"
                           max="999"
-                          {...field}
-                          onChange={e => field.onChange(e.target.value)}
+                          value={field.value}
+                          onChange={e => field.onChange(e.target.value === '' ? '' : e.target.value)}
                           placeholder={t('enterGrams')}
                         />
                       </FormControl>
@@ -573,8 +574,9 @@ const RawMaterialInventory = () => {
                         <Input
                           type="number"
                           min="0"
-                          {...field}
-                          onChange={e => field.onChange(e.target.value)}
+                          step="0.001"
+                          value={field.value}
+                          onChange={e => field.onChange(e.target.value === '' ? '' : e.target.value)}
                           placeholder={t('enterKg')}
                         />
                       </FormControl>
@@ -593,8 +595,8 @@ const RawMaterialInventory = () => {
                           type="number"
                           min="0"
                           max="999"
-                          {...field}
-                          onChange={e => field.onChange(e.target.value)}
+                          value={field.value}
+                          onChange={e => field.onChange(e.target.value === '' ? '' : e.target.value)}
                           placeholder={t('enterGrams')}
                         />
                       </FormControl>
@@ -614,8 +616,8 @@ const RawMaterialInventory = () => {
                         type="number"
                         min="0"
                         step="0.01"
-                        {...field}
-                        onChange={e => field.onChange(e.target.value)}
+                        value={field.value}
+                        onChange={e => field.onChange(e.target.value === '' ? '' : e.target.value)}
                         placeholder={t('enterCost')}
                       />
                     </FormControl>
