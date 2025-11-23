@@ -21,6 +21,7 @@ import DistributorsData from "./pages/DistributorsData";
 import NotFound from "./pages/NotFound";
 import PendingApproval from "./pages/PendingApproval";
 import Operations from "./pages/Operations";
+import Packaging from "./pages/Packaging";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient({
@@ -60,6 +61,7 @@ const App = () => (
                     <Route path="/returns" element={<Returns />} />
                     <Route path="/distributors-data" element={<DistributorsData />} />
                     <Route path="/operations" element={<Operations />} />
+                    <Route path="/packaging" element={<Packaging />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/admin-panel" element={<AdminPanel />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -305,6 +305,50 @@ export type Database = {
         }
         Relationships: []
       }
+      packaging_logs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          kg_packed: number
+          packaging_date: string
+          product_id: string
+          product_name: string
+          raw_materials_used: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kg_packed: number
+          packaging_date?: string
+          product_id: string
+          product_name: string
+          raw_materials_used?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kg_packed?: number
+          packaging_date?: string
+          product_id?: string
+          product_name?: string
+          raw_materials_used?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packaging_logs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       parties: {
         Row: {
           address: string | null
