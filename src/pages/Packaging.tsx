@@ -160,7 +160,7 @@ const Packaging = () => {
         </TabsList>
 
         {/* Daily Packaging Entry */}
-        <TabsContent value="entry">
+        <TabsContent value="entry" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Record Daily Packaging</CardTitle>
@@ -215,6 +215,71 @@ const Packaging = () => {
                     {createEntry.isPending ? 'Saving...' : 'Save Packaging Entry'}
                   </Button>
                 </form>
+              </CardContent>
+            </Card>
+
+            {/* Recent Packaging Logs */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <History className="h-5 w-5" />
+                  Recent Packaging Logs (Today)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {logsLoading ? (
+                  <p>Loading logs...</p>
+                ) : !packagingLogs || packagingLogs.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-4">
+                    No packaging entries recorded yet today
+                  </p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Time</TableHead>
+                          <TableHead>Product</TableHead>
+                          <TableHead>KG Packed</TableHead>
+                          <TableHead>Raw Materials Deducted</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {packagingLogs
+                          .filter((log) => {
+                            const logDate = new Date(log.packaging_date);
+                            const today = new Date();
+                            return (
+                              logDate.getDate() === today.getDate() &&
+                              logDate.getMonth() === today.getMonth() &&
+                              logDate.getFullYear() === today.getFullYear()
+                            );
+                          })
+                          .slice(0, 5)
+                          .map((log) => (
+                            <TableRow key={log.id}>
+                              <TableCell>
+                                {format(new Date(log.created_at), 'HH:mm:ss')}
+                              </TableCell>
+                              <TableCell className="font-medium">
+                                {log.product_name}
+                              </TableCell>
+                              <TableCell>{log.kg_packed} kg</TableCell>
+                              <TableCell>
+                                <div className="flex flex-wrap gap-1">
+                                  {log.raw_materials_used.map((rm: any, idx: number) => (
+                                    <Badge key={idx} variant="outline">
+                                      {rm.raw_material_name}: {rm.quantity_deducted_kg.toFixed(3)} kg
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
