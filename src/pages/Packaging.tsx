@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,8 +21,9 @@ import {
 } from '@/components/ui/table';
 import { useProducts } from '@/hooks/useProducts';
 import { usePackagingLogs, useCreatePackagingEntry } from '@/hooks/usePackaging';
-import { useProductRawMaterials } from '@/hooks/useProductRawMaterials';
-import { Package, History, Settings } from 'lucide-react';
+import { useProductRawMaterials, useSaveProductRawMaterials } from '@/hooks/useProductRawMaterials';
+import { useRawMaterials } from '@/hooks/useRawMaterials';
+import { Package, History, Settings, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Dialog,
@@ -33,11 +34,15 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from '@/hooks/use-toast';
 
 const Packaging = () => {
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [kgPacked, setKgPacked] = useState<string>('');
-  const [viewRecipeProductId, setViewRecipeProductId] = useState<string>('');
+  const [editRecipeProductId, setEditRecipeProductId] = useState<string>('');
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedMaterials, setSelectedMaterials] = useState<Record<string, number>>({});
   const [filterStartDate, setFilterStartDate] = useState<string>('');
   const [filterEndDate, setFilterEndDate] = useState<string>('');
 
@@ -46,10 +51,23 @@ const Packaging = () => {
     startDate: filterStartDate,
     endDate: filterEndDate,
   });
-  const { data: productRecipe } = useProductRawMaterials(viewRecipeProductId);
+  const { data: productRecipe } = useProductRawMaterials(editRecipeProductId);
+  const { data: allRawMaterials, isLoading: rawMaterialsLoading } = useRawMaterials();
   const createEntry = useCreatePackagingEntry();
+  const saveRecipe = useSaveProductRawMaterials();
 
   const selectedProduct = products?.find((p) => p.id === selectedProductId);
+
+  // Load existing recipe when editing
+  useEffect(() => {
+    if (isEditDialogOpen && productRecipe) {
+      const materials: Record<string, number> = {};
+      productRecipe.forEach((item) => {
+        materials[item.raw_material_id] = item.quantity_grams;
+      });
+      setSelectedMaterials(materials);
+    }
+  }, [isEditDialogOpen, productRecipe]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +89,60 @@ const Packaging = () => {
 
     // Reset form
     setKgPacked('');
+  };
+
+  const handleEditRecipe = (productId: string) => {
+    setEditRecipeProductId(productId);
+    setIsEditDialogOpen(true);
+    setSelectedMaterials({});
+  };
+
+  const handleMaterialToggle = (materialId: string) => {
+    setSelectedMaterials((prev) => {
+      const newMaterials = { ...prev };
+      if (newMaterials[materialId] !== undefined) {
+        delete newMaterials[materialId];
+      } else {
+        newMaterials[materialId] = 0;
+      }
+      return newMaterials;
+    });
+  };
+
+  const handleQuantityChange = (materialId: string, value: string) => {
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue >= 0) {
+      setSelectedMaterials((prev) => ({
+        ...prev,
+        [materialId]: numValue,
+      }));
+    }
+  };
+
+  const handleSaveRecipe = async () => {
+    const materials = Object.entries(selectedMaterials)
+      .filter(([_, qty]) => qty > 0)
+      .map(([raw_material_id, quantity_grams]) => ({
+        raw_material_id,
+        quantity_grams,
+      }));
+
+    if (materials.length === 0) {
+      toast({
+        title: 'No materials selected',
+        description: 'Please select at least one raw material with a quantity greater than 0.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    await saveRecipe.mutateAsync({
+      productId: editRecipeProductId,
+      materials,
+    });
+
+    setIsEditDialogOpen(false);
+    setSelectedMaterials({});
   };
 
   return (
@@ -249,50 +321,14 @@ const Packaging = () => {
                             <TableCell className="font-medium">{product.name}</TableCell>
                             <TableCell>{product.sku}</TableCell>
                             <TableCell>
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setViewRecipeProductId(product.id)}
-                                  >
-                                    View Recipe
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>
-                                      Raw Material Recipe: {product.name}
-                                    </DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-2">
-                                    {!productRecipe || productRecipe.length === 0 ? (
-                                      <p className="text-muted-foreground text-center py-4">
-                                        No recipe configured. Please configure on the Products page.
-                                      </p>
-                                    ) : (
-                                      <Table>
-                                        <TableHeader>
-                                          <TableRow>
-                                            <TableHead>Raw Material</TableHead>
-                                            <TableHead>Qty per 1 KG Product</TableHead>
-                                          </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                          {productRecipe.map((rm) => (
-                                            <TableRow key={rm.id}>
-                                              <TableCell>{rm.raw_material_id}</TableCell>
-                                              <TableCell>
-                                                {(rm.quantity_grams / 1000).toFixed(3)} kg
-                                              </TableCell>
-                                            </TableRow>
-                                          ))}
-                                        </TableBody>
-                                      </Table>
-                                    )}
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditRecipe(product.id)}
+                              >
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit Recipe
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -304,6 +340,86 @@ const Packaging = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Edit Recipe Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                Edit Recipe: {products?.find((p) => p.id === editRecipeProductId)?.name}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Select raw materials and enter the quantity (in grams) required for 1 KG of this product.
+              </p>
+              
+              {rawMaterialsLoading ? (
+                <p>Loading raw materials...</p>
+              ) : !allRawMaterials || allRawMaterials.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">
+                  No raw materials found in inventory.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {allRawMaterials.map((material) => (
+                    <div
+                      key={material.id}
+                      className="flex items-center gap-4 p-3 border rounded-lg"
+                    >
+                      <Checkbox
+                        id={material.id}
+                        checked={selectedMaterials[material.id] !== undefined}
+                        onCheckedChange={() => handleMaterialToggle(material.id)}
+                      />
+                      <label
+                        htmlFor={material.id}
+                        className="flex-1 text-sm font-medium cursor-pointer"
+                      >
+                        {material.name}
+                        <span className="text-muted-foreground ml-2">
+                          (Stock: {material.current_stock_kg} kg {material.current_stock_grams} g)
+                        </span>
+                      </label>
+                      {selectedMaterials[material.id] !== undefined && (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            step="0.001"
+                            min="0"
+                            placeholder="Grams"
+                            value={selectedMaterials[material.id] || ''}
+                            onChange={(e) => handleQuantityChange(material.id, e.target.value)}
+                            className="w-32"
+                          />
+                          <span className="text-sm text-muted-foreground">grams</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              <div className="flex justify-end gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditDialogOpen(false);
+                    setSelectedMaterials({});
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSaveRecipe}
+                  disabled={saveRecipe.isPending || Object.keys(selectedMaterials).length === 0}
+                >
+                  {saveRecipe.isPending ? 'Saving...' : 'Save Recipe'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
 };
