@@ -122,14 +122,15 @@ const Inventory = () => {
                     id="current_stock_kg"
                     type="number"
                     min="0"
+                    step="0.001"
                     value={formData.current_stock_kg}
                     onChange={(e) => setFormData({ ...formData, current_stock_kg: e.target.value })}
                     required
-                    placeholder="0"
+                    placeholder="Enter kg"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="current_stock_grams">Current Stock (grams) *</Label>
+                  <Label htmlFor="current_stock_grams">Current Stock (grams)</Label>
                   <Input
                     id="current_stock_grams"
                     type="number"
@@ -137,8 +138,7 @@ const Inventory = () => {
                     max="999"
                     value={formData.current_stock_grams}
                     onChange={(e) => setFormData({ ...formData, current_stock_grams: e.target.value })}
-                    required
-                    placeholder="0"
+                    placeholder="Optional (0-999)"
                   />
                 </div>
               </div>
@@ -150,14 +150,15 @@ const Inventory = () => {
                     id="minimum_stock_kg"
                     type="number"
                     min="0"
+                    step="0.001"
                     value={formData.minimum_stock_kg}
                     onChange={(e) => setFormData({ ...formData, minimum_stock_kg: e.target.value })}
                     required
-                    placeholder="0"
+                    placeholder="Enter kg"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="minimum_stock_grams">Minimum Stock (grams) *</Label>
+                  <Label htmlFor="minimum_stock_grams">Minimum Stock (grams)</Label>
                   <Input
                     id="minimum_stock_grams"
                     type="number"
@@ -165,8 +166,7 @@ const Inventory = () => {
                     max="999"
                     value={formData.minimum_stock_grams}
                     onChange={(e) => setFormData({ ...formData, minimum_stock_grams: e.target.value })}
-                    required
-                    placeholder="0"
+                    placeholder="Optional (0-999)"
                   />
                 </div>
               </div>
