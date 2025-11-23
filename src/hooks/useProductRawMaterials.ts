@@ -17,7 +17,14 @@ export const useProductRawMaterials = (productId?: string) => {
     queryFn: async () => {
       let query = supabase
         .from('product_raw_materials')
-        .select('*');
+        .select(`
+          *,
+          raw_materials:raw_material_id (
+            id,
+            name,
+            display_name
+          )
+        `);
       
       if (productId) {
         query = query.eq('product_id', productId);
@@ -26,7 +33,7 @@ export const useProductRawMaterials = (productId?: string) => {
       const { data, error } = await query;
       
       if (error) throw error;
-      return data as ProductRawMaterial[];
+      return data as any[];
     },
     enabled: !!productId,
   });
