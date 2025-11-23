@@ -37,6 +37,8 @@ export const useUserRole = () => {
 
       if (error) throw error;
       
+      console.log('[useUserRole] Fetched role from database:', data?.role);
+      
       // If no role found, user is pending approval (null)
       // Only set a role if one exists in the database
       setUserRole(data?.role || null);
@@ -50,14 +52,23 @@ export const useUserRole = () => {
 
   const isAdmin = () => false; // No admin role anymore
   const isDistributor = () => userRole === 'distributor';
-  const isSuperAdmin = () => userRole === 'superadmin' || user?.email === 'smitmodi416@gmail.com';
+  const isSuperAdmin = () => {
+    const result = userRole === 'superadmin' || user?.email === 'smitmodi416@gmail.com';
+    console.log('[useUserRole] isSuperAdmin() check:', { userRole, email: user?.email, result });
+    return result;
+  };
   const isViewer = () => false; // No viewer role anymore
 
   const isPendingApproval = () => userRole === null && user && !isSuperAdmin();
 
   const hasAccessToPage = (pagePath: string): boolean => {
+    console.log('[useUserRole] hasAccessToPage() called for:', pagePath);
+    
     // Superadmin has access to everything
-    if (isSuperAdmin()) return true;
+    if (isSuperAdmin()) {
+      console.log('[useUserRole] hasAccessToPage() -> true (superadmin)');
+      return true;
+    }
 
     // If user is pending approval, no access to any pages
     if (isPendingApproval()) return false;
@@ -85,15 +96,20 @@ export const useUserRole = () => {
 
     // Check superadmin pages (fallback if isSuperAdmin() doesn't catch it)
     if (superAdminPages.includes(pagePath)) {
-      return isSuperAdmin();
+      const result = isSuperAdmin();
+      console.log('[useUserRole] hasAccessToPage() -> superadmin page check:', result);
+      return result;
     }
 
     // Distributor has access to specific pages only
     if (isDistributor()) {
-      return distributorPages.includes(pagePath);
+      const result = distributorPages.includes(pagePath);
+      console.log('[useUserRole] hasAccessToPage() -> distributor page check:', result);
+      return result;
     }
 
     // Default: no access
+    console.log('[useUserRole] hasAccessToPage() -> false (no access)');
     return false;
   };
 

@@ -107,7 +107,16 @@ export function Layout({
   }
 
   // Check if user has access to current page (superadmin always allowed)
+  console.log('[Layout] Access check:', { 
+    pathname: location.pathname, 
+    isSuperAdmin: isSuperAdmin(), 
+    hasAccess: hasAccessToPage(location.pathname),
+    userRole,
+    userEmail: user?.email
+  });
+  
   if (!isSuperAdmin() && !hasAccessToPage(location.pathname)) {
+    console.log('[Layout] REDIRECTING to dashboard - access denied');
     return <Navigate to="/" replace />;
   }
 
