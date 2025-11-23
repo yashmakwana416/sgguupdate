@@ -40,6 +40,7 @@ const Operations = () => {
 
   // Form States
   const [batchName, setBatchName] = useState('');
+  const [batchNumber, setBatchNumber] = useState('');
   const [batchDetails, setBatchDetails] = useState('');
   const [selectedMaterials, setSelectedMaterials] = useState<Record<string, {
     kg: string;
@@ -141,6 +142,7 @@ const Operations = () => {
   };
   const resetForm = () => {
     setBatchName('');
+    setBatchNumber('');
     setBatchDetails('');
     setSelectedMaterials({});
     setEditingBatchId(null);
@@ -152,6 +154,7 @@ const Operations = () => {
   const handleEditBatch = (batch: any) => {
     setEditingBatchId(batch.id);
     setBatchName(batch.batch_name);
+    setBatchNumber(batch.batch_number || '');
     setBatchDetails(batch.batch_details || '');
 
     // Populate materials
@@ -233,6 +236,7 @@ const Operations = () => {
           error: updateError
         } = await supabase.from('batches').update({
           batch_name: batchName,
+          batch_number: batchNumber || null,
           batch_details: batchDetails,
           updated_at: new Date().toISOString()
         }).eq('id', editingBatchId);
@@ -250,6 +254,7 @@ const Operations = () => {
           error: batchError
         } = await supabase.from('batches').insert({
           batch_name: batchName,
+          batch_number: batchNumber || null,
           batch_details: batchDetails
         }).select().single();
         if (batchError) throw batchError;
@@ -317,7 +322,7 @@ const Operations = () => {
       } = (await supabase.rpc('deduct_inventory_for_batch_order' as any, {
         p_batch_id: selectedBatch.id,
         p_batch_name: selectedBatch.batch_name,
-        p_batch_number: selectedBatch.id.substring(0, 8).toUpperCase(),
+        p_batch_number: selectedBatch.batch_number || selectedBatch.id.substring(0, 8).toUpperCase(),
         p_user_id: user?.id,
         p_user_name: user?.email?.split('@')[0] || 'Unknown User',
         p_batch_items_snapshot: batchItemsSnapshot
@@ -498,6 +503,10 @@ const Operations = () => {
               <div className="grid gap-2">
                 <Label htmlFor="batchName">Batch Name *</Label>
                 <Input id="batchName" placeholder="e.g., Morning Batch A-1" value={batchName} onChange={e => setBatchName(e.target.value)} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="batchNumber">Batch Number</Label>
+                <Input id="batchNumber" placeholder="e.g., B-001 or 2024-001" value={batchNumber} onChange={e => setBatchNumber(e.target.value)} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="batchDetails">Batch Details</Label>
