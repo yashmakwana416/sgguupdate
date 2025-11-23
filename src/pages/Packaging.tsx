@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Layout } from '@/components/Layout';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,53 +74,52 @@ const Packaging = () => {
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto py-8 space-y-8">
-        <div className="flex items-center gap-3">
-          <Package className="h-8 w-8 text-primary" />
-          <h1 className="text-4xl font-bold">Packaging Module</h1>
-        </div>
+    <div className="container mx-auto py-8 space-y-8">
+      <div className="flex items-center gap-3">
+        <Package className="h-8 w-8 text-primary" />
+        <h1 className="text-4xl font-bold">Packaging Module</h1>
+      </div>
 
-        <Tabs defaultValue="entry" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="entry">Daily Entry</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
-          </TabsList>
+      <Tabs defaultValue="entry" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="entry">Daily Entry</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="products">Products</TabsTrigger>
+        </TabsList>
 
-          {/* Daily Packaging Entry */}
-          <TabsContent value="entry">
-            <Card>
-              <CardHeader>
-                <CardTitle>Record Daily Packaging</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="product">Select Product</Label>
-                      <Select
-                        value={selectedProductId}
-                        onValueChange={setSelectedProductId}
-                      >
-                        <SelectTrigger id="product">
-                          <SelectValue placeholder="Choose a product" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {productsLoading ? (
-                            <SelectItem value="loading" disabled>
-                              Loading...
+        {/* Daily Packaging Entry */}
+        <TabsContent value="entry">
+          <Card>
+            <CardHeader>
+              <CardTitle>Record Daily Packaging</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="product">Select Product</Label>
+                    <Select
+                      value={selectedProductId}
+                      onValueChange={setSelectedProductId}
+                    >
+                      <SelectTrigger id="product">
+                        <SelectValue placeholder="Choose a product" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {productsLoading ? (
+                          <SelectItem value="loading" disabled>
+                            Loading...
+                          </SelectItem>
+                        ) : (
+                          products?.map((product) => (
+                            <SelectItem key={product.id} value={product.id}>
+                              {product.name} ({product.sku})
                             </SelectItem>
-                          ) : (
-                            products?.map((product) => (
-                              <SelectItem key={product.id} value={product.id}>
-                                {product.name} ({product.sku})
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="kg">KG Packed Today</Label>
@@ -306,8 +305,7 @@ const Packaging = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </Layout>
-  );
+    );
 };
 
 export default Packaging;
