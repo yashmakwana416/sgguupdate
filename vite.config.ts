@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       devOptions: { enabled: mode === 'development' },
       includeAssets: ['splogo.png', 'favicon.ico'],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MiB
+      },
       manifest: {
         name: 'Shree Ganesh Gruh Udhyog',
         short_name: 'SGGU',
