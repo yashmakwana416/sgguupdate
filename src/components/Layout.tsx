@@ -40,6 +40,11 @@ const allNavigation = [{
   icon: Settings,
   superAdminOnly: true
 }, {
+  name: 'packaging',
+  href: '/packaging',
+  icon: Package,
+  superAdminOnly: true
+}, {
   name: 'createInvoice',
   href: '/create-invoice',
   icon: FileText
