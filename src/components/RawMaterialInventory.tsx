@@ -48,7 +48,7 @@ const RawMaterialInventory = () => {
     const handleInventoryUpdate = () => {
       refetch();
     };
-    
+
     window.addEventListener('inventoryUpdated', handleInventoryUpdate);
     return () => window.removeEventListener('inventoryUpdated', handleInventoryUpdate);
   }, [refetch]);
@@ -102,12 +102,20 @@ const RawMaterialInventory = () => {
     if (!editingMaterial) return;
 
     // Convert empty strings to 0 for submission
+    const kg = data.current_stock_kg === '' ? 0 : Number(data.current_stock_kg);
+    const grams = data.current_stock_grams === '' ? 0 : Number(data.current_stock_grams);
+
+    const minKg = data.minimum_stock_kg === '' ? 0 : Number(data.minimum_stock_kg);
+    const minGrams = data.minimum_stock_grams === '' ? 0 : Number(data.minimum_stock_grams);
+    const unitCost = data.unit_cost_per_kg === '' ? 0 : Number(data.unit_cost_per_kg);
+
     const updates = {
-      current_stock_kg: data.current_stock_kg === '' ? 0 : Number(data.current_stock_kg),
-      current_stock_grams: data.current_stock_grams === '' ? 0 : Number(data.current_stock_grams),
-      minimum_stock_kg: data.minimum_stock_kg === '' ? 0 : Number(data.minimum_stock_kg),
-      minimum_stock_grams: data.minimum_stock_grams === '' ? 0 : Number(data.minimum_stock_grams),
-      unit_cost_per_kg: data.unit_cost_per_kg === '' ? 0 : Number(data.unit_cost_per_kg),
+      current_stock_kg: kg,
+      current_stock_grams: grams,
+      // total_stock_grams is a generated column, so we don't update it directly
+      minimum_stock_kg: minKg,
+      minimum_stock_grams: minGrams,
+      unit_cost_per_kg: unitCost,
     };
 
     updateMaterial.mutate({
@@ -164,7 +172,7 @@ const RawMaterialInventory = () => {
         title: 'Success',
         description: 'Raw material deleted successfully',
       });
-      
+
       refetch();
     } catch (error: any) {
       console.error('Error deleting material:', error);
