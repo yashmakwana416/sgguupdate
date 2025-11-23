@@ -62,6 +62,15 @@ export const useUserRole = () => {
     // If user is pending approval, no access to any pages
     if (isPendingApproval()) return false;
 
+    // Define superadmin-only pages
+    const superAdminPages = [
+      '/inventory',
+      '/operations',
+      '/packaging',
+      '/distributors-data',
+      '/admin-panel'
+    ];
+
     // Define page access rules for distributors
     const distributorPages = [
       '/',
@@ -73,6 +82,11 @@ export const useUserRole = () => {
       '/returns',
       '/settings'
     ];
+
+    // Check superadmin pages (fallback if isSuperAdmin() doesn't catch it)
+    if (superAdminPages.includes(pagePath)) {
+      return isSuperAdmin();
+    }
 
     // Distributor has access to specific pages only
     if (isDistributor()) {
