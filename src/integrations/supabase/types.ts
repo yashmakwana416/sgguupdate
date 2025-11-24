@@ -101,6 +101,7 @@ export type Database = {
         Row: {
           batch_details: string | null
           batch_name: string
+          batch_number: string | null
           created_at: string | null
           id: string
           updated_at: string | null
@@ -108,6 +109,7 @@ export type Database = {
         Insert: {
           batch_details?: string | null
           batch_name: string
+          batch_number?: string | null
           created_at?: string | null
           id?: string
           updated_at?: string | null
@@ -115,6 +117,7 @@ export type Database = {
         Update: {
           batch_details?: string | null
           batch_name?: string
+          batch_number?: string | null
           created_at?: string | null
           id?: string
           updated_at?: string | null
@@ -1112,6 +1115,7 @@ export type Database = {
           invoice_number: string
           notes: string | null
           other_charges: number | null
+          previous_balance: number | null
           status: string
           subtotal: number
           tax_amount: number
@@ -1130,6 +1134,7 @@ export type Database = {
           invoice_number: string
           notes?: string | null
           other_charges?: number | null
+          previous_balance?: number | null
           status?: string
           subtotal?: number
           tax_amount?: number
@@ -1148,6 +1153,7 @@ export type Database = {
           invoice_number?: string
           notes?: string | null
           other_charges?: number | null
+          previous_balance?: number | null
           status?: string
           subtotal?: number
           tax_amount?: number
