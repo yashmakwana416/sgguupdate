@@ -232,11 +232,31 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
             </div>
           </div>
 
-          {/* Right side - Total Amount only */}
-          <div>
-            <div className="flex justify-between items-center border-b border-gray-200">
-              <span className="text-gray-700 font-medium text-[10px] print:text-[9px]">Total Amount</span>
+          {/* Right side - Payment Summary */}
+          <div className="space-y-1">
+            {invoice.previousBalance && invoice.previousBalance > 0 && (
+              <div className="flex justify-between items-center border-b border-gray-200 py-0.5">
+                <span className="text-gray-700 font-medium text-[10px] print:text-[9px]">Previous Balance</span>
+                <span className="font-semibold text-orange-600 text-[10px] print:text-[9px]">₹ {invoice.previousBalance.toFixed(0)}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center border-b border-gray-200 py-0.5">
+              <span className="text-gray-700 font-medium text-[10px] print:text-[9px]">Current Invoice</span>
               <span className="font-bold text-gray-900 text-[11px] print:text-[10px]">₹ {invoice.total.toFixed(0)}</span>
+            </div>
+            {invoice.paidAmount && invoice.paidAmount > 0 && (
+              <div className="flex justify-between items-center border-b border-gray-200 py-0.5">
+                <span className="text-gray-700 font-medium text-[10px] print:text-[9px]">Paid</span>
+                <span className="font-semibold text-green-600 text-[10px] print:text-[9px]">- ₹ {invoice.paidAmount.toFixed(0)}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center border-t-2 border-purple-300 pt-1">
+              <span className="text-purple-900 font-bold text-[11px] print:text-[10px]">
+                {invoice.status === 'paid' ? 'Total Paid' : 'Pending Balance'}
+              </span>
+              <span className={`font-bold text-[12px] print:text-[11px] ${invoice.status === 'paid' ? 'text-green-600' : 'text-red-600'}`}>
+                ₹ {((invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0)).toFixed(0)}
+              </span>
             </div>
           </div>
         </div>

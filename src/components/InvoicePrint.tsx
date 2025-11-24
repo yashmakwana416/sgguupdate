@@ -331,9 +331,25 @@ export const InvoicePrint: React.FC<InvoicePrintProps> = ({
                   <div class="text-sm accent-text">${convertAmountToWords(Math.floor(invoice.total))} Rupees Only</div>
                 </div>
                 <div>
+                  ${invoice.previousBalance && invoice.previousBalance > 0 ? `
                   <div class="flex justify-between items-center py-2 border-b">
-                    <span class="text-sm font-semibold accent-text">Total Amount</span>
+                    <span class="text-sm font-semibold accent-text">Previous Balance</span>
+                    <span class="text-sm font-semibold" style="color: #F97316;">₹ ${invoice.previousBalance.toFixed(0)}</span>
+                  </div>
+                  ` : ''}
+                  <div class="flex justify-between items-center py-2 border-b">
+                    <span class="text-sm font-semibold accent-text">Current Invoice</span>
                     <span class="text-base font-bold primary-text">₹ ${invoice.total.toFixed(0)}</span>
+                  </div>
+                  ${invoice.paidAmount && invoice.paidAmount > 0 ? `
+                  <div class="flex justify-between items-center py-2 border-b">
+                    <span class="text-sm font-semibold accent-text">Paid</span>
+                    <span class="text-sm font-semibold" style="color: #16A34A;">- ₹ ${invoice.paidAmount.toFixed(0)}</span>
+                  </div>
+                  ` : ''}
+                  <div class="flex justify-between items-center py-2 border-t-2" style="border-color: #7C3AED;">
+                    <span class="text-sm font-bold" style="color: #7C3AED;">${invoice.status === 'paid' ? 'Total Paid' : 'Pending Balance'}</span>
+                    <span class="text-base font-bold" style="color: ${invoice.status === 'paid' ? '#16A34A' : '#DC2626'};">₹ ${((invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0)).toFixed(0)}</span>
                   </div>
                 </div>
               </div>

@@ -121,7 +121,23 @@ export const useInvoices = () => {
       return (
         invoices?.map(invoice => {
           const invoiceItems = items?.filter(item => item.invoice_id === invoice.id) || [];
-          return transformInvoiceFromDB(invoice as SalesInvoiceDB, invoiceItems as SalesInvoiceItemDB[]);
+          
+          // Calculate previous balance for this customer
+          const previousBalance = invoices
+            .filter(inv => 
+              inv.customer_id === invoice.customer_id && 
+              inv.customer_id && // Only if customer_id exists
+              new Date(inv.created_at) < new Date(invoice.created_at) &&
+              inv.status !== 'paid'
+            )
+            .reduce((sum, inv) => sum + Number(inv.total), 0);
+          
+          const transformed = transformInvoiceFromDB(invoice as SalesInvoiceDB, invoiceItems as SalesInvoiceItemDB[]);
+          return {
+            ...transformed,
+            previousBalance,
+            paidAmount: invoice.status === 'paid' ? invoice.total : 0
+          };
         }) || []
       );
     },
@@ -151,6 +167,21 @@ export const useInvoices = () => {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
+
+      // Calculate previous balance for this customer
+      let previousBalance = 0;
+      if (invoiceData.customerId) {
+        const { data: previousInvoices } = await supabase
+          .from('sales_invoices')
+          .select('total, status')
+          .eq('customer_id', invoiceData.customerId)
+          .neq('status', 'paid')
+          .eq('created_by', user.id);
+        
+        if (previousInvoices) {
+          previousBalance = previousInvoices.reduce((sum, inv) => sum + Number(inv.total), 0);
+        }
+      }
 
       // Database will auto-generate invoice number via trigger
 
@@ -200,7 +231,12 @@ export const useInvoices = () => {
         createdItems = items as SalesInvoiceItemDB[];
       }
 
-      return transformInvoiceFromDB(invoice as SalesInvoiceDB, createdItems);
+      const transformed = transformInvoiceFromDB(invoice as SalesInvoiceDB, createdItems);
+      return {
+        ...transformed,
+        previousBalance,
+        paidAmount: invoiceData.status === 'paid' ? invoiceData.total : 0
+      };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
