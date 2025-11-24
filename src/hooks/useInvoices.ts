@@ -27,6 +27,9 @@ export interface SalesInvoiceDB {
   created_at: string;
   updated_at: string;
   created_by?: string;
+  payment_mode?: string;
+  cheque_number?: string;
+  online_payment_method?: string;
 }
 
 export interface SalesInvoiceItemDB {
@@ -84,7 +87,10 @@ const transformInvoiceFromDB = (dbInvoice: SalesInvoiceDB, items: SalesInvoiceIt
     status: status,
     notes: dbInvoice.notes,
     createdAt: new Date(dbInvoice.created_at),
-    createdBy: dbInvoice.created_by
+    createdBy: dbInvoice.created_by,
+    paymentMode: (dbInvoice.payment_mode as 'cash' | 'cheque' | 'online') || 'cash',
+    chequeNumber: dbInvoice.cheque_number,
+    onlinePaymentMethod: dbInvoice.online_payment_method as 'upi' | 'bank_transfer' | undefined
   };
 };
 
@@ -201,7 +207,10 @@ export const useInvoices = () => {
           total: invoiceData.total,
           status: invoiceData.status,
           notes: invoiceData.notes || null,
-          created_by: user.id
+          created_by: user.id,
+          payment_mode: invoiceData.paymentMode || 'cash',
+          cheque_number: invoiceData.chequeNumber || null,
+          online_payment_method: invoiceData.onlinePaymentMethod || null
         })
         .select()
         .single();

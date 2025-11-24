@@ -224,11 +224,33 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
       < div className="bg-white border-t border-purple-100" >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1 p-1 print:p-0.5">
 
-          {/* Left side - Amount in words */}
-          <div>
-            <div className="text-[10px] font-semibold text-purple-900 print:text-[9px]">Total Amount (in words)</div>
-            <div className="text-[10px] text-gray-800 leading-none print:text-[9px]">
-              {convertAmountToWords(Math.floor(invoice.total))} Rupees
+          {/* Left side - Amount in words and Payment Mode */}
+          <div className="space-y-1">
+            <div>
+              <div className="text-[10px] font-semibold text-purple-900 print:text-[9px]">Total Amount (in words)</div>
+              <div className="text-[10px] text-gray-800 leading-none print:text-[9px]">
+                {convertAmountToWords(Math.floor(invoice.total))} Rupees
+              </div>
+            </div>
+            
+            {/* Payment Mode Display */}
+            <div className="pt-1 border-t border-gray-200">
+              <div className="text-[10px] font-semibold text-purple-900 print:text-[9px]">Payment Mode</div>
+              <div className="text-[10px] text-gray-800 leading-none print:text-[9px]">
+                {invoice.paymentMode === 'cash' && 'Cash'}
+                {invoice.paymentMode === 'cheque' && (
+                  <div>
+                    <span className="font-medium">Cheque</span>
+                    {invoice.chequeNumber && <span> (#{invoice.chequeNumber})</span>}
+                  </div>
+                )}
+                {invoice.paymentMode === 'online' && (
+                  <div>
+                    <span className="font-medium">Online - </span>
+                    <span>{invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'}</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
