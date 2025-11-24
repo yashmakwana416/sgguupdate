@@ -179,6 +179,9 @@ const Invoices = () => {
         'Date',
         'Due Date',
         'Status',
+        'Payment Mode',
+        'Cheque Number',
+        'Online Method',
         'Subtotal',
         'Discount',
         'Other Charges',
@@ -196,6 +199,9 @@ const Invoices = () => {
           format(new Date(invoice.date), 'yyyy-MM-dd'),
           invoice.dueDate ? format(new Date(invoice.dueDate), 'yyyy-MM-dd') : 'N/A',
           invoice.status.toUpperCase(),
+          invoice.paymentMode?.toUpperCase() || 'CASH',
+          invoice.paymentMode === 'cheque' ? invoice.chequeNumber || 'N/A' : '-',
+          invoice.paymentMode === 'online' ? (invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer') : '-',
           invoice.subtotal || 0,
           invoice.discount || 0,
           invoice.otherCharges || 0,
@@ -214,7 +220,12 @@ const Invoices = () => {
       
       filteredInvoices.forEach((invoice) => {
         worksheetData.push([]);
-        worksheetData.push([`Invoice: ${invoice.invoiceNumber} - ${invoice.customerName}`]);
+        const paymentModeStr = invoice.paymentMode === 'cheque' 
+          ? `Cheque #${invoice.chequeNumber || 'N/A'}` 
+          : invoice.paymentMode === 'online' 
+            ? `Online (${invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'})` 
+            : 'Cash';
+        worksheetData.push([`Invoice: ${invoice.invoiceNumber} - ${invoice.customerName} [${paymentModeStr}]`]);
         worksheetData.push(['Date:', format(new Date(invoice.date), 'yyyy-MM-dd'), 'Status:', invoice.status.toUpperCase(), 'Total:', `₹${invoice.total.toLocaleString()}`]);
         worksheetData.push([]);
         worksheetData.push(['Product Name', 'Quantity', 'Price', 'MRP', 'Tax Rate', 'Amount']);
@@ -471,19 +482,28 @@ const Invoices = () => {
                            >
                              {t(invoice.status)}
                            </Badge>
-                         </div>
-                      </div>
-                         <div className="flex items-center gap-2">
-                         <InvoiceGenerator invoice={invoice} party={getPartyForInvoice(invoice)}>
-                           <Button
-                             variant="outline"
-                             size="sm"
-                             className="glass-button flex-1"
-                            >
-                              <Eye className="h-4 w-4 mr-1" />
-                              {t('view')}
-                            </Button>
-                         </InvoiceGenerator>
+                          </div>
+                       </div>
+                          <div className="flex items-center gap-2">
+                          {/* Payment Mode Display */}
+                          {invoice.paymentMode && invoice.paymentMode !== 'cash' && (
+                            <div className="text-xs text-muted-foreground bg-secondary/10 px-2 py-1 rounded">
+                              {invoice.paymentMode === 'cheque' && `Cheque: ${invoice.chequeNumber || 'N/A'}`}
+                              {invoice.paymentMode === 'online' && `Online: ${invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'}`}
+                            </div>
+                          )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                          <InvoiceGenerator invoice={invoice} party={getPartyForInvoice(invoice)}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="glass-button flex-1"
+                             >
+                               <Eye className="h-4 w-4 mr-1" />
+                               {t('view')}
+                             </Button>
+                          </InvoiceGenerator>
 
                           <Button
                             variant="outline"
@@ -580,6 +600,7 @@ const Invoices = () => {
                       <TableHead className="text-muted-foreground font-semibold">{t('dueDate')}</TableHead>
                        <TableHead className="text-muted-foreground font-semibold">{t('amount')}</TableHead>
                        <TableHead className="text-muted-foreground font-semibold">Tax</TableHead>
+                       <TableHead className="text-muted-foreground font-semibold">Payment Mode</TableHead>
                        <TableHead className="text-muted-foreground font-semibold">{t('status')}</TableHead>
                       <TableHead className="text-muted-foreground font-semibold">{t('actions')}</TableHead>
                     </TableRow>
@@ -604,6 +625,25 @@ const Invoices = () => {
                        </TableCell>
                        <TableCell className="text-card-foreground">
                          {invoice.taxAmount > 0 ? `₹${invoice.taxAmount.toLocaleString()}` : '-'}
+                       </TableCell>
+                       <TableCell className="text-card-foreground">
+                         <div className="text-sm">
+                           {invoice.paymentMode === 'cash' && 'Cash'}
+                           {invoice.paymentMode === 'cheque' && (
+                             <div className="flex flex-col">
+                               <span className="font-medium">Cheque</span>
+                               {invoice.chequeNumber && <span className="text-xs text-muted-foreground">#{invoice.chequeNumber}</span>}
+                             </div>
+                           )}
+                           {invoice.paymentMode === 'online' && (
+                             <div className="flex flex-col">
+                               <span className="font-medium">Online</span>
+                               <span className="text-xs text-muted-foreground">
+                                 {invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'}
+                               </span>
+                             </div>
+                           )}
+                         </div>
                        </TableCell>
                        <TableCell>
                         <Badge 

@@ -53,6 +53,10 @@ const CreateInvoice = () => {
   const [notes, setNotes] = useState('');
   const [discount, setDiscount] = useState<number>(0);
   const [otherCharges, setOtherCharges] = useState<number>(0);
+  const [paymentMode, setPaymentMode] = useState<'cash' | 'cheque' | 'online'>('cash');
+  const [chequeNumber, setChequeNumber] = useState('');
+  const [onlinePaymentMethod, setOnlinePaymentMethod] = useState<'upi' | 'bank_transfer' | ''>('');
+  const [showOnlineDialog, setShowOnlineDialog] = useState(false);
   const [items, setItems] = useState<InvoiceItem[]>([]);
   const [selectedProductId, setSelectedProductId] = useState('');
   const [showNewPartyForm, setShowNewPartyForm] = useState(false);
@@ -223,7 +227,10 @@ const CreateInvoice = () => {
       taxAmount,
       total,
       notes: notes || undefined,
-      status: isDebt ? 'draft' as const : 'paid' as const
+      status: isDebt ? 'draft' as const : 'paid' as const,
+      paymentMode,
+      chequeNumber: paymentMode === 'cheque' ? chequeNumber : undefined,
+      onlinePaymentMethod: paymentMode === 'online' && onlinePaymentMethod ? onlinePaymentMethod as 'upi' | 'bank_transfer' : undefined
     };
     try {
       const result = await createInvoice.mutateAsync(invoiceData);
@@ -255,6 +262,10 @@ const CreateInvoice = () => {
       setItems([]);
       setPartySearchValue('');
       setShowNewPartyForm(false);
+      setPaymentMode('cash');
+      setChequeNumber('');
+      setOnlinePaymentMethod('');
+      setShowOnlineDialog(false);
 
       // Scroll to the created invoice preview
       setTimeout(() => {
@@ -855,6 +866,125 @@ const CreateInvoice = () => {
             </p>
           </div>
         </div>
+
+        {/* Payment Mode Section */}
+        <div className="space-y-3 pt-4 border-t">
+          <Label className="text-card-foreground text-sm font-medium">Payment Mode</Label>
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant={paymentMode === 'cash' ? 'default' : 'outline'}
+              onClick={() => {
+                setPaymentMode('cash');
+                setChequeNumber('');
+                setOnlinePaymentMethod('');
+              }}
+              className="flex-1"
+            >
+              Cash
+            </Button>
+            <Button
+              type="button"
+              variant={paymentMode === 'cheque' ? 'default' : 'outline'}
+              onClick={() => {
+                setPaymentMode('cheque');
+                setOnlinePaymentMethod('');
+              }}
+              className="flex-1"
+            >
+              Cheque
+            </Button>
+            <Button
+              type="button"
+              variant={paymentMode === 'online' ? 'default' : 'outline'}
+              onClick={() => {
+                setPaymentMode('online');
+                setChequeNumber('');
+                setShowOnlineDialog(true);
+              }}
+              className="flex-1"
+            >
+              Online
+            </Button>
+          </div>
+
+          {/* Cheque Number Input */}
+          {paymentMode === 'cheque' && (
+            <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+              <Label htmlFor="chequeNumber" className="text-sm">Cheque Number</Label>
+              <Input
+                id="chequeNumber"
+                type="number"
+                inputMode="numeric"
+                value={chequeNumber}
+                onChange={(e) => setChequeNumber(e.target.value)}
+                placeholder="Enter cheque number"
+                className="bg-white"
+              />
+            </div>
+          )}
+
+          {/* Online Payment Method Display */}
+          {paymentMode === 'online' && onlinePaymentMethod && (
+            <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20">
+                <span className="text-sm font-medium">
+                  {onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowOnlineDialog(true)}
+                  className="text-xs"
+                >
+                  Change
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Online Payment Method Dialog */}
+        {showOnlineDialog && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+              <h3 className="text-lg font-semibold">Select Online Payment Method</h3>
+              <div className="space-y-2">
+                <Button
+                  type="button"
+                  variant={onlinePaymentMethod === 'upi' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setOnlinePaymentMethod('upi');
+                    setShowOnlineDialog(false);
+                  }}
+                  className="w-full justify-start"
+                >
+                  UPI
+                </Button>
+                <Button
+                  type="button"
+                  variant={onlinePaymentMethod === 'bank_transfer' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setOnlinePaymentMethod('bank_transfer');
+                    setShowOnlineDialog(false);
+                  }}
+                  className="w-full justify-start"
+                >
+                  Bank Transfer
+                </Button>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setShowOnlineDialog(false)}
+                className="w-full"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
 

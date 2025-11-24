@@ -50,6 +50,9 @@ export interface SalesInvoice {
   createdAt: Date;
   previousBalance?: number;
   paidAmount?: number;
+  paymentMode?: 'cash' | 'cheque' | 'online';
+  chequeNumber?: string;
+  onlinePaymentMethod?: 'upi' | 'bank_transfer';
 }
 
 export interface PurchaseOrder {

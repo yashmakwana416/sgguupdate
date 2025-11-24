@@ -1104,6 +1104,7 @@ export type Database = {
       }
       sales_invoices: {
         Row: {
+          cheque_number: string | null
           created_at: string
           created_by: string | null
           customer_id: string | null
@@ -1114,7 +1115,9 @@ export type Database = {
           id: string
           invoice_number: string
           notes: string | null
+          online_payment_method: string | null
           other_charges: number | null
+          payment_mode: string | null
           previous_balance: number | null
           status: string
           subtotal: number
@@ -1123,6 +1126,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cheque_number?: string | null
           created_at?: string
           created_by?: string | null
           customer_id?: string | null
@@ -1133,7 +1137,9 @@ export type Database = {
           id?: string
           invoice_number: string
           notes?: string | null
+          online_payment_method?: string | null
           other_charges?: number | null
+          payment_mode?: string | null
           previous_balance?: number | null
           status?: string
           subtotal?: number
@@ -1142,6 +1148,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cheque_number?: string | null
           created_at?: string
           created_by?: string | null
           customer_id?: string | null
@@ -1152,7 +1159,9 @@ export type Database = {
           id?: string
           invoice_number?: string
           notes?: string | null
+          online_payment_method?: string | null
           other_charges?: number | null
+          payment_mode?: string | null
           previous_balance?: number | null
           status?: string
           subtotal?: number
