@@ -48,6 +48,8 @@ export interface SalesInvoice {
   status: 'draft' | 'paid' | 'overdue';
   notes?: string;
   createdAt: Date;
+  previousBalance?: number;
+  paidAmount?: number;
 }
 
 export interface PurchaseOrder {
