@@ -31,6 +31,7 @@ export interface SalesInvoiceDB {
   cheque_number?: string;
   online_payment_method?: string;
   previous_balance?: number;
+  paid_amount?: number;
 }
 
 export interface SalesInvoiceItemDB {
@@ -92,7 +93,8 @@ const transformInvoiceFromDB = (dbInvoice: SalesInvoiceDB, items: SalesInvoiceIt
     paymentMode: (dbInvoice.payment_mode as 'cash' | 'cheque' | 'online') || 'cash',
     chequeNumber: dbInvoice.cheque_number,
     onlinePaymentMethod: dbInvoice.online_payment_method as 'upi' | 'bank_transfer' | undefined,
-    previousBalance: dbInvoice.previous_balance || 0
+    previousBalance: dbInvoice.previous_balance || 0,
+    paidAmount: dbInvoice.paid_amount || 0
   };
 };
 
@@ -143,8 +145,8 @@ export const useInvoices = () => {
           const transformed = transformInvoiceFromDB(invoice as SalesInvoiceDB, invoiceItems as SalesInvoiceItemDB[]);
           return {
             ...transformed,
-            previousBalance,
-            paidAmount: invoice.status === 'paid' ? invoice.total : 0
+            previousBalance: invoice.previous_balance || previousBalance,
+            paidAmount: invoice.paid_amount || 0
           };
         }) || []
       );
@@ -213,7 +215,8 @@ export const useInvoices = () => {
           payment_mode: invoiceData.paymentMode || 'cash',
           cheque_number: invoiceData.chequeNumber || null,
           online_payment_method: invoiceData.onlinePaymentMethod || null,
-          previous_balance: previousBalance
+          previous_balance: previousBalance,
+          paid_amount: invoiceData.paidAmount || (invoiceData.status === 'paid' ? invoiceData.total : 0)
         })
         .select()
         .single();

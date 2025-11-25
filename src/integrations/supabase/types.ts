@@ -1117,6 +1117,7 @@ export type Database = {
           notes: string | null
           online_payment_method: string | null
           other_charges: number | null
+          paid_amount: number | null
           payment_mode: string | null
           previous_balance: number | null
           status: string
@@ -1139,6 +1140,7 @@ export type Database = {
           notes?: string | null
           online_payment_method?: string | null
           other_charges?: number | null
+          paid_amount?: number | null
           payment_mode?: string | null
           previous_balance?: number | null
           status?: string
@@ -1161,6 +1163,7 @@ export type Database = {
           notes?: string | null
           online_payment_method?: string | null
           other_charges?: number | null
+          paid_amount?: number | null
           payment_mode?: string | null
           previous_balance?: number | null
           status?: string
