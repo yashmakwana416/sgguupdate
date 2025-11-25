@@ -30,6 +30,7 @@ export interface SalesInvoiceDB {
   payment_mode?: string;
   cheque_number?: string;
   online_payment_method?: string;
+  previous_balance?: number;
 }
 
 export interface SalesInvoiceItemDB {
@@ -90,7 +91,8 @@ const transformInvoiceFromDB = (dbInvoice: SalesInvoiceDB, items: SalesInvoiceIt
     createdBy: dbInvoice.created_by,
     paymentMode: (dbInvoice.payment_mode as 'cash' | 'cheque' | 'online') || 'cash',
     chequeNumber: dbInvoice.cheque_number,
-    onlinePaymentMethod: dbInvoice.online_payment_method as 'upi' | 'bank_transfer' | undefined
+    onlinePaymentMethod: dbInvoice.online_payment_method as 'upi' | 'bank_transfer' | undefined,
+    previousBalance: dbInvoice.previous_balance || 0
   };
 };
 
