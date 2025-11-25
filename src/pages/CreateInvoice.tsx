@@ -57,6 +57,8 @@ const CreateInvoice = () => {
   const [chequeNumber, setChequeNumber] = useState('');
   const [onlinePaymentMethod, setOnlinePaymentMethod] = useState<'upi' | 'bank_transfer' | ''>('');
   const [showOnlineDialog, setShowOnlineDialog] = useState(false);
+  const [paidAmount, setPaidAmount] = useState<number>(0);
+  const [previousBalance, setPreviousBalance] = useState<number>(0);
   const [items, setItems] = useState<InvoiceItem[]>([]);
   const [selectedProductId, setSelectedProductId] = useState('');
   const [showNewPartyForm, setShowNewPartyForm] = useState(false);
@@ -72,6 +74,7 @@ const CreateInvoice = () => {
     createParty
   } = useParties();
   const {
+    invoices,
     createInvoice
   } = useInvoices();
   const {
@@ -158,6 +161,17 @@ const CreateInvoice = () => {
     setPartySearchValue(party.name);
     setPartySearchOpen(false);
     setShowNewPartyForm(false);
+    
+    // Calculate previous balance for this party
+    if (invoices && party.id) {
+      const unpaidInvoices = invoices.filter(
+        inv => inv.customerId === party.id && inv.status !== 'paid'
+      );
+      const balance = unpaidInvoices.reduce((sum, inv) => sum + inv.total, 0);
+      setPreviousBalance(balance);
+    } else {
+      setPreviousBalance(0);
+    }
   };
   const handleCreateNewParty = async () => {
     if (!customerName.trim()) {
@@ -230,7 +244,9 @@ const CreateInvoice = () => {
       status: isDebt ? 'draft' as const : 'paid' as const,
       paymentMode,
       chequeNumber: paymentMode === 'cheque' ? chequeNumber : undefined,
-      onlinePaymentMethod: paymentMode === 'online' && onlinePaymentMethod ? onlinePaymentMethod as 'upi' | 'bank_transfer' : undefined
+      onlinePaymentMethod: paymentMode === 'online' && onlinePaymentMethod ? onlinePaymentMethod as 'upi' | 'bank_transfer' : undefined,
+      previousBalance,
+      paidAmount: isDebt ? 0 : paidAmount || total
     };
     try {
       const result = await createInvoice.mutateAsync(invoiceData);
@@ -266,6 +282,8 @@ const CreateInvoice = () => {
       setChequeNumber('');
       setOnlinePaymentMethod('');
       setShowOnlineDialog(false);
+      setPaidAmount(0);
+      setPreviousBalance(0);
 
       // Scroll to the created invoice preview
       setTimeout(() => {
@@ -983,6 +1001,35 @@ const CreateInvoice = () => {
                 Cancel
               </Button>
             </div>
+          </div>
+        )}
+
+        {/* Previous Balance & Paid Amount Section */}
+        {selectedParty && (
+          <div className="space-y-3 pt-4 border-t">
+            <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <span className="text-sm font-medium text-amber-900">Previous Balance</span>
+              <span className="text-sm font-bold text-amber-900">₹{previousBalance.toFixed(0)}</span>
+            </div>
+            
+            {!isDebt && (
+              <div className="space-y-2">
+                <Label htmlFor="paidAmount" className="text-sm font-medium">Paid Amount</Label>
+                <Input
+                  id="paidAmount"
+                  type="number"
+                  inputMode="decimal"
+                  value={paidAmount || ''}
+                  onChange={(e) => {
+                    const value = e.target.value === '' ? 0 : Number(e.target.value);
+                    setPaidAmount(value);
+                  }}
+                  placeholder="Enter amount paid"
+                  className="bg-white"
+                />
+                <p className="text-xs text-muted-foreground">Leave empty to use current invoice total as paid amount</p>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

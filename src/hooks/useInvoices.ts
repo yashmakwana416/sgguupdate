@@ -212,7 +212,8 @@ export const useInvoices = () => {
           created_by: user.id,
           payment_mode: invoiceData.paymentMode || 'cash',
           cheque_number: invoiceData.chequeNumber || null,
-          online_payment_method: invoiceData.onlinePaymentMethod || null
+          online_payment_method: invoiceData.onlinePaymentMethod || null,
+          previous_balance: previousBalance
         })
         .select()
         .single();
@@ -246,7 +247,7 @@ export const useInvoices = () => {
       return {
         ...transformed,
         previousBalance,
-        paidAmount: invoiceData.status === 'paid' ? invoiceData.total : 0
+        paidAmount: invoiceData.paidAmount || (invoiceData.status === 'paid' ? invoiceData.total : 0)
       };
     },
     onSuccess: (data) => {
