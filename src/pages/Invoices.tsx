@@ -26,7 +26,7 @@ const Invoices = () => {
   const [isPrinting, setIsPrinting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  
+
   const { invoices, isLoading, deleteInvoice, updateInvoice } = useInvoices();
   const { parties } = useParties();
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ const Invoices = () => {
 
   const filteredInvoices = invoices?.filter(invoice => {
     const matchesSearch = invoice.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
     return matchesSearch && matchesStatus;
   }) || [];
@@ -119,20 +119,20 @@ const Invoices = () => {
       `Best regards,\n` +
       `[Your Company Name]`
     );
-    
+
     window.open(`https://wa.me/?text=${message}`, '_blank');
   };
 
   const handleThermalPrint = async (invoice: SalesInvoice) => {
     if (isPrinting) return; // Prevent multiple simultaneous print requests
-    
+
     try {
       setIsPrinting(true);
       const party = getPartyForInvoice(invoice);
       await printThermalReceipt(
-        invoice, 
-        party?.name, 
-        party?.phone, 
+        invoice,
+        party?.name,
+        party?.phone,
         party?.address
       );
       toast.success('Print completed successfully!');
@@ -153,12 +153,12 @@ const Invoices = () => {
     try {
       // Prepare data for Excel
       const worksheetData: any[] = [];
-      
+
       // Add header
       worksheetData.push(['INVOICES DATA EXPORT']);
       worksheetData.push(['Generated on:', format(new Date(), 'yyyy-MM-dd HH:mm:ss')]);
       worksheetData.push([]);
-      
+
       // Add summary section
       worksheetData.push(['SUMMARY']);
       worksheetData.push(['Total Invoices:', filteredInvoices.length]);
@@ -170,7 +170,7 @@ const Invoices = () => {
       worksheetData.push(['Overdue Invoices:', filteredInvoices.filter(inv => inv.status === 'overdue').length]);
       worksheetData.push([]);
       worksheetData.push([]);
-      
+
       // Add invoice headers
       worksheetData.push([
         'Invoice Number',
@@ -189,7 +189,7 @@ const Invoices = () => {
         'Total',
         'Notes'
       ]);
-      
+
       // Add invoice data
       filteredInvoices.forEach((invoice) => {
         worksheetData.push([
@@ -210,26 +210,26 @@ const Invoices = () => {
           invoice.notes || ''
         ]);
       });
-      
+
       worksheetData.push([]);
       worksheetData.push([]);
-      
+
       // Add detailed items section
       worksheetData.push(['INVOICE ITEMS DETAILS']);
       worksheetData.push([]);
-      
+
       filteredInvoices.forEach((invoice) => {
         worksheetData.push([]);
-        const paymentModeStr = invoice.paymentMode === 'cheque' 
-          ? `Cheque #${invoice.chequeNumber || 'N/A'}` 
-          : invoice.paymentMode === 'online' 
-            ? `Online (${invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'})` 
+        const paymentModeStr = invoice.paymentMode === 'cheque'
+          ? `Cheque #${invoice.chequeNumber || 'N/A'}`
+          : invoice.paymentMode === 'online'
+            ? `Online (${invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'})`
             : 'Cash';
         worksheetData.push([`Invoice: ${invoice.invoiceNumber} - ${invoice.customerName} [${paymentModeStr}]`]);
         worksheetData.push(['Date:', format(new Date(invoice.date), 'yyyy-MM-dd'), 'Status:', invoice.status.toUpperCase(), 'Total:', `₹${invoice.total.toLocaleString()}`]);
         worksheetData.push([]);
         worksheetData.push(['Product Name', 'Quantity', 'Price', 'MRP', 'Tax Rate', 'Amount']);
-        
+
         if (invoice.items && invoice.items.length > 0) {
           invoice.items.forEach((item) => {
             worksheetData.push([
@@ -241,7 +241,7 @@ const Invoices = () => {
               item.amount
             ]);
           });
-          
+
           // Add invoice totals
           worksheetData.push([]);
           worksheetData.push(['', '', '', '', 'Subtotal:', invoice.subtotal || 0]);
@@ -259,11 +259,11 @@ const Invoices = () => {
           worksheetData.push(['No items']);
         }
       });
-      
+
       // Create workbook and worksheet
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.aoa_to_sheet(worksheetData);
-      
+
       // Set column widths
       ws['!cols'] = [
         { wch: 20 }, // Invoice Number
@@ -279,13 +279,13 @@ const Invoices = () => {
         { wch: 12 }, // Total
         { wch: 40 }  // Notes
       ];
-      
+
       XLSX.utils.book_append_sheet(wb, ws, 'Invoices');
-      
+
       // Generate filename and download
       const filename = `invoices_export_${format(new Date(), 'yyyy-MM-dd_HHmmss')}.xlsx`;
       XLSX.writeFile(wb, filename);
-      
+
       toast.success(`Successfully exported ${filteredInvoices.length} invoices!`);
     } catch (error) {
       console.error('Error exporting data:', error);
@@ -299,13 +299,7 @@ const Invoices = () => {
     .reduce((sum, invoice) => sum + invoice.total, 0);
   const pendingAmount = totalAmount - paidAmount;
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <RefreshCw className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  // Loading spinner removed as per request
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 relative">
@@ -368,7 +362,7 @@ const Invoices = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="glass-card">
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center gap-3 sm:gap-4">
@@ -382,7 +376,7 @@ const Invoices = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="glass-card">
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center gap-3 sm:gap-4">
@@ -439,7 +433,7 @@ const Invoices = () => {
               <FileText className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-base sm:text-lg font-medium text-card-foreground mb-2">{t('noInvoicesFound')}</h3>
               <p className="text-sm sm:text-base text-muted-foreground mb-4">
-                {searchTerm || statusFilter !== 'all' 
+                {searchTerm || statusFilter !== 'all'
                   ? t('tryAdjustingSearchFilter')
                   : t('createYourFirstInvoice')
                 }
@@ -469,93 +463,93 @@ const Invoices = () => {
                             {format(invoice.date, 'MMM dd, yyyy')}
                           </p>
                         </div>
-                         <div className="text-right">
-                           <p className="font-semibold text-card-foreground">₹{invoice.total.toLocaleString()}</p>
-                           {invoice.taxAmount > 0 && (
-                             <p className="text-xs text-muted-foreground">Tax: ₹{invoice.taxAmount.toLocaleString()}</p>
-                           )}
-                           <Badge 
-                             className={cn(
-                               "capitalize border text-xs mt-1 max-w-full break-words",
-                               getStatusColor(invoice.status)
-                             )}
-                           >
-                             {t(invoice.status)}
-                           </Badge>
-                          </div>
-                       </div>
-                          <div className="flex items-center gap-2">
-                          {/* Payment Mode Display */}
-                          {invoice.paymentMode && invoice.paymentMode !== 'cash' && (
-                            <div className="text-xs text-muted-foreground bg-secondary/10 px-2 py-1 rounded">
-                              {invoice.paymentMode === 'cheque' && `Cheque: ${invoice.chequeNumber || 'N/A'}`}
-                              {invoice.paymentMode === 'online' && `Online: ${invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'}`}
-                            </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-card-foreground">₹{invoice.total.toLocaleString()}</p>
+                          {invoice.taxAmount > 0 && (
+                            <p className="text-xs text-muted-foreground">Tax: ₹{invoice.taxAmount.toLocaleString()}</p>
                           )}
+                          <Badge
+                            className={cn(
+                              "capitalize border text-xs mt-1 max-w-full break-words",
+                              getStatusColor(invoice.status)
+                            )}
+                          >
+                            {t(invoice.status)}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {/* Payment Mode Display */}
+                        {invoice.paymentMode && invoice.paymentMode !== 'cash' && (
+                          <div className="text-xs text-muted-foreground bg-secondary/10 px-2 py-1 rounded">
+                            {invoice.paymentMode === 'cheque' && `Cheque: ${invoice.chequeNumber || 'N/A'}`}
+                            {invoice.paymentMode === 'online' && `Online: ${invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'}`}
                           </div>
-                          <div className="flex items-center gap-2">
-                          <InvoiceGenerator invoice={invoice} party={getPartyForInvoice(invoice)}>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="glass-button flex-1"
-                             >
-                               <Eye className="h-4 w-4 mr-1" />
-                               {t('view')}
-                             </Button>
-                          </InvoiceGenerator>
-
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <InvoiceGenerator invoice={invoice} party={getPartyForInvoice(invoice)}>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleThermalPrint(invoice)}
-                            className="glass-button p-2"
-                            title="Print to Thermal Printer"
-                            disabled={isPrinting}
+                            className="glass-button flex-1"
                           >
-                            {isPrinting ? (
-                              <RefreshCw className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Printer className="h-4 w-4" />
-                            )}
+                            <Eye className="h-4 w-4 mr-1" />
+                            {t('view')}
                           </Button>
-                         
-                          {invoice.status !== 'paid' && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleMarkAsPaid(invoice.id)}
-                              className="glass-button text-green-600 hover:bg-green-50 p-2"
-                            >
-                              <Check className="h-4 w-4" />
-                            </Button>
-                          )}
+                        </InvoiceGenerator>
 
-                          {invoice.status === 'paid' && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleMarkAsUnpaid(invoice.id)}
-                              className="glass-button text-orange-600 hover:bg-orange-50 p-2"
-                              title="Mark as Unpaid"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleThermalPrint(invoice)}
+                          className="glass-button p-2"
+                          title="Print to Thermal Printer"
+                          disabled={isPrinting}
+                        >
+                          {isPrinting ? (
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Printer className="h-4 w-4" />
                           )}
+                        </Button>
 
-                          {invoice.status === 'overdue' && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleWhatsAppReminder(invoice)}
-                              className="glass-button text-green-600 hover:bg-green-50 p-2"
-                              title="Send WhatsApp Payment Reminder"
-                            >
-                              <MessageSquare className="h-4 w-4" />
-                            </Button>
-                          )}
-                         
-                         <AlertDialog>
+                        {invoice.status !== 'paid' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleMarkAsPaid(invoice.id)}
+                            className="glass-button text-green-600 hover:bg-green-50 p-2"
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                        )}
+
+                        {invoice.status === 'paid' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleMarkAsUnpaid(invoice.id)}
+                            className="glass-button text-orange-600 hover:bg-orange-50 p-2"
+                            title="Mark as Unpaid"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+
+                        {invoice.status === 'overdue' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleWhatsAppReminder(invoice)}
+                            className="glass-button text-green-600 hover:bg-green-50 p-2"
+                            title="Send WhatsApp Payment Reminder"
+                          >
+                            <MessageSquare className="h-4 w-4" />
+                          </Button>
+                        )}
+
+                        <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
                               variant="outline"
@@ -565,21 +559,21 @@ const Invoices = () => {
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </AlertDialogTrigger>
-                           <AlertDialogContent className="glass-card mx-4">
-                             <AlertDialogHeader>
-                               <AlertDialogTitle className="text-card-foreground">{t('deleteInvoice')}</AlertDialogTitle>
-                               <AlertDialogDescription className="text-muted-foreground">
-                                 {t('areYouSureDeleteInvoice')} {invoice.invoiceNumber}? {t('thisActionCannotBeUndone')}
-                               </AlertDialogDescription>
-                             </AlertDialogHeader>
-                             <AlertDialogFooter>
-                               <AlertDialogCancel className="glass-button">{t('cancel')}</AlertDialogCancel>
-                               <AlertDialogAction
-                                 onClick={() => handleDeleteInvoice(invoice.id)}
-                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                               >
-                                 {t('delete')}
-                               </AlertDialogAction>
+                          <AlertDialogContent className="glass-card mx-4">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="text-card-foreground">{t('deleteInvoice')}</AlertDialogTitle>
+                              <AlertDialogDescription className="text-muted-foreground">
+                                {t('areYouSureDeleteInvoice')} {invoice.invoiceNumber}? {t('thisActionCannotBeUndone')}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="glass-button">{t('cancel')}</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteInvoice(invoice.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                {t('delete')}
+                              </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
@@ -598,74 +592,74 @@ const Invoices = () => {
                       <TableHead className="text-muted-foreground font-semibold">{t('customer')}</TableHead>
                       <TableHead className="text-muted-foreground font-semibold">{t('date')}</TableHead>
                       <TableHead className="text-muted-foreground font-semibold">{t('dueDate')}</TableHead>
-                       <TableHead className="text-muted-foreground font-semibold">{t('amount')}</TableHead>
-                       <TableHead className="text-muted-foreground font-semibold">Tax</TableHead>
-                       <TableHead className="text-muted-foreground font-semibold">Payment Mode</TableHead>
-                       <TableHead className="text-muted-foreground font-semibold">{t('status')}</TableHead>
+                      <TableHead className="text-muted-foreground font-semibold">{t('amount')}</TableHead>
+                      <TableHead className="text-muted-foreground font-semibold">Tax</TableHead>
+                      <TableHead className="text-muted-foreground font-semibold">Payment Mode</TableHead>
+                      <TableHead className="text-muted-foreground font-semibold">{t('status')}</TableHead>
                       <TableHead className="text-muted-foreground font-semibold">{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
-                <TableBody>
-                  {paginatedInvoices.map((invoice) => (
-                    <TableRow key={invoice.id} className="border-glass-border">
-                      <TableCell className="font-medium text-card-foreground">
-                        {invoice.invoiceNumber}
-                      </TableCell>
-                      <TableCell className="text-card-foreground">
-                        {invoice.customerName}
-                      </TableCell>
-                      <TableCell className="text-card-foreground">
-                        {format(invoice.date, 'MMM dd, yyyy')}
-                      </TableCell>
-                      <TableCell className="text-card-foreground">
-                        {invoice.dueDate ? format(invoice.dueDate, 'MMM dd, yyyy') : '-'}
-                      </TableCell>
-                       <TableCell className="font-medium text-card-foreground">
-                         ₹{invoice.total.toLocaleString()}
-                       </TableCell>
-                       <TableCell className="text-card-foreground">
-                         {invoice.taxAmount > 0 ? `₹${invoice.taxAmount.toLocaleString()}` : '-'}
-                       </TableCell>
-                       <TableCell className="text-card-foreground">
-                         <div className="text-sm">
-                           {invoice.paymentMode === 'cash' && 'Cash'}
-                           {invoice.paymentMode === 'cheque' && (
-                             <div className="flex flex-col">
-                               <span className="font-medium">Cheque</span>
-                               {invoice.chequeNumber && <span className="text-xs text-muted-foreground">#{invoice.chequeNumber}</span>}
-                             </div>
-                           )}
-                           {invoice.paymentMode === 'online' && (
-                             <div className="flex flex-col">
-                               <span className="font-medium">Online</span>
-                               <span className="text-xs text-muted-foreground">
-                                 {invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'}
-                               </span>
-                             </div>
-                           )}
-                         </div>
-                       </TableCell>
-                       <TableCell>
-                        <Badge 
-                          className={cn(
-                            "capitalize border",
-                            getStatusColor(invoice.status)
-                          )}
-                           >
-                             {t(invoice.status)}
-                           </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                           <InvoiceGenerator invoice={invoice} party={getPartyForInvoice(invoice)}>
-                             <Button
-                               variant="outline"
-                               size="sm"
-                               className="glass-button"
-                             >
-                               <Eye className="h-4 w-4" />
-                             </Button>
-                           </InvoiceGenerator>
+                  <TableBody>
+                    {paginatedInvoices.map((invoice) => (
+                      <TableRow key={invoice.id} className="border-glass-border">
+                        <TableCell className="font-medium text-card-foreground">
+                          {invoice.invoiceNumber}
+                        </TableCell>
+                        <TableCell className="text-card-foreground">
+                          {invoice.customerName}
+                        </TableCell>
+                        <TableCell className="text-card-foreground">
+                          {format(invoice.date, 'MMM dd, yyyy')}
+                        </TableCell>
+                        <TableCell className="text-card-foreground">
+                          {invoice.dueDate ? format(invoice.dueDate, 'MMM dd, yyyy') : '-'}
+                        </TableCell>
+                        <TableCell className="font-medium text-card-foreground">
+                          ₹{invoice.total.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-card-foreground">
+                          {invoice.taxAmount > 0 ? `₹${invoice.taxAmount.toLocaleString()}` : '-'}
+                        </TableCell>
+                        <TableCell className="text-card-foreground">
+                          <div className="text-sm">
+                            {invoice.paymentMode === 'cash' && 'Cash'}
+                            {invoice.paymentMode === 'cheque' && (
+                              <div className="flex flex-col">
+                                <span className="font-medium">Cheque</span>
+                                {invoice.chequeNumber && <span className="text-xs text-muted-foreground">#{invoice.chequeNumber}</span>}
+                              </div>
+                            )}
+                            {invoice.paymentMode === 'online' && (
+                              <div className="flex flex-col">
+                                <span className="font-medium">Online</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {invoice.onlinePaymentMethod === 'upi' ? 'UPI' : 'Bank Transfer'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={cn(
+                              "capitalize border",
+                              getStatusColor(invoice.status)
+                            )}
+                          >
+                            {t(invoice.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <InvoiceGenerator invoice={invoice} party={getPartyForInvoice(invoice)}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="glass-button"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </InvoiceGenerator>
 
                             <Button
                               variant="outline"
@@ -681,7 +675,7 @@ const Invoices = () => {
                                 <Printer className="h-4 w-4" />
                               )}
                             </Button>
-                           
+
                             {invoice.status !== 'paid' && (
                               <Button
                                 variant="outline"
@@ -716,39 +710,39 @@ const Invoices = () => {
                                 <MessageSquare className="h-4 w-4" />
                               </Button>
                             )}
-                           
-                           <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="glass-button text-destructive hover:bg-destructive-glass"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                             <AlertDialogContent className="glass-card">
-                               <AlertDialogHeader>
-                                 <AlertDialogTitle className="text-card-foreground">{t('deleteInvoice')}</AlertDialogTitle>
-                                 <AlertDialogDescription className="text-muted-foreground">
-                                   {t('areYouSureDeleteInvoice')} {invoice.invoiceNumber}? {t('thisActionCannotBeUndone')}
-                                 </AlertDialogDescription>
-                               </AlertDialogHeader>
-                               <AlertDialogFooter>
-                                 <AlertDialogCancel className="glass-button">{t('cancel')}</AlertDialogCancel>
-                                 <AlertDialogAction
-                                   onClick={() => handleDeleteInvoice(invoice.id)}
-                                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                 >
-                                   {t('delete')}
-                                 </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="glass-button text-destructive hover:bg-destructive-glass"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="glass-card">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle className="text-card-foreground">{t('deleteInvoice')}</AlertDialogTitle>
+                                  <AlertDialogDescription className="text-muted-foreground">
+                                    {t('areYouSureDeleteInvoice')} {invoice.invoiceNumber}? {t('thisActionCannotBeUndone')}
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel className="glass-button">{t('cancel')}</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDeleteInvoice(invoice.id)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    {t('delete')}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </div>
@@ -759,7 +753,7 @@ const Invoices = () => {
                   <Pagination>
                     <PaginationContent className="gap-1 sm:gap-2">
                       <PaginationItem>
-                        <PaginationPrevious 
+                        <PaginationPrevious
                           onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                           className={cn(
                             "h-9 w-9 sm:h-10 sm:w-auto sm:px-4 cursor-pointer touch-manipulation",
@@ -767,7 +761,7 @@ const Invoices = () => {
                           )}
                         />
                       </PaginationItem>
-                      
+
                       {/* Mobile: Show only current, first, and last page */}
                       <div className="flex sm:hidden gap-1">
                         {currentPage > 1 && (
@@ -781,7 +775,7 @@ const Invoices = () => {
                           </PaginationItem>
                         )}
                         {currentPage > 2 && <span className="flex items-center px-1 text-muted-foreground">...</span>}
-                        
+
                         <PaginationItem>
                           <PaginationLink
                             isActive={true}
@@ -790,7 +784,7 @@ const Invoices = () => {
                             {currentPage}
                           </PaginationLink>
                         </PaginationItem>
-                        
+
                         {currentPage < totalPages - 1 && <span className="flex items-center px-1 text-muted-foreground">...</span>}
                         {currentPage < totalPages && (
                           <PaginationItem>
@@ -804,86 +798,23 @@ const Invoices = () => {
                         )}
                       </div>
 
-                      {/* Desktop: Show all pages or smart truncation */}
-                      <div className="hidden sm:flex gap-1">
-                        {totalPages <= 7 ? (
-                          // Show all pages if 7 or fewer
-                          Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <PaginationItem key={page}>
-                              <PaginationLink
-                                onClick={() => setCurrentPage(page)}
-                                isActive={currentPage === page}
-                                className="cursor-pointer touch-manipulation"
-                              >
-                                {page}
-                              </PaginationLink>
-                            </PaginationItem>
-                          ))
-                        ) : (
-                          // Smart truncation for many pages
-                          <>
-                            {[1, 2].map((page) => (
-                              <PaginationItem key={page}>
-                                <PaginationLink
-                                  onClick={() => setCurrentPage(page)}
-                                  isActive={currentPage === page}
-                                  className="cursor-pointer touch-manipulation"
-                                >
-                                  {page}
-                                </PaginationLink>
-                              </PaginationItem>
-                            ))}
-                            
-                            {currentPage > 4 && <span className="flex items-center px-2 text-muted-foreground">...</span>}
-                            
-                            {currentPage > 3 && currentPage < totalPages - 2 && (
-                              <>
-                                <PaginationItem>
-                                  <PaginationLink
-                                    onClick={() => setCurrentPage(currentPage - 1)}
-                                    className="cursor-pointer touch-manipulation"
-                                  >
-                                    {currentPage - 1}
-                                  </PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                  <PaginationLink
-                                    isActive={true}
-                                    className="cursor-pointer touch-manipulation"
-                                  >
-                                    {currentPage}
-                                  </PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                  <PaginationLink
-                                    onClick={() => setCurrentPage(currentPage + 1)}
-                                    className="cursor-pointer touch-manipulation"
-                                  >
-                                    {currentPage + 1}
-                                  </PaginationLink>
-                                </PaginationItem>
-                              </>
-                            )}
-                            
-                            {currentPage < totalPages - 3 && <span className="flex items-center px-2 text-muted-foreground">...</span>}
-                            
-                            {[totalPages - 1, totalPages].map((page) => (
-                              <PaginationItem key={page}>
-                                <PaginationLink
-                                  onClick={() => setCurrentPage(page)}
-                                  isActive={currentPage === page}
-                                  className="cursor-pointer touch-manipulation"
-                                >
-                                  {page}
-                                </PaginationLink>
-                              </PaginationItem>
-                            ))}
-                          </>
-                        )}
+                      {/* Desktop: Show all pages */}
+                      <div className="hidden sm:flex gap-2">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(page)}
+                              isActive={currentPage === page}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
                       </div>
-                      
+
                       <PaginationItem>
-                        <PaginationNext 
+                        <PaginationNext
                           onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                           className={cn(
                             "h-9 w-9 sm:h-10 sm:w-auto sm:px-4 cursor-pointer touch-manipulation",

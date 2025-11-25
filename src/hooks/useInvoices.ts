@@ -56,7 +56,7 @@ const transformInvoiceFromDB = (dbInvoice: SalesInvoiceDB, items: SalesInvoiceIt
     const dueDate = new Date(dbInvoice.due_date);
     today.setHours(0, 0, 0, 0);
     dueDate.setHours(0, 0, 0, 0);
-    
+
     if (today > dueDate) {
       status = 'overdue';
     }
@@ -131,17 +131,17 @@ export const useInvoices = () => {
       return (
         invoices?.map(invoice => {
           const invoiceItems = items?.filter(item => item.invoice_id === invoice.id) || [];
-          
+
           // Calculate previous balance for this customer
           const previousBalance = invoices
-            .filter(inv => 
-              inv.customer_id === invoice.customer_id && 
+            .filter(inv =>
+              inv.customer_id === invoice.customer_id &&
               inv.customer_id && // Only if customer_id exists
               new Date(inv.created_at) < new Date(invoice.created_at) &&
               inv.status !== 'paid'
             )
             .reduce((sum, inv) => sum + Number(inv.total), 0);
-          
+
           const transformed = transformInvoiceFromDB(invoice as SalesInvoiceDB, invoiceItems as SalesInvoiceItemDB[]);
           return {
             ...transformed,
@@ -187,7 +187,7 @@ export const useInvoices = () => {
           .eq('customer_id', invoiceData.customerId)
           .neq('status', 'paid')
           .eq('created_by', user.id);
-        
+
         if (previousInvoices) {
           previousBalance = previousInvoices.reduce((sum, inv) => sum + Number(inv.total), 0);
         }
@@ -254,12 +254,17 @@ export const useInvoices = () => {
       };
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['invoices'] });
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      // Show success toast immediately
       toast({
         title: "Success",
-        description: `Invoice ${data.invoiceNumber} created successfully! Product stock updated.`,
+        description: `Invoice ${data.invoiceNumber} created successfully!`,
       });
+
+      // Invalidate queries in background (non-blocking)
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['invoices'] });
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+      }, 0);
     },
     onError: (error: any) => {
       toast({
@@ -321,7 +326,7 @@ export const useInvoices = () => {
         title: "Success",
         description: "Invoice deleted successfully! Product stock restored.",
       });
-      
+
       // Auto-dismiss after 0.5 seconds
       setTimeout(() => {
         toastInstance.dismiss();

@@ -245,7 +245,7 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
                   <div class="text-sm accent-text">${convertAmountToWords(Math.floor(invoice.total))} Rupees Only</div>
                   
                   ${invoice.status === 'paid' ? `
-                    <div style="margin-top: 16px; padding: 12px; background: #ECFDF5; border-radius: 6px; border: 1px solid #10B981;">
+                    <div style="margin-top: 48px; padding: 12px; background: #ECFDF5; border-radius: 16px; border: 1px solid #10B981;">
                       <div class="text-sm font-semibold" style="color: #047857; margin-bottom: 4px;">
                         Payment Status
                       </div>
@@ -284,12 +284,10 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
                   ` : ''}
                 </div>
                 <div>
-                  ${invoice.previousBalance && invoice.previousBalance > 0 ? `
                   <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #D1D5DB;">
                     <span class="text-sm font-semibold accent-text">Previous Balance</span>
-                    <span class="text-sm font-bold primary-text">₹ ${invoice.previousBalance.toFixed(0)}</span>
+                    <span class="text-sm font-bold primary-text">₹ ${(invoice.previousBalance || 0).toFixed(0)}</span>
                   </div>
-                  ` : ''}
                   <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #D1D5DB;">
                     <span class="text-sm font-semibold accent-text">Current Invoice</span>
                     <span class="text-sm font-bold primary-text">₹ ${invoice.total.toFixed(0)}</span>
@@ -368,34 +366,34 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
   };
 
   const getPaymentStatusText = (invoice: any) => {
-    const amount = `₹${invoice.total.toLocaleString()}`;
+    const amount = `₹${invoice.total.toLocaleString()} `;
 
     switch (invoice.status) {
       case 'paid':
-        return `✅ *PAID* - Amount: ${amount}`;
+        return `✅ * PAID * - Amount: ${amount} `;
 
       case 'draft':
         if (invoice.dueDate) {
           const dueDate = format(invoice.dueDate, 'dd/MM/yyyy');
-          return `⏳ *DUE* - Due Date: ${dueDate} | Amount: ${amount}`;
+          return `⏳ * DUE * - Due Date: ${dueDate} | Amount: ${amount} `;
         }
-        return `⏳ *DUE* - Amount: ${amount}`;
+        return `⏳ * DUE * - Amount: ${amount} `;
 
       case 'overdue':
         if (invoice.dueDate) {
           const overdueDate = format(invoice.dueDate, 'dd/MM/yyyy');
-          return `⚠️ *OVERDUE* - Due Date: ${overdueDate} | Amount: ${amount}`;
+          return `⚠️ * OVERDUE * - Due Date: ${overdueDate} | Amount: ${amount} `;
         }
-        return `⚠️ *OVERDUE* - Amount: ${amount}`;
+        return `⚠️ * OVERDUE * - Amount: ${amount} `;
 
       default:
-        return `Amount: ${amount}`;
+        return `Amount: ${amount} `;
     }
   };
 
   const getShareText = () => {
     const paymentStatus = getPaymentStatusText(invoice);
-    return `*Invoice ${invoice.invoiceNumber}*\n\nCustomer: ${invoice.customerName}\nDate: ${format(invoice.date, 'PP')}\n${paymentStatus}\n\nItems:\n${invoice.items.map((item, index) => `${index + 1}. ${item.productName} - Qty: ${item.quantity} - ₹${item.amount}`).join('\n')}`;
+    return `* Invoice ${invoice.invoiceNumber}*\n\nCustomer: ${invoice.customerName} \nDate: ${format(invoice.date, 'PP')} \n${paymentStatus} \n\nItems: \n${invoice.items.map((item, index) => `${index + 1}. ${item.productName} - Qty: ${item.quantity} - ₹${item.amount}`).join('\n')} `;
   };
 
   const handleWhatsAppShare = async () => {

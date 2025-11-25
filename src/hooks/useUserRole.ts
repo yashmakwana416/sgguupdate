@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useEffect } from 'react';
 
 interface UserRole {
   id: string;
@@ -11,44 +12,63 @@ interface UserRole {
 }
 
 export const useUserRole = () => {
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
+  // Use React Query to cache the role - only fetches once and caches for 24 hours
+  const { data: userRole, isLoading: loading, refetch } = useQuery({
+    queryKey: ['userRole', user?.id],
+    enabled: !!user,
+    // Use global config from App.tsx - no refetching on mount/focus
+    queryFn: async () => {
+      if (!user) return null;
+
+      try {
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (error) throw error;
+        
+        console.log('[useUserRole] Fetched role from database:', data?.role);
+        
+        // If no role found, user is pending approval (null)
+        return data?.role || null;
+      } catch (error) {
+        console.error('Error fetching user role:', error);
+        return null;
+      }
+    },
+  });
+
+  // Listen for realtime role changes
   useEffect(() => {
-    if (user) {
-      fetchUserRole();
-    } else {
-      setUserRole(null);
-      setLoading(false);
-    }
-  }, [user]);
-
-  const fetchUserRole = async () => {
     if (!user) return;
 
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .maybeSingle();
+    const channel = supabase
+      .channel('user-role-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_roles',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('[useUserRole] Role changed via realtime:', payload);
+          // Invalidate and refetch the role
+          queryClient.invalidateQueries({ queryKey: ['userRole', user.id] });
+        }
+      )
+      .subscribe();
 
-      if (error) throw error;
-      
-      console.log('[useUserRole] Fetched role from database:', data?.role);
-      
-      // If no role found, user is pending approval (null)
-      // Only set a role if one exists in the database
-      setUserRole(data?.role || null);
-    } catch (error) {
-      console.error('Error fetching user role:', error);
-      setUserRole(null); // No role on error means pending approval
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
 
   const isAdmin = () => false; // No admin role anymore
   const isDistributor = () => userRole === 'distributor';
@@ -122,6 +142,6 @@ export const useUserRole = () => {
     isViewer,
     isPendingApproval,
     hasAccessToPage,
-    refetch: fetchUserRole
+    refetch
   };
 };

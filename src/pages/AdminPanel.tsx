@@ -66,7 +66,7 @@ export default function AdminPanel() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch profiles
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
@@ -117,10 +117,10 @@ export default function AdminPanel() {
     try {
       // Remove the role
       await removeRole(roleId);
-      
+
       // Force sign out the user from Supabase auth (requires admin API)
       // Note: This will be handled by RLS - when role is removed, user loses access
-      
+
       toast.success('User removed successfully');
       fetchData(); // Refresh the data
     } catch (error) {
@@ -145,7 +145,7 @@ export default function AdminPanel() {
             <p className="text-sm sm:text-base text-muted-foreground mt-1 sm:mt-2">{t('manageUserRolesAndPermissions')}</p>
           </div>
         </div>
-        
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="glass-button bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto">
@@ -167,15 +167,15 @@ export default function AdminPanel() {
                   <SelectContent className="z-50 bg-popover text-popover-foreground border border-glass-border shadow-lg">
                     {profiles.map((profile) => (
                       <SelectItem key={profile.id} value={profile.email}>
-                        {profile.email} {profile.first_name && profile.last_name && 
+                        {profile.email} {profile.first_name && profile.last_name &&
                           `(${profile.first_name} ${profile.last_name})`}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              
-              
+
+
               <div>
                 <Label htmlFor="role" className="text-card-foreground">{t('role')}</Label>
                 <Select value={selectedRole} onValueChange={(val) => setSelectedRole(val as 'superadmin' | 'distributor')}>
@@ -191,10 +191,10 @@ export default function AdminPanel() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="flex gap-2 pt-4">
-                <Button 
-                  onClick={handleAssignRole} 
+                <Button
+                  onClick={handleAssignRole}
                   className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
                   disabled={!selectedEmail || !selectedRole}
                 >

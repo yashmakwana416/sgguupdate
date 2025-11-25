@@ -939,7 +939,7 @@ const CreateInvoice = () => {
                 placeholder="Enter cheque number"
                 className="bg-white"
               />
-            </div>
+            </div> 
           )}
 
           {/* Online Payment Method Display */}
@@ -1011,25 +1011,6 @@ const CreateInvoice = () => {
               <span className="text-sm font-medium text-amber-900">Previous Balance</span>
               <span className="text-sm font-bold text-amber-900">₹{previousBalance.toFixed(0)}</span>
             </div>
-            
-            {!isDebt && (
-              <div className="space-y-2">
-                <Label htmlFor="paidAmount" className="text-sm font-medium">Paid Amount</Label>
-                <Input
-                  id="paidAmount"
-                  type="number"
-                  inputMode="decimal"
-                  value={paidAmount || ''}
-                  onChange={(e) => {
-                    const value = e.target.value === '' ? 0 : Number(e.target.value);
-                    setPaidAmount(value);
-                  }}
-                  placeholder="Enter amount paid"
-                  className="bg-white"
-                />
-                <p className="text-xs text-muted-foreground">Leave empty to use current invoice total as paid amount</p>
-              </div>
-            )}
           </div>
         )}
       </CardContent>

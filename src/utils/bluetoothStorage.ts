@@ -28,7 +28,7 @@ class BluetoothStorage {
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
-        
+
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
           store.createIndex('deviceId', 'deviceId', { unique: true });
@@ -40,11 +40,11 @@ class BluetoothStorage {
 
   async savePrinter(printer: StoredPrinter): Promise<void> {
     if (!this.db) await this.init();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
-      
+
       // If this is the default printer, unset other defaults
       if (printer.isDefault) {
         const allRequest = store.getAll();
@@ -58,7 +58,7 @@ class BluetoothStorage {
           });
         };
       }
-      
+
       const request = store.put(printer);
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
@@ -67,13 +67,13 @@ class BluetoothStorage {
 
   async getPrinter(deviceId: string): Promise<StoredPrinter | null> {
     if (!this.db) await this.init();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORE_NAME], 'readonly');
       const store = transaction.objectStore(STORE_NAME);
       const index = store.index('deviceId');
       const request = index.get(deviceId);
-      
+
       request.onsuccess = () => resolve(request.result || null);
       request.onerror = () => reject(request.error);
     });
@@ -81,26 +81,30 @@ class BluetoothStorage {
 
   async getDefaultPrinter(): Promise<StoredPrinter | null> {
     if (!this.db) await this.init();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORE_NAME], 'readonly');
       const store = transaction.objectStore(STORE_NAME);
-      const index = store.index('isDefault');
-      const request = index.get(IDBKeyRange.only(true));
-      
-      request.onsuccess = () => resolve(request.result || null);
+      // Use getAll instead of index to avoid potential boolean key issues
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        const printers = request.result as StoredPrinter[];
+        const defaultPrinter = printers.find(p => p.isDefault === true);
+        resolve(defaultPrinter || null);
+      };
       request.onerror = () => reject(request.error);
     });
   }
 
   async getAllPrinters(): Promise<StoredPrinter[]> {
     if (!this.db) await this.init();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORE_NAME], 'readonly');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.getAll();
-      
+
       request.onsuccess = () => resolve(request.result || []);
       request.onerror = () => reject(request.error);
     });
@@ -108,13 +112,13 @@ class BluetoothStorage {
 
   async deletePrinter(deviceId: string): Promise<void> {
     if (!this.db) await this.init();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
       const index = store.index('deviceId');
       const getRequest = index.getKey(deviceId);
-      
+
       getRequest.onsuccess = () => {
         if (getRequest.result) {
           const deleteRequest = store.delete(getRequest.result);
@@ -130,12 +134,12 @@ class BluetoothStorage {
 
   async deleteAllPrinters(): Promise<void> {
     if (!this.db) await this.init();
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.clear();
-      
+
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });

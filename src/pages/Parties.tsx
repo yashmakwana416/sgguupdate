@@ -220,12 +220,12 @@ export default function Parties() {
 
     setIsImporting(true);
     setImportProgress(0);
-    
+
     try {
       const text = await file.text();
       const lines = text.split('\n').filter(line => line.trim());
       const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-      
+
       const nameIndex = headers.findIndex(h => h.includes('name'));
       const emailIndex = headers.findIndex(h => h.includes('email'));
       const phoneIndex = headers.findIndex(h => h.includes('phone'));
@@ -243,17 +243,17 @@ export default function Parties() {
 
       const dataRows = lines.slice(1);
       setTotalRecords(dataRows.length);
-      
+
       // Process data in chunks for rapid import
       const chunkSize = 50; // Process 50 records at a time
       const validParties: CreatePartyData[] = [];
-      
+
       for (let i = 0; i < dataRows.length; i++) {
         const line = dataRows[i].trim();
         if (!line) continue;
-        
+
         const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
-        
+
         const partyData = {
           name: values[nameIndex] || '',
           phone: phoneIndex >= 0 ? values[phoneIndex] || '' : '',
@@ -270,7 +270,7 @@ export default function Parties() {
       let processed = 0;
       for (let i = 0; i < validParties.length; i += chunkSize) {
         const chunk = validParties.slice(i, i + chunkSize);
-        
+
         // Use requestIdleCallback to prevent blocking UI
         await new Promise(resolve => {
           const processChunk = async () => {
@@ -279,7 +279,7 @@ export default function Parties() {
             setImportProgress(Math.round((processed / validParties.length) * 100));
             resolve(void 0);
           };
-          
+
           if (window.requestIdleCallback) {
             window.requestIdleCallback(() => processChunk());
           } else {
@@ -352,7 +352,7 @@ export default function Parties() {
       const columnWidths = [
         { wch: 50 }, // Name
         { wch: 15 }, // Phone
-        { wch: 60}, // Address
+        { wch: 60 }, // Address
         { wch: 20 }, // GSTIN
         { wch: 10 }, // Status
         { wch: 15 }, // Created Date
@@ -386,65 +386,65 @@ export default function Parties() {
   // Removed loading screen - data persists and page loads instantly
 
   return <div className="space-y-3 sm:space-y-4 lg:space-y-6 p-3 sm:p-4 lg:p-6">
-      <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-primary/10">
-            <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-responsive-lg font-bold text-foreground">{t('parties')}</h1>
-            <p className="text-responsive-sm text-muted-foreground mt-1">{t('manageYourPartyInformation')}</p>
-          </div>
+    <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="flex items-center gap-3">
+        <div className="p-3 rounded-xl bg-primary/10">
+          <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
         </div>
-        
-        <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+        <div>
+          <h1 className="text-responsive-lg font-bold text-foreground">{t('parties')}</h1>
+          <p className="text-responsive-sm text-muted-foreground mt-1">{t('manageYourPartyInformation')}</p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+        <Button
+          onClick={handleExportToExcel}
+          disabled={!parties || parties.length === 0}
+          variant="outline"
+          size="sm"
+          className="text-xs sm:text-sm flex-1 sm:flex-none min-w-[80px]"
+        >
+          <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+          <span className="hidden xs:inline">Export</span>
+          <span className="xs:hidden">Exp</span>
+        </Button>
+
+        <div className="relative flex-1 sm:flex-none min-w-[80px]">
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleImport}
+            disabled={isImporting}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            id="import-file"
+          />
           <Button
-            onClick={handleExportToExcel}
-            disabled={!parties || parties.length === 0}
+            disabled={isImporting}
             variant="outline"
             size="sm"
-            className="text-xs sm:text-sm flex-1 sm:flex-none min-w-[80px]"
+            className="text-xs sm:text-sm w-full"
+            asChild
           >
-            <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="hidden xs:inline">Export</span>
-            <span className="xs:hidden">Exp</span>
+            <label htmlFor="import-file" className="cursor-pointer flex items-center justify-center">
+              {isImporting ? (
+                <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
+              ) : (
+                <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              )}
+              <span className="hidden sm:inline">{isImporting ? t('importing') : t('import')}</span>
+              <span className="sm:hidden">{isImporting ? t('importing') : t('import')}</span>
+            </label>
           </Button>
-          
-          <div className="relative flex-1 sm:flex-none min-w-[80px]">
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleImport}
-              disabled={isImporting}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              id="import-file"
-            />
-            <Button 
-              disabled={isImporting}
-              variant="outline"
-              size="sm"
-              className="text-xs sm:text-sm w-full"
-              asChild
-            >
-              <label htmlFor="import-file" className="cursor-pointer flex items-center justify-center">
-                {isImporting ? (
-                  <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
-                ) : (
-                  <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                )}
-                <span className="hidden sm:inline">{isImporting ? t('importing') : t('import')}</span>
-                <span className="sm:hidden">{isImporting ? t('importing') : t('import')}</span>
-              </label>
+        </div>
+
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="text-xs sm:text-sm flex-1 sm:flex-none min-w-[80px]" onClick={resetForm}>
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              {t('addParty')}
             </Button>
-          </div>
-          
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="text-xs sm:text-sm flex-1 sm:flex-none min-w-[80px]" onClick={resetForm}>
-                <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                {t('addParty')}
-              </Button>
-            </DialogTrigger>
+          </DialogTrigger>
           <DialogContent className="bg-white max-w-[95vw] sm:max-w-md mx-4 sm:mx-auto max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-card-foreground text-base sm:text-lg">
@@ -482,16 +482,16 @@ export default function Parties() {
               </div>
               <div>
                 <Label htmlFor="location_link" className="text-card-foreground text-sm">{t('locationLink')}</Label>
-                <Input 
-                  id="location_link" 
+                <Input
+                  id="location_link"
                   type="url"
                   placeholder={t('enterLocationLink')}
-                  value={formData.location_link} 
+                  value={formData.location_link}
                   onChange={e => setFormData({
                     ...formData,
                     location_link: e.target.value
-                  })} 
-                  className="glass-input mt-1" 
+                  })}
+                  className="glass-input mt-1"
                 />
               </div>
               <div className="flex flex-col sm:flex-row gap-2 pt-4">
@@ -504,272 +504,262 @@ export default function Parties() {
               </div>
             </form>
           </DialogContent>
-          </Dialog>
-        </div>
+        </Dialog>
+      </div>
+    </div>
+
+    {/* Import Progress Bar */}
+    {isImporting && (
+      <Card className="bg-white">
+        <CardContent className="p-3 sm:p-4 lg:p-6">
+          <div className="space-y-2 sm:space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs sm:text-sm font-medium">Importing parties...</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">{importProgress}%</p>
+            </div>
+            <Progress value={importProgress} className="w-full h-2 sm:h-3" />
+            <p className="text-xs text-muted-foreground">
+              Processing {totalRecords} records from CSV file
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    )}
+
+    {/* Mobile Card View */}
+    <div className="block sm:hidden space-y-2">
+      {/* Mobile Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder={t('searchParties')}
+          value={searchTerm}
+          onChange={e => handleSearchChange(e.target.value)}
+          className="pl-10 bg-white h-9 text-sm"
+        />
       </div>
 
-      {/* Import Progress Bar */}
-      {isImporting && (
-        <Card className="bg-white">
-          <CardContent className="p-3 sm:p-4 lg:p-6">
-            <div className="space-y-2 sm:space-y-3">
-              <div className="flex items-center justify-between">
-                <p className="text-xs sm:text-sm font-medium">Importing parties...</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">{importProgress}%</p>
+      {paginatedParties.map(party => (
+        <Card key={party.id} className="bg-white p-3 shadow-sm border">
+          <CardContent className="p-3">
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex-1 min-w-0 mr-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-sm font-semibold text-foreground truncate">{party.name}</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleCopyName(party.name)}
+                    className="h-5 w-5 p-0 hover:bg-primary-glass/50 shrink-0 flex-shrink-0"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-xs text-muted-foreground truncate">{party.phone || 'No phone'}</p>
+                  <p className="text-xs text-muted-foreground truncate">{party.address || 'No address'}</p>
+                  <p className="text-xs text-muted-foreground truncate">{party.gstin || 'No GSTIN'}</p>
+                </div>
               </div>
-              <Progress value={importProgress} className="w-full h-2 sm:h-3" />
-              <p className="text-xs text-muted-foreground">
-                Processing {totalRecords} records from CSV file
-              </p>
             </div>
+
+            <div className="flex gap-2 mt-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleEdit(party)}
+                className="flex-1 text-xs h-8"
+                disabled={deleteParty.isPending}
+              >
+                <Edit className="mr-1 h-3 w-3" />
+                {t('edit')}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDeleteClick(party)}
+                className="flex-1 text-xs glass-button text-destructive hover:bg-destructive-glass h-8"
+                disabled={deleteParty.isPending}
+              >
+                <Trash2 className="mr-1 h-3 w-3" />
+                {t('delete')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+
+      {filteredParties.length === 0 && !isLoading && (
+        <Card className="mobile-card bg-white">
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-sm sm:text-base text-muted-foreground">
+              {searchTerm ? t('noPartiesFound') : t('noPartiesYet')}
+            </p>
           </CardContent>
         </Card>
       )}
 
-      {/* Mobile Card View */}
-      <div className="block sm:hidden space-y-2">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-6">
-            <Loader2 className="h-6 w-6 animate-spin" />
+      {/* Mobile Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-2 py-2 bg-white border rounded-lg shadow-sm mt-3">
+          <div className="text-xs text-muted-foreground flex-1 min-w-0">
+            <span className="truncate">{startIndex + 1}-{Math.min(endIndex, filteredParties.length)} of {filteredParties.length}</span>
           </div>
-        ) : (
-          <>
-            {/* Mobile Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder={t('searchParties')} 
-                value={searchTerm} 
-                onChange={e => handleSearchChange(e.target.value)} 
-                className="pl-10 bg-white h-9 text-sm" 
-              />
-            </div>
-            
-            {paginatedParties.map(party => (
-              <Card key={party.id} className="bg-white p-3 shadow-sm border">
-                <CardContent className="p-3">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1 min-w-0 mr-2">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-sm font-semibold text-foreground truncate">{party.name}</h3>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleCopyName(party.name)}
-                          className="h-5 w-5 p-0 hover:bg-primary-glass/50 shrink-0 flex-shrink-0"
-                        >
-                          <Copy className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <div className="space-y-0.5">
-                        <p className="text-xs text-muted-foreground truncate">{party.phone || 'No phone'}</p>
-                        <p className="text-xs text-muted-foreground truncate">{party.address || 'No address'}</p>
-                        <p className="text-xs text-muted-foreground truncate">{party.gstin || 'No GSTIN'}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2 mt-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(party)}
-                      className="flex-1 text-xs h-8"
-                      disabled={deleteParty.isPending}
-                    >
-                      <Edit className="mr-1 h-3 w-3" />
-                      {t('edit')}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteClick(party)}
-                      className="flex-1 text-xs glass-button text-destructive hover:bg-destructive-glass h-8"
-                      disabled={deleteParty.isPending}
-                    >
-                      <Trash2 className="mr-1 h-3 w-3" />
-                      {t('delete')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            
-            {filteredParties.length === 0 && !isLoading && (
-              <Card className="mobile-card bg-white">
-                <CardContent className="p-4 sm:p-6 text-center">
-                  <p className="text-sm sm:text-base text-muted-foreground">
-                    {searchTerm ? t('noPartiesFound') : t('noPartiesYet')}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Mobile Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between px-2 py-2 bg-white border rounded-lg shadow-sm mt-3">
-                <div className="text-xs text-muted-foreground flex-1 min-w-0">
-                  <span className="truncate">{startIndex + 1}-{Math.min(endIndex, filteredParties.length)} of {filteredParties.length}</span>
-                </div>
-                <div className="flex items-center gap-1 ml-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                    className="text-xs px-2 py-1 h-7 min-w-[60px]"
-                  >
-                    <span className="hidden sm:inline">{t('previous')}</span>
-                    <span className="sm:hidden">{t('previous')}</span>
-                  </Button>
-                  
-                  <span className="text-xs text-muted-foreground px-1 min-w-[40px] text-center">
-                    {currentPage}/{totalPages}
-                  </span>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                    className="text-xs px-2 py-1 h-7 min-w-[60px]"
-                  >
-                    <span className="hidden sm:inline">{t('next')}</span>
-                    <span className="sm:hidden">{t('next')}</span>
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Desktop Table View */}
-      <Card className="bg-white hidden sm:block">
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <CardTitle>{t('partyDirectory')}</CardTitle>
-            <div className="relative flex-1 max-w-sm ml-auto">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder={t('searchParties')} value={searchTerm} onChange={e => handleSearchChange(e.target.value)} className="pl-10 bg-white" />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </div> : <div className="rounded-lg overflow-hidden border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-semibold">{t('name')}</TableHead>
-                    <TableHead className="font-semibold">{t('address')}</TableHead>
-                    <TableHead className="font-semibold">{t('phone')}</TableHead>
-                    <TableHead className="font-semibold">{t('gstin')}</TableHead>
-                    <TableHead className="font-semibold">{t('actions')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedParties.map(party => <TableRow key={party.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          <span>{party.name}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleCopyName(party.name)}
-                            className="h-6 w-6 p-0"
-                          >
-                            <Copy className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                      <TableCell>{party.address || '-'}</TableCell>
-                      <TableCell>{party.phone || '-'}</TableCell>
-                      <TableCell>{party.gstin || '-'}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" onClick={() => handleEdit(party)} disabled={deleteParty.isPending}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDeleteClick(party)} className="text-destructive" disabled={deleteParty.isPending}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>)}
-                  {filteredParties.length === 0 && !isLoading && <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                        {searchTerm ? t('noPartiesFound') : t('noPartiesYet')}
-                      </TableCell>
-                    </TableRow>}
-                </TableBody>
-              </Table>
-            </div>}
-        </CardContent>
-      </Card>
-
-      {/* Pagination Controls */}
-      {filteredParties.length > 0 && (
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-white border rounded-lg shadow-sm">
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-            <span className="font-medium">Showing {startIndex + 1} to {Math.min(endIndex, filteredParties.length)} of {filteredParties.length} parties</span>
-            {totalPages > 1 && <span className="hidden sm:inline text-xs bg-primary/10 text-primary px-2 py-1 rounded">Page {currentPage} of {totalPages}</span>}
-          </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 ml-2">
             <Button
               variant="outline"
               size="sm"
               onClick={handlePreviousPage}
-              disabled={currentPage === 1 || totalPages <= 1}
-              className="text-xs"
+              disabled={currentPage === 1}
+              className="text-xs px-2 py-1 h-7 min-w-[60px]"
             >
-              Previous
+              <span className="hidden sm:inline">{t('previous')}</span>
+              <span className="sm:hidden">{t('previous')}</span>
             </Button>
-            
-            {/* Page numbers */}
-            {totalPages > 1 && (
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
-                  if (pageNum > totalPages) return null;
-                  return (
-                    <Button
-                      key={pageNum}
-                      variant={currentPage === pageNum ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handlePageChange(pageNum)}
-                      className="w-8 h-8 p-0 text-xs"
-                    >
-                      {pageNum}
-                    </Button>
-                  );
-                })}
-              </div>
-            )}
+
+            <span className="text-xs text-muted-foreground px-1 min-w-[40px] text-center">
+              {currentPage}/{totalPages}
+            </span>
 
             <Button
               variant="outline"
               size="sm"
               onClick={handleNextPage}
-              disabled={currentPage === totalPages || totalPages <= 1}
-              className="text-xs"
+              disabled={currentPage === totalPages}
+              className="text-xs px-2 py-1 h-7 min-w-[60px]"
             >
-              Next
+              <span className="hidden sm:inline">{t('next')}</span>
+              <span className="sm:hidden">{t('next')}</span>
             </Button>
           </div>
         </div>
       )}
+    </div>
 
-      <DeleteConfirmationDialog
-        isOpen={deleteDialogOpen}
-        onClose={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        title={t('deleteParty')}
-        itemName={partyToDelete?.name}
-        isLoading={deleteParty.isPending}
-        confirmText={t('delete')}
-        cancelText={t('cancel')}
-      />
-    </div>;
+    {/* Desktop Table View */}
+    <Card className="bg-white hidden sm:block">
+      <CardHeader>
+        <div className="flex items-center gap-4">
+          <CardTitle>{t('partyDirectory')}</CardTitle>
+          <div className="relative flex-1 max-w-sm ml-auto">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder={t('searchParties')} value={searchTerm} onChange={e => handleSearchChange(e.target.value)} className="pl-10 bg-white" />
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-lg overflow-hidden border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="font-semibold">{t('name')}</TableHead>
+                <TableHead className="font-semibold">{t('address')}</TableHead>
+                <TableHead className="font-semibold">{t('phone')}</TableHead>
+                <TableHead className="font-semibold">{t('gstin')}</TableHead>
+                <TableHead className="font-semibold">{t('actions')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedParties.map(party => <TableRow key={party.id} className="hover:bg-muted/50">
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    <span>{party.name}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleCopyName(party.name)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell>{party.address || '-'}</TableCell>
+                <TableCell>{party.phone || '-'}</TableCell>
+                <TableCell>{party.gstin || '-'}</TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(party)} disabled={deleteParty.isPending}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDeleteClick(party)} className="text-destructive" disabled={deleteParty.isPending}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>)}
+              {filteredParties.length === 0 && !isLoading && <TableRow>
+                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                  {searchTerm ? t('noPartiesFound') : t('noPartiesYet')}
+                </TableCell>
+              </TableRow>}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+
+    {/* Pagination Controls */}
+    {filteredParties.length > 0 && (
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-white border rounded-lg shadow-sm">
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+          <span className="font-medium">Showing {startIndex + 1} to {Math.min(endIndex, filteredParties.length)} of {filteredParties.length} parties</span>
+          {totalPages > 1 && <span className="hidden sm:inline text-xs bg-primary/10 text-primary px-2 py-1 rounded">Page {currentPage} of {totalPages}</span>}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1 || totalPages <= 1}
+            className="text-xs"
+          >
+            Previous
+          </Button>
+
+          {/* Page numbers */}
+          {totalPages > 1 && (
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                if (pageNum > totalPages) return null;
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={currentPage === pageNum ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePageChange(pageNum)}
+                    className="w-8 h-8 p-0 text-xs"
+                  >
+                    {pageNum}
+                  </Button>
+                );
+              })}
+            </div>
+          )}
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages || totalPages <= 1}
+            className="text-xs"
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    )}
+
+    <DeleteConfirmationDialog
+      isOpen={deleteDialogOpen}
+      onClose={handleDeleteCancel}
+      onConfirm={handleDeleteConfirm}
+      title={t('deleteParty')}
+      itemName={partyToDelete?.name}
+      isLoading={deleteParty.isPending}
+      confirmText={t('delete')}
+      cancelText={t('cancel')}
+    />
+  </div>;
 }

@@ -2,61 +2,61 @@ import React from 'react';
 import { SalesInvoice } from '@/types/billing';
 
 interface InvoicePrintProps {
-    invoice: SalesInvoice;
-    party?: {
-        phone?: string;
-        address?: string;
-    } | null;
-    companyDetails?: {
-        name: string;
-        address: string;
-        landmark?: string;
-        city: string;
-        state: string;
-        pincode: string;
-        mobile: string;
-        tagline?: string;
-        signature_name?: string;
-    };
+  invoice: SalesInvoice;
+  party?: {
+    phone?: string;
+    address?: string;
+  } | null;
+  companyDetails?: {
+    name: string;
+    address: string;
+    landmark?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    mobile: string;
+    tagline?: string;
+    signature_name?: string;
+  };
 }
 
 export const InvoicePrint: React.FC<InvoicePrintProps> = ({
-    invoice,
-    party,
-    companyDetails = {
-        name: "શ્રી ગણેશ ગૃહ ઉદ્યોગ ----- Sakshi Pradip Adad Papad",
-        address: "150FI RING ROAD, RAMAPUR",
-        landmark: "CHOKDI,SHASTRI NAGAR, B/H LILJAT",
-        city: "PAPAD, 19/4 CORNER, RAJKOT",
-        state: "Gujarat",
-        pincode: "",
-        mobile: "9624985555",
-        tagline: "આપણો વિશ્વાસુ",
-        signature_name: "પ્રજાપતિ મહેશ"
-    }
+  invoice,
+  party,
+  companyDetails = {
+    name: "શ્રી ગણેશ ગૃહ ઉદ્યોગ ----- Sakshi Pradip Adad Papad",
+    address: "150FI RING ROAD, RAMAPUR",
+    landmark: "CHOKDI,SHASTRI NAGAR, B/H LILJAT",
+    city: "PAPAD, 19/4 CORNER, RAJKOT",
+    state: "Gujarat",
+    pincode: "",
+    mobile: "9624985555",
+    tagline: "આપણો વિશ્વાસુ",
+    signature_name: "પ્રજાપતિ મહેશ"
+  }
 }) => {
 
-    const convertAmountToWords = (amount: number): string => {
-        const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-        const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-        const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  const convertAmountToWords = (amount: number): string => {
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
 
-        if (amount === 0) return 'Zero';
-        if (amount < 10) return ones[amount];
-        if (amount < 20) return teens[amount - 10];
-        if (amount < 100) return tens[Math.floor(amount / 10)] + (amount % 10 !== 0 ? ' ' + ones[amount % 10] : '');
-        if (amount < 1000) return ones[Math.floor(amount / 100)] + ' Hundred' + (amount % 100 !== 0 ? ' ' + convertAmountToWords(amount % 100) : '');
-        if (amount < 100000) return convertAmountToWords(Math.floor(amount / 1000)) + ' Thousand' + (amount % 1000 !== 0 ? ' ' + convertAmountToWords(amount % 1000) : '');
-        if (amount < 1000000) return convertAmountToWords(Math.floor(amount / 100000)) + ' Lakh' + (amount % 100000 !== 0 ? ' ' + convertAmountToWords(amount % 100000) : '');
+    if (amount === 0) return 'Zero';
+    if (amount < 10) return ones[amount];
+    if (amount < 20) return teens[amount - 10];
+    if (amount < 100) return tens[Math.floor(amount / 10)] + (amount % 10 !== 0 ? ' ' + ones[amount % 10] : '');
+    if (amount < 1000) return ones[Math.floor(amount / 100)] + ' Hundred' + (amount % 100 !== 0 ? ' ' + convertAmountToWords(amount % 100) : '');
+    if (amount < 100000) return convertAmountToWords(Math.floor(amount / 1000)) + ' Thousand' + (amount % 1000 !== 0 ? ' ' + convertAmountToWords(amount % 1000) : '');
+    if (amount < 1000000) return convertAmountToWords(Math.floor(amount / 100000)) + ' Lakh' + (amount % 100000 !== 0 ? ' ' + convertAmountToWords(amount % 100000) : '');
 
-        return 'Rupees Only';
-    };
+    return 'Rupees Only';
+  };
 
-    const printInvoice = () => {
-        const printWindow = window.open('', '_blank');
-        if (!printWindow) return;
+  const printInvoice = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
 
-        const html = `
+    const html = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -331,12 +331,10 @@ export const InvoicePrint: React.FC<InvoicePrintProps> = ({
                   <div class="text-sm accent-text">${convertAmountToWords(Math.floor(invoice.total))} Rupees Only</div>
                 </div>
                 <div>
-                  ${invoice.previousBalance && invoice.previousBalance > 0 ? `
                   <div class="flex justify-between items-center py-2 border-b">
                     <span class="text-sm font-semibold accent-text">Previous Balance</span>
-                    <span class="text-sm font-semibold" style="color: #F97316;">₹ ${invoice.previousBalance.toFixed(0)}</span>
+                    <span class="text-sm font-semibold" style="color: #F97316;">₹ ${(invoice.previousBalance || 0).toFixed(0)}</span>
                   </div>
-                  ` : ''}
                   <div class="flex justify-between items-center py-2 border-b">
                     <span class="text-sm font-semibold accent-text">Current Invoice</span>
                     <span class="text-base font-bold primary-text">₹ ${invoice.total.toFixed(0)}</span>
@@ -349,7 +347,7 @@ export const InvoicePrint: React.FC<InvoicePrintProps> = ({
                   ` : ''}
                   <div class="flex justify-between items-center py-2 border-t-2" style="border-color: #7C3AED;">
                     <span class="text-sm font-bold" style="color: #7C3AED;">${invoice.status === 'paid' ? 'Total Paid' : 'Pending Balance'}</span>
-                    <span class="text-base font-bold" style="color: ${invoice.status === 'paid' ? '#16A34A' : '#DC2626'};">₹ ${((invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0)).toFixed(0)}</span>
+                    <span class="text-base font-bold" style="color: ${invoice.status === 'paid' ? '#16A34A' : '#DC2626'};">₹ ${invoice.status === 'paid' ? invoice.total.toFixed(0) : (invoice.total - (invoice.paidAmount || 0)).toFixed(0)}</span>
                   </div>
                 </div>
               </div>
@@ -383,21 +381,21 @@ export const InvoicePrint: React.FC<InvoicePrintProps> = ({
       </html>
     `;
 
-        printWindow.document.write(html);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => {
-            printWindow.print();
-            printWindow.close();
-        }, 250);
-    };
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+  };
 
-    // Auto-print when component mounts
-    React.useEffect(() => {
-        printInvoice();
-    }, []);
+  // Auto-print when component mounts
+  React.useEffect(() => {
+    printInvoice();
+  }, []);
 
-    return null;
+  return null;
 };
 
 export default InvoicePrint;

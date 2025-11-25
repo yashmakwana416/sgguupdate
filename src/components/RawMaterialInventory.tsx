@@ -184,36 +184,7 @@ const RawMaterialInventory = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6 animate-fade-in">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="glass-card">
-              <CardContent className="p-6">
-                <div className="animate-pulse">
-                  <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                  <div className="h-8 bg-muted rounded w-1/2"></div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        <Card className="glass-card">
-          <CardContent className="p-6">
-            <div className="animate-pulse space-y-4">
-              <div className="h-6 bg-muted rounded w-1/4"></div>
-              <div className="space-y-2">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-4 bg-muted rounded"></div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // Loading spinner removed as per request
 
   if (error) {
     return (
@@ -229,7 +200,7 @@ const RawMaterialInventory = () => {
                 </p>
               </div>
             )}
-            <Button onClick={() => window.location.reload()} variant="outline">
+            <Button onClick={() => refetch()} variant="outline">
               {t('retry')}
             </Button>
           </CardContent>
@@ -275,7 +246,7 @@ const RawMaterialInventory = () => {
             <p className="text-muted-foreground mb-4">
               {t('autoCreateMaterials')}
             </p>
-            <Button onClick={() => window.location.reload()}>
+            <Button onClick={() => refetch()}>
               {t('refreshPage')}
             </Button>
           </CardContent>

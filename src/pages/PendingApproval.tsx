@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Clock, Shield, LogOut } from 'lucide-react';
@@ -12,25 +11,7 @@ export default function PendingApproval() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Check if user now has a role every 5 seconds
-    const interval = setInterval(async () => {
-      if (user) {
-        const { data } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        
-        if (data?.role) {
-          // User has been assigned a role, refresh the page to trigger routing
-          window.location.reload();
-        }
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [user]);
+  // Polling removed as per request
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -61,7 +42,7 @@ export default function PendingApproval() {
               {t('willReceiveAccessOnceApproved')}
             </p>
           </div>
-          
+
           <div className="pt-4 border-t border-glass-border">
             <div className="space-y-2 text-xs text-muted-foreground">
               <p>{t('loggedInAs')} <span className="font-medium text-card-foreground">{user?.email}</span></p>

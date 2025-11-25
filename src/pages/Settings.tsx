@@ -1,14 +1,17 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { Settings as SettingsIcon, Package, BarChart, FileText, Receipt, BarChart3, Truck, Shield, Globe } from 'lucide-react';
+import { Settings as SettingsIcon, Package, BarChart, FileText, Receipt, BarChart3, Truck, Shield, Globe, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { AdminPanelButton } from '@/components/AdminPanelButton';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { BluetoothDevicesSettings } from '@/components/BluetoothDevicesSettings';
 import { DistributorSettings } from '@/components/DistributorSettings';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/hooks/useAuth';
 
 const Settings = () => {
   const { t } = useTranslation();
+  const { signOut } = useAuth();
 
   const navigationOptions = [
     { name: 'dashboard', href: '/', icon: BarChart3, description: 'View business overview and analytics' },
@@ -19,6 +22,10 @@ const Settings = () => {
     { name: 'invoices', href: '/invoices', icon: Receipt, description: 'View and manage all invoices' },
     { name: 'reports', href: '/reports', icon: BarChart3, description: 'Generate business reports' },
   ];
+
+  const handleLogout = async () => {
+    await signOut();
+  };
 
   return (
     <div className="space-y-6">
@@ -110,6 +117,32 @@ const Settings = () => {
 
         {/* Bluetooth Printer Settings */}
         <BluetoothDevicesSettings />
+
+        {/* Account Actions */}
+        <Card className="glass-card border-destructive/20">
+          <CardHeader>
+            <CardTitle className="text-card-foreground flex items-center gap-2">
+              <LogOut className="h-5 w-5 text-destructive" />
+              Account Actions
+            </CardTitle>
+            <p className="text-muted-foreground text-sm">Manage your account and session</p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Sign out of your account to end your current session
+              </p>
+              <Button
+                onClick={handleLogout}
+                variant="destructive"
+                className="w-full sm:w-auto"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

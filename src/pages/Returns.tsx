@@ -25,18 +25,18 @@ const Returns = () => {
   const [partySearchOpen, setPartySearchOpen] = useState(false);
   const [partySearchValue, setPartySearchValue] = useState('');
   const [selectedParty, setSelectedParty] = useState<any>(null);
-  
+
   const { returns, isLoading, createReturn } = useReturns();
   const { parties } = useParties();
   const { products } = useProducts();
-  
+
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<CreateReturnData>();
-  
+
   const selectedProductId = watch('product_id');
   const selectedProduct = products?.find(p => p.id === selectedProductId);
   const quantity = watch('quantity_returned');
 
-  const filteredReturns = returns?.filter(ret => 
+  const filteredReturns = returns?.filter(ret =>
     ret.party_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     ret.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     ret.return_number.toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,7 +44,7 @@ const Returns = () => {
 
   const totalReturns = returns?.length || 0;
   const totalReturnValue = returns?.reduce((sum, ret) => sum + ret.total_amount, 0) || 0;
-  const todayReturns = returns?.filter(ret => 
+  const todayReturns = returns?.filter(ret =>
     new Date(ret.date).toDateString() === new Date().toDateString()
   ).length || 0;
 
@@ -57,7 +57,7 @@ const Returns = () => {
 
   const onSubmit = async (data: CreateReturnData) => {
     if (!selectedProduct) return;
-    
+
     const returnData = {
       ...data,
       product_name: selectedProduct.name,
@@ -65,7 +65,7 @@ const Returns = () => {
       party_name: parties?.find(p => p.id === data.party_id)?.name || '',
       date: data.date || new Date().toISOString().split('T')[0],
     };
-    
+
     try {
       await createReturn.mutateAsync(returnData);
       setIsCreateDialogOpen(false);
@@ -93,7 +93,7 @@ const Returns = () => {
           <h1 className="text-3xl font-bold gradient-text">{t('returnsManagement')}</h1>
           <p className="text-muted-foreground">{t('processAndTrackProductReturns')}</p>
         </div>
-        
+
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl shadow-primary/30 border border-primary/40">
@@ -108,7 +108,7 @@ const Returns = () => {
                 {t('enterReturnDetails')}
               </DialogDescription>
             </DialogHeader>
-            
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="date" className="text-sm font-medium">{t('returnDate')}</Label>
@@ -137,8 +137,8 @@ const Returns = () => {
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0 glass-card" align="start">
                     <Command>
-                      <CommandInput 
-                        placeholder={t('searchParties')} 
+                      <CommandInput
+                        placeholder={t('searchParties')}
                         value={partySearchValue}
                         onValueChange={setPartySearchValue}
                         className="h-9"
@@ -210,7 +210,7 @@ const Returns = () => {
                   min="1"
                   step="0.01"
                   placeholder={t('enterQuantityDots')}
-                  {...register('quantity_returned', { 
+                  {...register('quantity_returned', {
                     required: 'Quantity is required',
                     min: { value: 0.01, message: 'Quantity must be positive' }
                   })}
@@ -244,16 +244,16 @@ const Returns = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={createReturn.isPending}
                   className="glass-button flex-1 h-10 text-sm"
                 >
                   {createReturn.isPending ? t('processing') : t('processReturn')}
                 </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsCreateDialogOpen(false)}
                   className="glass-button-outline h-10 text-sm sm:w-20"
                 >
@@ -326,14 +326,9 @@ const Returns = () => {
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent className="p-3 sm:p-6">
-          {isLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground text-sm sm:text-base">{t('loadingReturns')}</p>
-            </div>
-          ) : filteredReturns?.length === 0 ? (
+          {filteredReturns?.length === 0 ? (
             <div className="text-center py-8">
               <AlertCircle className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="font-semibold text-base sm:text-lg mb-2">{t('noReturnsFound')}</h3>
@@ -403,25 +398,25 @@ const Returns = () => {
                           {t(returnItem.status)}
                         </Badge>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-muted-foreground">{t('date')}:</span>
                           <span className="text-sm">{format(new Date(returnItem.date), 'MMM dd, yyyy')}</span>
                         </div>
-                        
+
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-muted-foreground">{t('product')}:</span>
                           <span className="text-sm text-right max-w-[60%] truncate" title={returnItem.product_name}>
                             {returnItem.product_name}
                           </span>
                         </div>
-                        
+
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-muted-foreground">{t('quantity')}:</span>
                           <span className="text-sm font-medium">{returnItem.quantity_returned}</span>
                         </div>
-                        
+
                         <div className="flex justify-between items-center border-t pt-2">
                           <span className="text-xs text-muted-foreground">{t('value')}:</span>
                           <span className="text-sm font-semibold text-primary">

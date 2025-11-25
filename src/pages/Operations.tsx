@@ -19,16 +19,11 @@ import { format } from 'date-fns';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { BatchSheetGenerator } from '@/components/BatchSheetGenerator';
+
 const Operations = () => {
-  const {
-    t
-  } = useTranslation();
-  const {
-    toast
-  } = useToast();
-  const {
-    isSuperAdmin
-  } = useUserRole();
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const { isSuperAdmin } = useUserRole();
 
   // Dialog States
   const [showBatchDialog, setShowBatchDialog] = useState(false);
@@ -62,17 +57,16 @@ const Operations = () => {
     data: groupedMaterials,
     isLoading: materialsLoading
   } = useGroupedRawMaterials();
+
   useEffect(() => {
     fetchBatches();
     fetchOrderLogs();
   }, []);
+
   const fetchBatches = async () => {
     try {
       setIsLoadingBatches(true);
-      const {
-        data,
-        error
-      } = await supabase.from('batches').select(`
+      const { data, error } = await supabase.from('batches').select(`
           *,
           batch_items (
             id,
@@ -84,9 +78,7 @@ const Operations = () => {
               display_name
             )
           )
-        `).order('created_at', {
-        ascending: false
-      });
+        `).order('created_at', { ascending: false });
       if (error) throw error;
       setBatches(data || []);
     } catch (error) {
@@ -100,13 +92,11 @@ const Operations = () => {
       setIsLoadingBatches(false);
     }
   };
+
   const fetchOrderLogs = async () => {
     try {
       setIsLoadingLogs(true);
-      const {
-        data,
-        error
-      } = await supabase.from('batch_orders_log' as any).select('*').order('created_at', {
+      const { data, error } = await supabase.from('batch_orders_log' as any).select('*').order('created_at', {
         ascending: false
       }).limit(50); // Limit to last 50 orders for performance
 
@@ -118,6 +108,7 @@ const Operations = () => {
       setIsLoadingLogs(false);
     }
   };
+
   const handleCheckboxChange = (materialId: string, checked: boolean) => {
     setSelectedMaterials(prev => ({
       ...prev,
@@ -129,6 +120,7 @@ const Operations = () => {
       }
     }));
   };
+
   const handleQuantityChange = (materialId: string, field: 'kg' | 'grams', value: string) => {
     setSelectedMaterials(prev => ({
       ...prev,
@@ -140,6 +132,7 @@ const Operations = () => {
       }
     }));
   };
+
   const resetForm = () => {
     setBatchName('');
     setBatchNumber('');
@@ -147,10 +140,12 @@ const Operations = () => {
     setSelectedMaterials({});
     setEditingBatchId(null);
   };
+
   const handleDialogClose = () => {
     setShowBatchDialog(false);
     resetForm();
   };
+
   const handleEditBatch = (batch: any) => {
     setEditingBatchId(batch.id);
     setBatchName(batch.batch_name);
@@ -177,16 +172,16 @@ const Operations = () => {
     setSelectedMaterials(materialsMap);
     setShowBatchDialog(true);
   };
+
   const handleDeleteClick = (batch: any) => {
     setSelectedBatch(batch);
     setShowDeleteDialog(true);
   };
+
   const confirmDelete = async () => {
     if (!selectedBatch) return;
     try {
-      const {
-        error
-      } = await supabase.from('batches').delete().eq('id', selectedBatch.id);
+      const { error } = await supabase.from('batches').delete().eq('id', selectedBatch.id);
       if (error) throw error;
       toast({
         title: "Success",
@@ -205,6 +200,7 @@ const Operations = () => {
       setSelectedBatch(null);
     }
   };
+
   const handleSaveBatch = async () => {
     if (!batchName.trim()) {
       toast({
@@ -232,9 +228,7 @@ const Operations = () => {
       let batchId = editingBatchId;
       if (editingBatchId) {
         // Update existing batch
-        const {
-          error: updateError
-        } = await supabase.from('batches').update({
+        const { error: updateError } = await supabase.from('batches').update({
           batch_name: batchName,
           batch_number: batchNumber || null,
           batch_details: batchDetails,
@@ -243,16 +237,11 @@ const Operations = () => {
         if (updateError) throw updateError;
 
         // Delete existing items to replace with new ones (simpler than diffing)
-        const {
-          error: deleteItemsError
-        } = await supabase.from('batch_items').delete().eq('batch_id', editingBatchId);
+        const { error: deleteItemsError } = await supabase.from('batch_items').delete().eq('batch_id', editingBatchId);
         if (deleteItemsError) throw deleteItemsError;
       } else {
         // Create new batch
-        const {
-          data: batchData,
-          error: batchError
-        } = await supabase.from('batches').insert({
+        const { data: batchData, error: batchError } = await supabase.from('batches').insert({
           batch_name: batchName,
           batch_number: batchNumber || null,
           batch_details: batchDetails
@@ -269,9 +258,7 @@ const Operations = () => {
         quantity_kg: item.quantity_kg,
         quantity_grams: item.quantity_grams
       }));
-      const {
-        error: itemsError
-      } = await supabase.from('batch_items').insert(batchItems);
+      const { error: itemsError } = await supabase.from('batch_items').insert(batchItems);
       if (itemsError) throw itemsError;
       toast({
         title: "Success",
@@ -290,22 +277,21 @@ const Operations = () => {
       setIsSaving(false);
     }
   };
+
   const handleOrderClick = (batch: any) => {
     setSelectedBatch(batch);
     setShowOrderConfirmDialog(true);
   };
+
   const handleViewOrderMaterials = (orderLog: any) => {
     setSelectedOrderLog(orderLog);
     setShowOrderMaterialsDialog(true);
   };
+
   const handleConfirmOrder = async () => {
     if (!selectedBatch) return;
     try {
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
       // Create snapshot of batch items with material details
       const batchItemsSnapshot = selectedBatch.batch_items?.map((item: any) => ({
@@ -316,10 +302,7 @@ const Operations = () => {
       })) || [];
 
       // Call the database function to log order and deduct inventory atomically
-      const {
-        data,
-        error
-      } = (await supabase.rpc('deduct_inventory_for_batch_order' as any, {
+      const { data, error } = (await supabase.rpc('deduct_inventory_for_batch_order' as any, {
         p_batch_id: selectedBatch.id,
         p_batch_name: selectedBatch.batch_name,
         p_batch_number: selectedBatch.batch_number || selectedBatch.id.substring(0, 8).toUpperCase(),
@@ -352,7 +335,9 @@ const Operations = () => {
       setSelectedBatch(null);
     }
   };
-  return <div className="space-y-6 p-6">
+
+  return (
+    <div className="space-y-6 p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Operations</h1>
@@ -360,24 +345,26 @@ const Operations = () => {
             Manage production batches and raw material usage
           </p>
         </div>
-        {isSuperAdmin() && <Button onClick={() => setShowBatchDialog(true)} size="lg" className="gap-2">
+        {isSuperAdmin() && (
+          <Button onClick={() => setShowBatchDialog(true)} size="lg" className="gap-2">
             <Plus className="h-5 w-5" />
             Add Batch
-          </Button>}
+          </Button>
+        )}
       </div>
-
-      {isSuperAdmin()}
 
       <div className="space-y-4">
         <h2 className="text-xl font-semibold tracking-tight">Recent Batches</h2>
-        {isLoadingBatches ? <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div> : batches.length === 0 ? <div className="text-center py-12 border rounded-lg bg-muted/10">
+        {batches.length === 0 ? (
+          <div className="text-center py-12 border rounded-lg bg-muted/10">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
             <h3 className="text-lg font-medium text-foreground">No batches found</h3>
             <p className="text-muted-foreground">Create your first production batch to get started.</p>
-          </div> : <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {batches.map(batch => <Card key={batch.id} className="hover:shadow-md transition-shadow group relative">
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {batches.map(batch => (
+              <Card key={batch.id} className="hover:shadow-md transition-shadow group relative">
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <div>
@@ -395,7 +382,8 @@ const Operations = () => {
                         <ClipboardList className="h-4 w-4" />
                       </Button>
 
-                      {isSuperAdmin() && <DropdownMenu>
+                      {isSuperAdmin() && (
+                        <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                               <MoreHorizontal className="h-4 w-4" />
@@ -411,7 +399,8 @@ const Operations = () => {
                               <Trash2 className="mr-2 h-4 w-4" /> Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
-                        </DropdownMenu>}
+                        </DropdownMenu>
+                      )}
                     </div>
                   </div>
                 </CardHeader>
@@ -430,8 +419,10 @@ const Operations = () => {
                     </BatchSheetGenerator>
                   </div>
                 </CardContent>
-              </Card>)}
-          </div>}
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Recent Batch Orders Log */}
@@ -440,11 +431,12 @@ const Operations = () => {
           <h2 className="text-xl font-semibold tracking-tight">Recent Batch Orders</h2>
         </div>
 
-        {isLoadingLogs ? <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div> : orderLogs.length === 0 ? <div className="text-center py-8 border rounded-lg bg-muted/5">
+        {orderLogs.length === 0 ? (
+          <div className="text-center py-8 border rounded-lg bg-muted/5">
             <p className="text-muted-foreground">No orders logged yet.</p>
-          </div> : <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
+          </div>
+        ) : (
+          <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
@@ -456,7 +448,8 @@ const Operations = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orderLogs.map(log => <TableRow key={log.id}>
+                {orderLogs.map(log => (
+                  <TableRow key={log.id}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         <Clock className="h-3 w-3 text-muted-foreground" />
@@ -482,10 +475,12 @@ const Operations = () => {
                         <Eye className="h-4 w-4" />
                       </Button>
                     </TableCell>
-                  </TableRow>)}
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
-          </div>}
+          </div>
+        )}
       </div>
 
       {/* Create/Edit Batch Dialog */}
@@ -516,52 +511,56 @@ const Operations = () => {
 
             <div className="space-y-4">
               <Label className="text-base font-semibold">Raw Materials</Label>
-              {materialsLoading ? <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                </div> : <div className="space-y-6 border rounded-lg p-4">
-                  {groupedMaterials?.map(group => <div key={group.material_id} className="space-y-3">
-                      <h3 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
-                        <FileText className="h-4 w-4" />
-                        {group.base_material_name}
-                      </h3>
-                      <div className="grid gap-3 pl-2">
-                        {group.variants.map(variant => {
-                    const state = selectedMaterials[variant.id] || {
-                      checked: false,
-                      kg: '',
-                      grams: ''
-                    };
-                    return <div key={variant.id} className={`flex flex-col sm:flex-row sm:items-center gap-4 p-3 border rounded-lg transition-colors ${state.checked ? 'bg-primary/5 border-primary/30' : 'bg-card'}`}>
-                              <div className="flex items-center gap-3 flex-1">
-                                <Checkbox id={`material-${variant.id}`} checked={state.checked} onCheckedChange={checked => handleCheckboxChange(variant.id, checked as boolean)} />
-                                <div className="grid gap-1">
-                                  <Label htmlFor={`material-${variant.id}`} className="font-medium cursor-pointer">
-                                    {variant.display_name || variant.name}
-                                    {variant.variant_name && <span className="ml-2 text-sm text-muted-foreground">
-                                        ({variant.variant_type}: {variant.variant_name})
-                                      </span>}
-                                  </Label>
-                                  <p className="text-xs text-muted-foreground">
-                                    Stock: {variant.current_stock_kg} kg {variant.current_stock_grams}g
-                                  </p>
-                                </div>
+              <div className="space-y-6 border rounded-lg p-4">
+                {groupedMaterials?.map(group => (
+                  <div key={group.material_id} className="space-y-3">
+                    <h3 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      {group.base_material_name}
+                    </h3>
+                    <div className="grid gap-3 pl-2">
+                      {group.variants.map(variant => {
+                        const state = selectedMaterials[variant.id] || {
+                          checked: false,
+                          kg: '',
+                          grams: ''
+                        };
+                        return (
+                          <div key={variant.id} className={`flex flex-col sm:flex-row sm:items-center gap-4 p-3 border rounded-lg transition-colors ${state.checked ? 'bg-primary/5 border-primary/30' : 'bg-card'}`}>
+                            <div className="flex items-center gap-3 flex-1">
+                              <Checkbox id={`material-${variant.id}`} checked={state.checked} onCheckedChange={checked => handleCheckboxChange(variant.id, checked as boolean)} />
+                              <div className="grid gap-1">
+                                <Label htmlFor={`material-${variant.id}`} className="font-medium cursor-pointer">
+                                  {variant.display_name || variant.name}
+                                  {variant.variant_name && (
+                                    <span className="ml-2 text-sm text-muted-foreground">
+                                      ({variant.variant_type}: {variant.variant_name})
+                                    </span>
+                                  )}
+                                </Label>
+                                <p className="text-xs text-muted-foreground">
+                                  Stock: {variant.current_stock_kg} kg {variant.current_stock_grams}g
+                                </p>
                               </div>
+                            </div>
 
-                              <div className="flex items-center gap-2 w-full sm:w-auto">
-                                <div className="grid gap-1 flex-1 sm:w-24">
-                                  <Label htmlFor={`kg-${variant.id}`} className="text-xs text-muted-foreground">Kg</Label>
-                                  <Input id={`kg-${variant.id}`} type="number" placeholder="0" value={state.kg} onChange={e => handleQuantityChange(variant.id, 'kg', e.target.value)} min="0" className="h-9" />
-                                </div>
-                                <div className="grid gap-1 flex-1 sm:w-24">
-                                  <Label htmlFor={`gms-${variant.id}`} className="text-xs text-muted-foreground">Gms</Label>
-                                  <Input id={`gms-${variant.id}`} type="number" placeholder="0" value={state.grams} onChange={e => handleQuantityChange(variant.id, 'grams', e.target.value)} min="0" max="999" className="h-9" />
-                                </div>
+                            <div className="flex items-center gap-2 w-full sm:w-auto">
+                              <div className="grid gap-1 flex-1 sm:w-24">
+                                <Label htmlFor={`kg-${variant.id}`} className="text-xs text-muted-foreground">Kg</Label>
+                                <Input id={`kg-${variant.id}`} type="number" placeholder="0" value={state.kg} onChange={e => handleQuantityChange(variant.id, 'kg', e.target.value)} min="0" className="h-9" />
                               </div>
-                            </div>;
-                  })}
-                      </div>
-                    </div>)}
-                </div>}
+                              <div className="grid gap-1 flex-1 sm:w-24">
+                                <Label htmlFor={`gms-${variant.id}`} className="text-xs text-muted-foreground">Gms</Label>
+                                <Input id={`gms-${variant.id}`} type="number" placeholder="0" value={state.grams} onChange={e => handleQuantityChange(variant.id, 'grams', e.target.value)} min="0" max="999" className="h-9" />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -624,7 +623,8 @@ const Operations = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {selectedBatch?.batch_items?.map((item: any) => <TableRow key={item.id}>
+                    {selectedBatch?.batch_items?.map((item: any) => (
+                      <TableRow key={item.id}>
                         <TableCell className="font-medium">
                           {item.raw_materials?.display_name || item.raw_materials?.name || 'Unknown Material'}
                         </TableCell>
@@ -640,12 +640,15 @@ const Operations = () => {
                             </span>
                           </div>
                         </TableCell>
-                      </TableRow>)}
-                    {(!selectedBatch?.batch_items || selectedBatch.batch_items.length === 0) && <TableRow>
+                      </TableRow>
+                    ))}
+                    {(!selectedBatch?.batch_items || selectedBatch.batch_items.length === 0) && (
+                      <TableRow>
                         <TableCell colSpan={2} className="text-center py-4 text-muted-foreground">
                           No raw materials recorded for this batch.
                         </TableCell>
-                      </TableRow>}
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </div>
@@ -737,7 +740,8 @@ const Operations = () => {
           </DialogHeader>
 
           <div className="py-4">
-            {selectedOrderLog?.batch_items_snapshot && selectedOrderLog.batch_items_snapshot.length > 0 ? <div className="border rounded-lg  overflow-hidden">
+            {selectedOrderLog?.batch_items_snapshot && selectedOrderLog.batch_items_snapshot.length > 0 ? (
+              <div className="border rounded-lg  overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">
@@ -746,7 +750,8 @@ const Operations = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {selectedOrderLog.batch_items_snapshot.map((item: any, index: number) => <TableRow key={index}>
+                    {selectedOrderLog.batch_items_snapshot.map((item: any, index: number) => (
+                      <TableRow key={index}>
                         <TableCell className="font-medium">
                           {item.material_name || 'Unknown Material'}
                         </TableCell>
@@ -762,13 +767,17 @@ const Operations = () => {
                             </span>
                           </div>
                         </TableCell>
-                      </TableRow>)}
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
-              </div> : <div className="text-center py-8 border rounded-lg bg-muted/5">
+              </div>
+            ) : (
+              <div className="text-center py-8 border rounded-lg bg-muted/5">
                 <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground">No materials data available</p>
-              </div>}
+              </div>
+            )}
           </div>
 
           <DialogFooter>
@@ -776,6 +785,8 @@ const Operations = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>;
+    </div>
+  );
 };
+
 export default Operations;

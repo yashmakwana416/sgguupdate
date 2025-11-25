@@ -3,12 +3,12 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Bluetooth, 
-  CheckCircle2, 
-  XCircle, 
-  Loader2, 
-  Printer, 
+import {
+  Bluetooth,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  Printer,
   WifiOff,
   Wifi,
   Star,
@@ -117,7 +117,7 @@ export const BluetoothDevicesSettings = () => {
             <h3 className="text-sm font-semibold text-card-foreground">
               {t('currentConnection')}
             </h3>
-            
+
             <div className="flex items-start gap-3 p-4 bg-accent/20 rounded-lg border border-border">
               {isConnected && currentPrinter ? (
                 <>
@@ -195,7 +195,7 @@ export const BluetoothDevicesSettings = () => {
             </div>
           </div>
 
-          {/* Saved Printers */}
+          {/* Saved Printers section hidden as per request
           {savedPrinters.length > 0 && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -284,6 +284,7 @@ export const BluetoothDevicesSettings = () => {
               )}
             </div>
           )}
+          */}
 
           {/* Help Text */}
           <Alert>

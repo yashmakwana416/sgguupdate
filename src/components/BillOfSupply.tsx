@@ -144,7 +144,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
               <th className="px-0.5 py-0.5 text-right text-[10px] font-bold text-purple-900 uppercase print:text-[9px]">RATE</th>
               <th className="px-0.5 py-0.5 text-right text-[10px] font-bold text-purple-900 uppercase print:text-[9px]">AMOUNT</th>
             </tr>
-          </thead >
+          </thead>
           <tbody className="bg-white">
             {invoice.items.map((item, index) => (
               <tr key={index} className="border-b border-gray-100">
@@ -217,11 +217,11 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
               </tr>
             )}
           </tbody>
-        </table >
-      </div >
+        </table>
+      </div>
 
       {/* Totals Section - Minimal */}
-      < div className="bg-white border-t border-purple-100" >
+      <div className="bg-white border-t border-purple-100">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1 p-1 print:p-0.5">
 
           {/* Left side - Amount in words and Payment Mode */}
@@ -232,7 +232,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
                 {convertAmountToWords(Math.floor(invoice.total))} Rupees
               </div>
             </div>
-            
+
             {/* Payment Mode Display */}
             <div className="pt-1 border-t border-gray-200">
               <div className="text-[10px] font-semibold text-purple-900 print:text-[9px]">Payment Mode</div>
@@ -256,12 +256,10 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
 
           {/* Right side - Payment Summary */}
           <div className="space-y-1">
-            {invoice.previousBalance && invoice.previousBalance > 0 && (
-              <div className="flex justify-between items-center border-b border-gray-200 py-0.5">
-                <span className="text-gray-700 font-medium text-[10px] print:text-[9px]">Previous Balance</span>
-                <span className="font-semibold text-orange-600 text-[10px] print:text-[9px]">₹ {invoice.previousBalance.toFixed(0)}</span>
-              </div>
-            )}
+            <div className="flex justify-between items-center border-b border-gray-200 py-0.5">
+              <span className="text-gray-700 font-medium text-[10px] print:text-[9px]">Previous Balance</span>
+              <span className="font-semibold text-orange-600 text-[10px] print:text-[9px]">₹ {(invoice.previousBalance || 0).toFixed(0)}</span>
+            </div>
             <div className="flex justify-between items-center border-b border-gray-200 py-0.5">
               <span className="text-gray-700 font-medium text-[10px] print:text-[9px]">Current Invoice</span>
               <span className="font-bold text-gray-900 text-[11px] print:text-[10px]">₹ {invoice.total.toFixed(0)}</span>
@@ -277,15 +275,15 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
                 {invoice.status === 'paid' ? 'Total Paid' : 'Pending Balance'}
               </span>
               <span className={`font-bold text-[12px] print:text-[11px] ${invoice.status === 'paid' ? 'text-green-600' : 'text-red-600'}`}>
-                ₹ {((invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0)).toFixed(0)}
+                ₹ {invoice.status === 'paid' ? invoice.total.toFixed(0) : (invoice.total - (invoice.paidAmount || 0)).toFixed(0)}
               </span>
             </div>
           </div>
         </div>
-      </div >
+      </div>
 
       {/* Footer with Signature - Minimal */}
-      < div className="bg-purple-100 border-t border-purple-200 p-1 text-center print:p-0.5" >
+      <div className="bg-purple-100 border-t border-purple-200 p-1 text-center print:p-0.5">
         <div className="bg-purple-200 rounded p-0.5 inline-block">
           <div className="text-[10px] font-bold text-purple-900 print:text-[9px]">
             {companyDetails.tagline}
@@ -297,7 +295,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
         <div className="text-[9px] text-purple-700 print:text-[8px]">
           Authorised Signature for {companyDetails.name}
         </div>
-      </div >
+      </div>
 
       {/* Notes Section - Minimal */}
       {
@@ -310,7 +308,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
         )
       }
 
-    </div >
+    </div>
   );
 };
 

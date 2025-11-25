@@ -131,12 +131,12 @@ export default function DistributorsData() {
 
   // Apply search and status filters
   const filteredInvoices = distributorInvoices.filter((invoice: any) => {
-    const matchesSearch = 
+    const matchesSearch =
       (invoice.invoice_number?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (invoice.customer_name?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -150,7 +150,7 @@ export default function DistributorsData() {
     try {
       // Prepare data for Excel
       const worksheetData: any[] = [];
-      
+
       // Add distributor header
       worksheetData.push(['Distributor Data Export']);
       worksheetData.push(['Generated on:', format(new Date(), 'yyyy-MM-dd HH:mm:ss')]);
@@ -158,7 +158,7 @@ export default function DistributorsData() {
       worksheetData.push(['Distributor Name:', getDistributorName(selectedDistributor)]);
       worksheetData.push(['Distributor Email:', selectedDistributor.email]);
       worksheetData.push([]);
-      
+
       // Add summary section
       worksheetData.push(['Summary']);
       worksheetData.push(['Total Invoices:', filteredInvoices.length]);
@@ -167,7 +167,7 @@ export default function DistributorsData() {
       worksheetData.push(['Draft Invoices:', filteredInvoices.filter((inv: any) => inv.status === 'draft').length]);
       worksheetData.push(['Overdue Invoices:', filteredInvoices.filter((inv: any) => inv.status === 'overdue').length]);
       worksheetData.push([]);
-      
+
       // Add invoice headers
       worksheetData.push([
         'Invoice Number',
@@ -182,7 +182,7 @@ export default function DistributorsData() {
         'Total',
         'Notes'
       ]);
-      
+
       // Add invoice data
       filteredInvoices.forEach((invoice: any) => {
         worksheetData.push([
@@ -199,17 +199,17 @@ export default function DistributorsData() {
           invoice.notes || ''
         ]);
       });
-      
+
       worksheetData.push([]);
       worksheetData.push([]);
-      
+
       // Add detailed items section
       worksheetData.push(['Invoice Items Details']);
       filteredInvoices.forEach((invoice: any) => {
         worksheetData.push([]);
         worksheetData.push([`Invoice: ${invoice.invoice_number} - ${invoice.customer_name}`]);
         worksheetData.push(['Product Name', 'Quantity', 'Price', 'MRP', 'Tax Rate', 'Amount']);
-        
+
         if (invoice.items && invoice.items.length > 0) {
           invoice.items.forEach((item: any) => {
             worksheetData.push([
@@ -225,11 +225,11 @@ export default function DistributorsData() {
           worksheetData.push(['No items']);
         }
       });
-      
+
       // Create workbook and worksheet
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.aoa_to_sheet(worksheetData);
-      
+
       // Set column widths
       ws['!cols'] = [
         { wch: 20 }, // Invoice Number
@@ -244,13 +244,13 @@ export default function DistributorsData() {
         { wch: 12 }, // Total
         { wch: 30 }  // Notes
       ];
-      
+
       XLSX.utils.book_append_sheet(wb, ws, 'Distributor Data');
-      
+
       // Generate filename and download
       const filename = `${selectedDistributor.email.split('@')[0]}_data_${format(new Date(), 'yyyy-MM-dd_HHmmss')}.xlsx`;
       XLSX.writeFile(wb, filename);
-      
+
       toast.success('Data downloaded successfully!');
     } catch (error) {
       console.error('Error downloading data:', error);
@@ -280,14 +280,6 @@ export default function DistributorsData() {
     const name = `${distributor.first_name || ''} ${distributor.last_name || ''}`.trim();
     return name || distributor.email;
   };
-
-  if (distributorsLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   // Show distributor list
   if (!selectedDistributor) {
@@ -353,186 +345,186 @@ export default function DistributorsData() {
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
-    {/* Header */}
-    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-      <Button 
-        variant="outline" 
-        size="sm" 
-        onClick={() => setSelectedDistributor(null)}
-        className="w-fit touch-manipulation"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        {t('backToDistributors')}
-      </Button>
-      <div className="flex-1 min-w-0">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground truncate">
-          {getDistributorName(selectedDistributor)} - Invoices
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground truncate">{selectedDistributor.email}</p>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setSelectedDistributor(null)}
+          className="w-fit touch-manipulation"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          {t('backToDistributors')}
+        </Button>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground truncate">
+            {getDistributorName(selectedDistributor)} - Invoices
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground truncate">{selectedDistributor.email}</p>
+        </div>
       </div>
-    </div>
 
-    {/* Stats Cards */}
-    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <Card className="glass-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium">{t('totalInvoices')}</CardTitle>
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{totalInvoices}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium">{t('totalAmount')}</CardTitle>
+            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">₹{totalAmount.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium">{t('paidInvoices')}</CardTitle>
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{paidInvoices}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium">{t('draftInvoices')}</CardTitle>
+            <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{draftInvoices}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters */}
       <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4">
-          <CardTitle className="text-xs sm:text-sm font-medium">{t('totalInvoices')}</CardTitle>
-          <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent className="p-3 sm:p-4 pt-0">
-          <div className="text-xl sm:text-2xl font-bold">{totalInvoices}</div>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4">
-          <CardTitle className="text-xs sm:text-sm font-medium">{t('totalAmount')}</CardTitle>
-          <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent className="p-3 sm:p-4 pt-0">
-          <div className="text-xl sm:text-2xl font-bold">₹{totalAmount.toLocaleString()}</div>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4">
-          <CardTitle className="text-xs sm:text-sm font-medium">{t('paidInvoices')}</CardTitle>
-          <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent className="p-3 sm:p-4 pt-0">
-          <div className="text-xl sm:text-2xl font-bold">{paidInvoices}</div>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-4">
-          <CardTitle className="text-xs sm:text-sm font-medium">{t('draftInvoices')}</CardTitle>
-          <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent className="p-3 sm:p-4 pt-0">
-          <div className="text-xl sm:text-2xl font-bold">{draftInvoices}</div>
-        </CardContent>
-      </Card>
-    </div>
-
-    {/* Filters */}
-    <Card className="glass-card">
-      <CardHeader className="p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg sm:text-xl">{t('invoicesText')}</CardTitle>
-            <CardDescription className="text-xs sm:text-sm truncate">{t('allInvoicesCreatedBy')} {getDistributorName(selectedDistributor)}</CardDescription>
-          </div>
-          <Button 
-            onClick={downloadInvoiceData} 
-            disabled={filteredInvoices.length === 0}
-            className="flex items-center gap-2 w-full sm:w-auto touch-manipulation"
-            size="sm"
-          >
-            <Download className="h-4 w-4" />
-            <span className="text-sm">{t('downloadData')}</span>
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={t('searchInvoices')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 h-10"
-            />
-          </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-48 h-10">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder={t('filterByStatus')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('allStatus')}</SelectItem>
-              <SelectItem value="draft">{t('draft')}</SelectItem>
-              <SelectItem value="paid">{t('paid')}</SelectItem>
-              <SelectItem value="overdue">{t('overdue')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Mobile Card View */}
-        <div className="block sm:hidden space-y-3">
-          {filteredInvoices.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8 text-sm">
-              {t('noInvoicesFound')}
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-lg sm:text-xl">{t('invoicesText')}</CardTitle>
+              <CardDescription className="text-xs sm:text-sm truncate">{t('allInvoicesCreatedBy')} {getDistributorName(selectedDistributor)}</CardDescription>
             </div>
-          ) : (
-            filteredInvoices.map((invoice: any) => (
-              <Card key={invoice.id} className="glass-card p-4">
-                <div className="space-y-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm truncate">{invoice.invoice_number}</p>
-                      <p className="text-xs text-muted-foreground truncate">{invoice.customer_name}</p>
-                    </div>
-                    <Badge className={`${getStatusColor(invoice.status)} text-white text-xs shrink-0`}>
-                      {getTranslatedStatus(invoice.status)}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">
-                      {format(new Date(invoice.date), 'MMM dd, yyyy')}
-                    </span>
-                    <span className="font-semibold text-sm">₹{invoice.total?.toLocaleString()}</span>
-                  </div>
-                </div>
-              </Card>
-            ))
-          )}
-        </div>
+            <Button
+              onClick={downloadInvoiceData}
+              disabled={filteredInvoices.length === 0}
+              className="flex items-center gap-2 w-full sm:w-auto touch-manipulation"
+              size="sm"
+            >
+              <Download className="h-4 w-4" />
+              <span className="text-sm">{t('downloadData')}</span>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={t('searchInvoices')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 h-10"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-48 h-10">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder={t('filterByStatus')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('allStatus')}</SelectItem>
+                <SelectItem value="draft">{t('draft')}</SelectItem>
+                <SelectItem value="paid">{t('paid')}</SelectItem>
+                <SelectItem value="overdue">{t('overdue')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Desktop Table View */}
-        <div className="hidden sm:block rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-xs sm:text-sm">{t('invoiceNumber')}</TableHead>
-                <TableHead className="text-xs sm:text-sm">{t('customer')}</TableHead>
-                <TableHead className="text-xs sm:text-sm">{t('date')}</TableHead>
-                <TableHead className="text-xs sm:text-sm">{t('status')}</TableHead>
-                <TableHead className="text-xs sm:text-sm">{t('amount')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredInvoices.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8 text-sm">
-                    {t('noInvoicesFound')}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredInvoices.map((invoice: any) => (
-                  <TableRow key={invoice.id}>
-                    <TableCell className="font-medium text-xs sm:text-sm">
-                      {invoice.invoice_number}
-                    </TableCell>
-                    <TableCell className="text-xs sm:text-sm">{invoice.customer_name}</TableCell>
-                    <TableCell className="text-xs sm:text-sm">
-                      {format(new Date(invoice.date), 'MMM dd, yyyy')}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={`${getStatusColor(invoice.status)} text-white text-xs`}>
+          {/* Mobile Card View */}
+          <div className="block sm:hidden space-y-3">
+            {filteredInvoices.length === 0 ? (
+              <div className="text-center text-muted-foreground py-8 text-sm">
+                {t('noInvoicesFound')}
+              </div>
+            ) : (
+              filteredInvoices.map((invoice: any) => (
+                <Card key={invoice.id} className="glass-card p-4">
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm truncate">{invoice.invoice_number}</p>
+                        <p className="text-xs text-muted-foreground truncate">{invoice.customer_name}</p>
+                      </div>
+                      <Badge className={`${getStatusColor(invoice.status)} text-white text-xs shrink-0`}>
                         {getTranslatedStatus(invoice.status)}
                       </Badge>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">
+                        {format(new Date(invoice.date), 'MMM dd, yyyy')}
+                      </span>
+                      <span className="font-semibold text-sm">₹{invoice.total?.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </Card>
+              ))
+            )}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden sm:block rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs sm:text-sm">{t('invoiceNumber')}</TableHead>
+                  <TableHead className="text-xs sm:text-sm">{t('customer')}</TableHead>
+                  <TableHead className="text-xs sm:text-sm">{t('date')}</TableHead>
+                  <TableHead className="text-xs sm:text-sm">{t('status')}</TableHead>
+                  <TableHead className="text-xs sm:text-sm">{t('amount')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredInvoices.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8 text-sm">
+                      {t('noInvoicesFound')}
                     </TableCell>
-                    <TableCell className="font-medium text-xs sm:text-sm">₹{invoice.total?.toLocaleString()}</TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-);
+                ) : (
+                  filteredInvoices.map((invoice: any) => (
+                    <TableRow key={invoice.id}>
+                      <TableCell className="font-medium text-xs sm:text-sm">
+                        {invoice.invoice_number}
+                      </TableCell>
+                      <TableCell className="text-xs sm:text-sm">{invoice.customer_name}</TableCell>
+                      <TableCell className="text-xs sm:text-sm">
+                        {format(new Date(invoice.date), 'MMM dd, yyyy')}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`${getStatusColor(invoice.status)} text-white text-xs`}>
+                          {getTranslatedStatus(invoice.status)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-medium text-xs sm:text-sm">₹{invoice.total?.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

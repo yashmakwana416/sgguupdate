@@ -27,7 +27,7 @@ const wrapText = (text: string, maxWidth = 30): string[] => {
   const lines: string[] = [];
   const words = text.split(' ');
   let currentLine = '';
-  
+
   words.forEach(word => {
     const testLine = currentLine ? `${currentLine} ${word}` : word;
     if ([...testLine].length <= maxWidth) {
@@ -37,7 +37,7 @@ const wrapText = (text: string, maxWidth = 30): string[] => {
       currentLine = word;
     }
   });
-  
+
   if (currentLine) lines.push(currentLine);
   return lines;
 };
@@ -83,7 +83,7 @@ export const generateThermalReceipt = (invoice: SalesInvoice, partyName?: string
 
   // Company Info - Gujarati text supported with proper spacing
   lines.push(centerText('શ્રી ગણેશ ગૃહ ઉદ્યોગ', width));
-  
+
   // Address lines split for better alignment
   const companyAddressParts = [
     '150Ft RING ROAD',
@@ -148,7 +148,7 @@ export const generateThermalReceipt = (invoice: SalesInvoice, partyName?: string
     productLines.forEach((line, idx) => {
       lines.push(idx === 0 ? line : `   ${line}`);
     });
-    
+
     // Quantity x Price and Amount on same line
     const qtyPrice = `${item.quantity}x₹${item.price.toFixed(0)}`;
     const itemTotal = `₹${item.amount.toFixed(0)}`;
@@ -178,23 +178,21 @@ export const generateThermalReceipt = (invoice: SalesInvoice, partyName?: string
   }
 
   lines.push(separator('=', width));
-  
+
   // Payment Summary Section
-  if (invoice.previousBalance && invoice.previousBalance > 0) {
-    lines.push(formatRow('Previous Balance:', `₹${invoice.previousBalance.toFixed(0)}`, width));
-  }
+  lines.push(formatRow('Previous Balance:', `₹${(invoice.previousBalance || 0).toFixed(0)}`, width));
   lines.push(formatRow('Current Invoice:', `₹${invoice.total.toFixed(0)}`, width));
-  
+
   if (invoice.paidAmount && invoice.paidAmount > 0) {
     lines.push(formatRow('Paid (-)', `-₹${invoice.paidAmount.toFixed(0)}`, width));
     lines.push(separator('=', width));
-    lines.push(formatRow('TOTAL PAID:', `₹${invoice.paidAmount.toFixed(0)}`, width));
+    lines.push(formatRow('TOTAL PAID:', `₹${invoice.total.toFixed(0)}`, width));
   } else {
-    const pendingBalance = (invoice.previousBalance || 0) + invoice.total;
+    const pendingBalance = invoice.total - (invoice.paidAmount || 0);
     lines.push(separator('=', width));
     lines.push(formatRow('PENDING BALANCE:', `₹${pendingBalance.toFixed(0)}`, width));
   }
-  
+
   lines.push(separator('=', width));
   lines.push(separator('-', width));
 
