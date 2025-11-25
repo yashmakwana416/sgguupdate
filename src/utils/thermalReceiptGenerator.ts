@@ -187,12 +187,14 @@ export const generateThermalReceipt = (invoice: SalesInvoice, partyName?: string
   
   if (invoice.paidAmount && invoice.paidAmount > 0) {
     lines.push(formatRow('Paid (-)', `-₹${invoice.paidAmount.toFixed(0)}`, width));
+    lines.push(separator('=', width));
+    lines.push(formatRow('TOTAL PAID:', `₹${invoice.paidAmount.toFixed(0)}`, width));
+  } else {
+    const pendingBalance = (invoice.previousBalance || 0) + invoice.total;
+    lines.push(separator('=', width));
+    lines.push(formatRow('PENDING BALANCE:', `₹${pendingBalance.toFixed(0)}`, width));
   }
   
-  lines.push(separator('=', width));
-  
-  const pendingBalance = (invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0);
-  lines.push(formatRow('PENDING BALANCE:', `₹${pendingBalance.toFixed(0)}`, width));
   lines.push(separator('=', width));
   lines.push(separator('-', width));
 

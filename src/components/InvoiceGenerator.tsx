@@ -299,11 +299,16 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
                     <span class="text-sm font-semibold accent-text">Paid (-)</span>
                     <span class="text-sm font-bold" style="color: #16A34A;">- ₹ ${invoice.paidAmount.toFixed(0)}</span>
                   </div>
-                  ` : ''}
-                  <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 2px solid #D1D5DB; background-color: #F5F3FF; margin: 8px -12px 0; padding-left: 12px; padding-right: 12px;">
-                    <span class="text-base font-bold primary-text">PENDING BALANCE</span>
-                    <span class="text-base font-bold" style="color: #DC2626;">₹ ${((invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0)).toFixed(0)}</span>
+                  <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 2px solid #D1D5DB; background-color: #ECFDF5; margin: 8px -12px 0; padding-left: 12px; padding-right: 12px;">
+                    <span class="text-base font-bold" style="color: #047857;">TOTAL PAID</span>
+                    <span class="text-base font-bold" style="color: #16A34A;">₹ ${invoice.paidAmount.toFixed(0)}</span>
                   </div>
+                  ` : `
+                  <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 2px solid #D1D5DB; background-color: #FEF3C7; margin: 8px -12px 0; padding-left: 12px; padding-right: 12px;">
+                    <span class="text-base font-bold" style="color: #92400E;">PENDING BALANCE</span>
+                    <span class="text-base font-bold" style="color: #D97706;">₹ ${((invoice.previousBalance || 0) + invoice.total).toFixed(0)}</span>
+                  </div>
+                  `}
                 </div>
               </div>
              </div>
