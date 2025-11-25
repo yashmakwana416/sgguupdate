@@ -284,9 +284,25 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
                   ` : ''}
                 </div>
                 <div>
+                  ${invoice.previousBalance && invoice.previousBalance > 0 ? `
                   <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #D1D5DB;">
-                    <span class="text-sm font-semibold accent-text">Total Amount</span>
+                    <span class="text-sm font-semibold accent-text">Previous Balance</span>
+                    <span class="text-sm font-bold primary-text">₹ ${invoice.previousBalance.toFixed(0)}</span>
+                  </div>
+                  ` : ''}
+                  <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #D1D5DB;">
+                    <span class="text-sm font-semibold accent-text">Current Invoice</span>
                     <span class="text-sm font-bold primary-text">₹ ${invoice.total.toFixed(0)}</span>
+                  </div>
+                  ${invoice.paidAmount && invoice.paidAmount > 0 ? `
+                  <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #D1D5DB;">
+                    <span class="text-sm font-semibold accent-text">Paid Amount (-)</span>
+                    <span class="text-sm font-bold" style="color: #16A34A;">₹ ${invoice.paidAmount.toFixed(0)}</span>
+                  </div>
+                  ` : ''}
+                  <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 2px solid #D1D5DB; background-color: #F5F3FF; margin: 8px -12px 0; padding-left: 12px; padding-right: 12px;">
+                    <span class="text-base font-bold primary-text">${invoice.status === 'paid' ? 'TOTAL PAID' : 'PENDING BALANCE'}</span>
+                    <span class="text-base font-bold" style="color: ${invoice.status === 'paid' ? '#16A34A' : '#DC2626'};">₹ ${((invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0)).toFixed(0)}</span>
                   </div>
                 </div>
               </div>
