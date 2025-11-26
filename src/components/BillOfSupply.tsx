@@ -275,7 +275,7 @@ export const BillOfSupply: React.FC<BillOfSupplyProps> = ({
                 {invoice.status === 'paid' ? 'Total Paid' : 'Pending Balance'}
               </span>
               <span className={`font-bold text-[12px] print:text-[11px] ${invoice.status === 'paid' ? 'text-green-600' : 'text-red-600'}`}>
-                ₹ {invoice.status === 'paid' ? invoice.total.toFixed(0) : (invoice.total - (invoice.paidAmount || 0)).toFixed(0)}
+                ₹ {invoice.status === 'paid' ? invoice.total.toFixed(0) : ((invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0)).toFixed(0)}
               </span>
             </div>
           </div>

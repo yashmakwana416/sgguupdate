@@ -188,7 +188,7 @@ export const generateThermalReceipt = (invoice: SalesInvoice, partyName?: string
     lines.push(separator('=', width));
     lines.push(formatRow('TOTAL PAID:', `₹${invoice.total.toFixed(0)}`, width));
   } else {
-    const pendingBalance = invoice.total - (invoice.paidAmount || 0);
+    const pendingBalance = (invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0);
     lines.push(separator('=', width));
     lines.push(formatRow('PENDING BALANCE:', `₹${pendingBalance.toFixed(0)}`, width));
   }
