@@ -346,8 +346,8 @@ export const InvoicePrint: React.FC<InvoicePrintProps> = ({
                   </div>
                   ` : ''}
                   <div class="flex justify-between items-center py-2 border-t-2" style="border-color: #7C3AED;">
-                    <span class="text-sm font-bold" style="color: #7C3AED;">${invoice.status === 'paid' ? 'Total Paid' : 'Total Pending Balance'}</span>
-                    <span class="text-base font-bold" style="color: ${invoice.status === 'paid' ? '#16A34A' : '#DC2626'};">₹ ${((invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0)).toFixed(0)}</span>
+                    <span class="text-sm font-bold" style="color: #7C3AED;">${invoice.status === 'paid' ? 'Total Paid' : 'Pending Balance'}</span>
+                    <span class="text-base font-bold" style="color: ${invoice.status === 'paid' ? '#16A34A' : '#DC2626'};">₹ ${invoice.status === 'paid' ? invoice.total.toFixed(0) : (invoice.total - (invoice.paidAmount || 0)).toFixed(0)}</span>
                   </div>
                 </div>
               </div>
