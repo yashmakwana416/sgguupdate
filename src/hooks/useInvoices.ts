@@ -254,17 +254,22 @@ export const useInvoices = () => {
       };
     },
     onSuccess: (data) => {
+      // Optimistically update the invoices cache
+      queryClient.setQueryData(['invoices', user?.id || 'anon'], (old: SalesInvoice[] | undefined) => {
+        return old ? [data, ...old] : [data];
+      });
+
       // Show success toast immediately
       toast({
         title: "Success",
         description: `Invoice ${data.invoiceNumber} created successfully!`,
       });
 
-      // Invalidate queries in background (non-blocking)
+      // Invalidate queries in background for full refresh
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ['invoices'] });
         queryClient.invalidateQueries({ queryKey: ['products'] });
-      }, 0);
+      }, 100);
     },
     onError: (error: any) => {
       toast({
