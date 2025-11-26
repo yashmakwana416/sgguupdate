@@ -48,6 +48,7 @@ export interface SalesInvoice {
   status: 'draft' | 'paid' | 'overdue';
   notes?: string;
   createdAt: Date;
+  createdBy?: string;
   previousBalance?: number;
   paidAmount?: number;
   paymentMode?: 'cash' | 'cheque' | 'online';

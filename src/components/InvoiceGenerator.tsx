@@ -50,13 +50,14 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
   useEffect(() => {
     const fetchDistributorSettings = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        // Fetch settings for the invoice creator (invoice.createdBy), not the current user
+        const invoiceCreatorId = invoice.createdBy;
+        if (!invoiceCreatorId) return;
 
         const { data } = await supabase
           .from('distributor_settings')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', invoiceCreatorId)
           .single();
 
         if (data) {
@@ -82,7 +83,7 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
       }
     };
     fetchDistributorSettings();
-  }, []);
+  }, [invoice.createdBy]);
 
   const handleDownload = async () => {
     try {
