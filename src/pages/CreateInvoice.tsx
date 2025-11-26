@@ -560,11 +560,32 @@ const CreateInvoice = () => {
 
     try {
       setIsPrinting(true);
+      
+      // Fetch distributor settings for company details
+      const { data: { user } } = await supabase.auth.getUser();
+      let companyDetails;
+      if (user) {
+        const { data } = await supabase
+          .from('distributor_settings')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (data) {
+          companyDetails = {
+            name: data.company_name,
+            address: data.address,
+            mobile: data.mobile_number
+          };
+        }
+      }
+      
       await printThermalReceipt(
         createdInvoice,
         createdInvoiceParty?.name,
         createdInvoiceParty?.phone,
-        createdInvoiceParty?.address
+        createdInvoiceParty?.address,
+        companyDetails
       );
       toast({
         title: "Print Completed",

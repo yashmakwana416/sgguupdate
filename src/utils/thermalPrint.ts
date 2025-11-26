@@ -3,12 +3,24 @@ import { hasGujarati, ensureGujaratiFont, buildReceiptImageBytes } from '@/utils
 import { generateThermalReceipt } from '@/utils/thermalReceiptGenerator';
 import BluetoothPrinterService from '@/services/BluetoothPrinterService';
 
+interface CompanyDetails {
+  name?: string;
+  address?: string;
+  mobile?: string;
+}
+
 // Print to thermal printer (fallback to browser print)
-export const printThermalReceipt = async (invoice: SalesInvoice, partyName?: string, partyPhone?: string, partyAddress?: string) => {
+export const printThermalReceipt = async (
+  invoice: SalesInvoice, 
+  partyName?: string, 
+  partyPhone?: string, 
+  partyAddress?: string,
+  companyDetails?: CompanyDetails
+) => {
   try {
     // Try to print to Bluetooth thermal printer first
     console.log('Attempting to print to Bluetooth thermal printer...');
-    const success = await BluetoothPrinterService.printReceipt(invoice, partyName, partyPhone, partyAddress);
+    const success = await BluetoothPrinterService.printReceipt(invoice, partyName, partyPhone, partyAddress, companyDetails);
 
     if (success) {
       console.log('Successfully printed to Bluetooth thermal printer');
@@ -17,7 +29,7 @@ export const printThermalReceipt = async (invoice: SalesInvoice, partyName?: str
 
     // Fallback: Open print dialog with formatted text
     console.warn('Bluetooth printer not available, using browser print fallback');
-    const receiptText = generateThermalReceipt(invoice, partyName, partyPhone, partyAddress);
+    const receiptText = generateThermalReceipt(invoice, partyName, partyPhone, partyAddress, companyDetails);
 
     const printWindow = window.open('', '_blank');
     if (printWindow) {

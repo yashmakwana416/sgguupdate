@@ -507,7 +507,8 @@ class BluetoothPrinterService {
     invoice: SalesInvoice, 
     partyName?: string, 
     partyPhone?: string, 
-    partyAddress?: string
+    partyAddress?: string,
+    companyDetails?: { name?: string; address?: string; mobile?: string }
   ): Promise<boolean> {
     try {
       const printerInfo = await this.loadPrinterInfo();
@@ -562,7 +563,7 @@ class BluetoothPrinterService {
         throw new Error('Printer not connected');
       }
 
-      const receiptText = generateThermalReceipt(invoice, partyName, partyPhone, partyAddress);
+      const receiptText = generateThermalReceipt(invoice, partyName, partyPhone, partyAddress, companyDetails);
       
       // ESC/POS initialization commands
       const ESC = 0x1B;

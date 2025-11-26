@@ -72,8 +72,20 @@ const convertAmountToWords = (amount: number): string => {
   return result.trim() + ' Rupees Only';
 };
 
+interface CompanyDetails {
+  name?: string;
+  address?: string;
+  mobile?: string;
+}
+
 // Generate thermal receipt text with optimized formatting
-export const generateThermalReceipt = (invoice: SalesInvoice, partyName?: string, partyPhone?: string, partyAddress?: string): string => {
+export const generateThermalReceipt = (
+  invoice: SalesInvoice, 
+  partyName?: string, 
+  partyPhone?: string, 
+  partyAddress?: string,
+  companyDetails?: CompanyDetails
+): string => {
   const lines: string[] = [];
   const width = 32;
 
@@ -81,29 +93,23 @@ export const generateThermalReceipt = (invoice: SalesInvoice, partyName?: string
   lines.push(centerText('BILL OF SUPPLY', width));
   lines.push(separator('=', width));
 
-  // Company Info - Gujarati text supported with proper spacing
-  lines.push(centerText('શ્રી ગણેશ ગૃહ ઉદ્યોગ', width));
+  // Company Info - Use distributor settings or fallback to default
+  const companyName = companyDetails?.name || 'શ્રી ગણેશ ગૃહ ઉદ્યોગ';
+  const companyAddress = companyDetails?.address || '150Ft RING ROAD, RAMAPIR CHOKDI, SHASTRI NAGAR, B/H LIJJAT PAPAD, 19/4 CORNER, RAJKOT';
+  const companyPhone = companyDetails?.mobile || '9624985555';
 
-  // Address lines split for better alignment
-  const companyAddressParts = [
-    '150Ft RING ROAD',
-    'RAMAPIR CHOKDI',
-    'SHASTRI NAGAR,',
-    'B/H LIJJAT PAPAD,',
-    '19/4 CORNER, RAJKOT',
-    'Ph: 9624985555',
-  ];
+  lines.push(centerText(companyName, width));
 
-  // Wrap each part separately to prevent word splitting
-  companyAddressParts.forEach((part) => {
-    const wrappedLines = wrapText(part, width);
-    wrappedLines.forEach((line) => {
-      lines.push(centerText(line, width));
-    });
+  // Wrap company address
+  const addressLines = wrapText(companyAddress, width);
+  addressLines.forEach((line) => {
+    lines.push(centerText(line, width));
   });
 
+  lines.push(centerText(`Ph: ${companyPhone}`, width));
   lines.push('');
   lines.push(separator('-', width));
+
 
   // Invoice Details - One info per row
   lines.push(formatRow(`Invoice No: ${invoice.invoiceNumber}`, '', width));

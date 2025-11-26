@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { printThermalReceipt } from '@/utils/thermalPrint';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
+import { supabase } from '@/integrations/supabase/client';
 
 const Invoices = () => {
   const { t } = useTranslation();
@@ -129,11 +130,32 @@ const Invoices = () => {
     try {
       setIsPrinting(true);
       const party = getPartyForInvoice(invoice);
+      
+      // Fetch distributor settings for company details
+      const { data: { user } } = await supabase.auth.getUser();
+      let companyDetails;
+      if (user) {
+        const { data } = await supabase
+          .from('distributor_settings')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (data) {
+          companyDetails = {
+            name: data.company_name,
+            address: data.address,
+            mobile: data.mobile_number
+          };
+        }
+      }
+      
       await printThermalReceipt(
         invoice,
         party?.name,
         party?.phone,
-        party?.address
+        party?.address,
+        companyDetails
       );
       toast.success('Print completed successfully!');
     } catch (error) {
