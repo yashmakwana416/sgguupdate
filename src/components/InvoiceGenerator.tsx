@@ -303,8 +303,8 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
                   </div>
                   ` : `
                   <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 2px solid #D1D5DB; background-color: #FEF3C7; margin: 8px -12px 0; padding-left: 12px; padding-right: 12px;">
-                    <span class="text-base font-bold" style="color: #92400E;">PENDING BALANCE</span>
-                    <span class="text-base font-bold" style="color: #D97706;">₹ ${((invoice.previousBalance || 0) + invoice.total).toFixed(0)}</span>
+                    <span class="text-base font-bold" style="color: #92400E;">TOTAL PENDING BALANCE</span>
+                    <span class="text-base font-bold" style="color: #D97706;">₹ ${((invoice.previousBalance || 0) + invoice.total - (invoice.paidAmount || 0)).toFixed(0)}</span>
                   </div>
                   `}
                 </div>
