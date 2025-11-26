@@ -249,9 +249,13 @@ const CreateInvoice = () => {
       paidAmount: isDebt ? 0 : paidAmount || total
     };
     try {
+      // Show loading immediately
+      toast({
+        title: "Creating invoice...",
+        description: "Please wait",
+      });
+
       const result = await createInvoice.mutateAsync(invoiceData);
-
-
 
       // Store created invoice and party info for preview
       setCreatedInvoice(result);
