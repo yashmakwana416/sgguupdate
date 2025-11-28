@@ -247,7 +247,7 @@ const Packaging = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Time</TableHead>
+                        <TableHead>Date & Time</TableHead>
                         <TableHead>Product</TableHead>
                         <TableHead>KG Packed</TableHead>
                         <TableHead>Raw Materials Deducted</TableHead>
@@ -268,7 +268,7 @@ const Packaging = () => {
                         .map((log) => (
                           <TableRow key={log.id}>
                             <TableCell>
-                              {format(new Date(log.created_at), 'HH:mm:ss')}
+                              {format(new Date(log.created_at), 'PPP p')}
                             </TableCell>
                             <TableCell className="font-medium">
                               {log.product_name}
@@ -384,7 +384,7 @@ const Packaging = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
+                        <TableHead>Date & Time</TableHead>
                         <TableHead>Product</TableHead>
                         <TableHead>KG Packed</TableHead>
                         <TableHead>Raw Materials Used</TableHead>
@@ -394,7 +394,7 @@ const Packaging = () => {
                       {packagingLogs.map((log) => (
                         <TableRow key={log.id}>
                           <TableCell>
-                            {format(new Date(log.packaging_date), 'MMM dd, yyyy')}
+                            {format(new Date(log.created_at), 'PPP p')}
                           </TableCell>
                           <TableCell className="font-medium">
                             {log.product_name}
