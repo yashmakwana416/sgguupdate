@@ -45,6 +45,11 @@ const allNavigation = [{
   icon: Package,
   superAdminOnly: true
 }, {
+  name: 'looseMaal',
+  href: '/loose-maal',
+  icon: Package,
+  superAdminOnly: true
+}, {
   name: 'createInvoice',
   href: '/create-invoice',
   icon: FileText

@@ -246,6 +246,53 @@ export type Database = {
           },
         ]
       }
+      loose_maal_stock: {
+        Row: {
+          created_at: string
+          current_stock_grams: number
+          current_stock_kg: number
+          id: string
+          minimum_stock_grams: number | null
+          minimum_stock_kg: number | null
+          product_id: string
+          product_name: string
+          unit_cost_per_kg: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_stock_grams?: number
+          current_stock_kg?: number
+          id?: string
+          minimum_stock_grams?: number | null
+          minimum_stock_kg?: number | null
+          product_id: string
+          product_name: string
+          unit_cost_per_kg?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_stock_grams?: number
+          current_stock_kg?: number
+          id?: string
+          minimum_stock_grams?: number | null
+          minimum_stock_kg?: number | null
+          product_id?: string
+          product_name?: string
+          unit_cost_per_kg?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loose_maal_stock_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       material_variants: {
         Row: {
           created_at: string

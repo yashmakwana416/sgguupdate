@@ -22,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import PendingApproval from "./pages/PendingApproval";
 import Operations from "./pages/Operations";
 import Packaging from "./pages/Packaging";
+import LooseMaal from "./pages/LooseMaal";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient({
@@ -62,6 +63,7 @@ const App = () => (
                     <Route path="/distributors-data" element={<DistributorsData />} />
                     <Route path="/operations" element={<Operations />} />
                     <Route path="/packaging" element={<Packaging />} />
+                    <Route path="/loose-maal" element={<LooseMaal />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/admin-panel" element={<AdminPanel />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
