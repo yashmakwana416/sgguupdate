@@ -26,7 +26,7 @@ export const BatchSheet: React.FC<BatchSheetProps> = ({ batch, companyDetails })
                 </div>
                 <div className="text-right">
                     <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 min-w-[200px]">
-                        <h2 className="text-lg font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2">BATCH SHEET</h2>
+                        <h2 className="text-lg font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2">PURCHASE INVOICE</h2>
                         <div className="space-y-2">
                             <div>
                                 <p className="text-xs text-slate-500 uppercase tracking-wider">Batch Date</p>
