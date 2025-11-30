@@ -84,7 +84,7 @@ const Operations = () => {
     } catch (error) {
       console.error('Error fetching batches:', error);
       toast({
-        title: "Error",
+        title: t('error'),
         description: "Failed to load batches",
         variant: "destructive"
       });
@@ -191,7 +191,7 @@ const Operations = () => {
     } catch (error: any) {
       console.error('Error deleting batch:', error);
       toast({
-        title: "Error",
+        title: t('error'),
         description: "Failed to delete batch",
         variant: "destructive"
       });
@@ -204,7 +204,7 @@ const Operations = () => {
   const handleSaveBatch = async () => {
     if (!batchName.trim()) {
       toast({
-        title: "Error",
+        title: t('error'),
         description: "Please enter a batch name",
         variant: "destructive"
       });
@@ -217,7 +217,7 @@ const Operations = () => {
     })).filter(item => item.quantity_kg > 0 || item.quantity_grams > 0);
     if (itemsToSave.length === 0) {
       toast({
-        title: "Error",
+        title: t('error'),
         description: "Please select at least one raw material with quantity",
         variant: "destructive"
       });
@@ -269,7 +269,7 @@ const Operations = () => {
     } catch (error: any) {
       console.error('Error saving batch:', error);
       toast({
-        title: "Error",
+        title: t('error'),
         description: error.message || "Failed to save batch",
         variant: "destructive"
       });
@@ -325,7 +325,7 @@ const Operations = () => {
     } catch (error: any) {
       console.error('Error logging order:', error);
       toast({
-        title: "Error",
+        title: t('error'),
         description: error.message || "Failed to log order",
         variant: "destructive",
         duration: 6000
@@ -340,26 +340,26 @@ const Operations = () => {
     <div className="space-y-6 p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Operations</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('operations')}</h1>
           <p className="text-muted-foreground">
-            Manage production batches and raw material usage
+            {t('manageProductionBatches')}
           </p>
         </div>
         {isSuperAdmin() && (
           <Button onClick={() => setShowBatchDialog(true)} size="lg" className="gap-2">
             <Plus className="h-5 w-5" />
-            Add Batch
+            {t('addBatch')}
           </Button>
         )}
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold tracking-tight">Recent Batches</h2>
+        <h2 className="text-xl font-semibold tracking-tight">{t('recentBatches')}</h2>
         {batches.length === 0 ? (
           <div className="text-center py-12 border rounded-lg bg-muted/10">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-            <h3 className="text-lg font-medium text-foreground">No batches found</h3>
-            <p className="text-muted-foreground">Create your first production batch to get started.</p>
+            <h3 className="text-lg font-medium text-foreground">{t('noBatchesFound')}</h3>
+            <p className="text-muted-foreground">{t('createFirstBatch')}</p>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -390,13 +390,13 @@ const Operations = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuLabel>{t('actions')}</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => handleEditBatch(batch)}>
-                              <Pencil className="mr-2 h-4 w-4" /> Edit
+                              <Pencil className="mr-2 h-4 w-4" /> {t('edit')}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDeleteClick(batch)} className="text-destructive focus:text-destructive">
-                              <Trash2 className="mr-2 h-4 w-4" /> Delete
+                              <Trash2 className="mr-2 h-4 w-4" /> {t('delete')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -410,11 +410,11 @@ const Operations = () => {
                   </div>
                   <div className="flex items-center justify-between text-sm pt-2 border-t">
                     <Badge variant="secondary" className="font-normal">
-                      {batch.batch_items?.length || 0} Materials
+                      {batch.batch_items?.length || 0} {t('rawMaterials')}
                     </Badge>
                     <BatchSheetGenerator batch={batch}>
                       <Button variant="link" className="h-auto p-0 text-primary">
-                        View Details <ChevronRight className="h-3 w-3 ml-1" />
+                        {t('viewDetails')} <ChevronRight className="h-3 w-3 ml-1" />
                       </Button>
                     </BatchSheetGenerator>
                   </div>
@@ -428,23 +428,23 @@ const Operations = () => {
       {/* Recent Batch Orders Log */}
       <div className="space-y-4 pt-8 border-t">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold tracking-tight">Recent Batch Orders</h2>
+          <h2 className="text-xl font-semibold tracking-tight">{t('recentBatchOrders')}</h2>
         </div>
 
         {orderLogs.length === 0 ? (
           <div className="text-center py-8 border rounded-lg bg-muted/5">
-            <p className="text-muted-foreground">No orders logged yet.</p>
+            <p className="text-muted-foreground">{t('noOrdersLogged')}</p>
           </div>
         ) : (
           <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead>Date & Time</TableHead>
-                  <TableHead>Batch Name</TableHead>
-                  <TableHead>Batch Number</TableHead>
-                  <TableHead>Ordered By</TableHead>
-                  <TableHead className="text-center">Actions</TableHead>
+                  <TableHead>{t('date')}</TableHead>
+                  <TableHead>{t('batchName')}</TableHead>
+                  <TableHead>{t('batchNumber')}</TableHead>
+                  <TableHead>{t('orderedBy')}</TableHead>
+                  <TableHead className="text-center">{t('actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -471,7 +471,7 @@ const Operations = () => {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" onClick={() => handleViewOrderMaterials(log)} title="View Materials Used">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" onClick={() => handleViewOrderMaterials(log)} title={t('viewMaterialsUsed')}>
                         <Eye className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -487,30 +487,30 @@ const Operations = () => {
       <Dialog open={showBatchDialog} onOpenChange={open => !open && handleDialogClose()}>
         <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>{editingBatchId ? 'Edit Batch' : 'Add New Batch'}</DialogTitle>
+            <DialogTitle>{editingBatchId ? t('editBatch') : t('addNewBatch')}</DialogTitle>
             <DialogDescription>
-              {editingBatchId ? 'Update batch details and raw materials.' : 'Enter batch details and select raw materials used.'}
+              {editingBatchId ? t('updateBatchDetails') : t('enterBatchDetails')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto pr-2 space-y-6 py-4">
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="batchName">Batch Name *</Label>
+                <Label htmlFor="batchName">{t('batchName')} *</Label>
                 <Input id="batchName" placeholder="e.g., Morning Batch A-1" value={batchName} onChange={e => setBatchName(e.target.value)} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="batchNumber">Batch Number</Label>
+                <Label htmlFor="batchNumber">{t('batchNumber')}</Label>
                 <Input id="batchNumber" placeholder="e.g., B-001 or 2024-001" value={batchNumber} onChange={e => setBatchNumber(e.target.value)} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="batchDetails">Batch Details</Label>
+                <Label htmlFor="batchDetails">{t('batchDetails')}</Label>
                 <Textarea id="batchDetails" placeholder="Any additional notes about this batch..." value={batchDetails} onChange={e => setBatchDetails(e.target.value)} />
               </div>
             </div>
 
             <div className="space-y-4">
-              <Label className="text-base font-semibold">Raw Materials</Label>
+              <Label className="text-base font-semibold">{t('rawMaterials')}</Label>
               <div className="space-y-6 border rounded-lg p-4">
                 {groupedMaterials?.map(group => (
                   <div key={group.material_id} className="space-y-3">
@@ -546,11 +546,11 @@ const Operations = () => {
 
                             <div className="flex items-center gap-2 w-full sm:w-auto">
                               <div className="grid gap-1 flex-1 sm:w-24">
-                                <Label htmlFor={`kg-${variant.id}`} className="text-xs text-muted-foreground">Kg</Label>
+                                <Label htmlFor={`kg-${variant.id}`} className="text-xs text-muted-foreground">{t('kg')}</Label>
                                 <Input id={`kg-${variant.id}`} type="number" placeholder="0" value={state.kg} onChange={e => handleQuantityChange(variant.id, 'kg', e.target.value)} min="0" className="h-9" />
                               </div>
                               <div className="grid gap-1 flex-1 sm:w-24">
-                                <Label htmlFor={`gms-${variant.id}`} className="text-xs text-muted-foreground">Gms</Label>
+                                <Label htmlFor={`gms-${variant.id}`} className="text-xs text-muted-foreground">{t('grams')}</Label>
                                 <Input id={`gms-${variant.id}`} type="number" placeholder="0" value={state.grams} onChange={e => handleQuantityChange(variant.id, 'grams', e.target.value)} min="0" max="999" className="h-9" />
                               </div>
                             </div>
@@ -566,11 +566,11 @@ const Operations = () => {
 
           <DialogFooter className="pt-4 border-t">
             <Button variant="outline" onClick={handleDialogClose}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button onClick={handleSaveBatch} disabled={isSaving}>
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {editingBatchId ? 'Update Batch' : 'Save Batch'}
+              {editingBatchId ? t('updateBatch') : t('saveBatch')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -580,14 +580,14 @@ const Operations = () => {
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Batch Details</DialogTitle>
+            <DialogTitle>{t('batchDetails')}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
             {/* Horizontal Row for Date, Name, Details */}
             <div className="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg bg-muted/10 items-start sm:items-center">
               <div className="flex flex-col min-w-[120px]">
-                <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Date</span>
+                <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{t('date')}</span>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">{selectedBatch && format(new Date(selectedBatch.created_at), 'PPP')}</span>
@@ -597,7 +597,7 @@ const Operations = () => {
               <div className="hidden sm:block h-10 w-px bg-border" />
 
               <div className="flex flex-col min-w-[150px]">
-                <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Batch Name</span>
+                <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{t('batchName')}</span>
                 <span className="font-medium text-primary">{selectedBatch?.batch_name}</span>
               </div>
 
@@ -612,14 +612,14 @@ const Operations = () => {
             <div>
               <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                Raw Materials Used
+                {t('rawMaterials')}
               </h4>
               <div className="border rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">
-                      <TableHead>Material Name</TableHead>
-                      <TableHead className="text-right">Quantity Used</TableHead>
+                      <TableHead>{t('name')}</TableHead>
+                      <TableHead className="text-right">{t('quantityUsed')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -636,7 +636,7 @@ const Operations = () => {
                               {item.quantity_grams > 0 && `${item.quantity_grams} g`}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              Total: {(item.quantity_kg * 1000 + item.quantity_grams).toLocaleString()} g
+                              {t('total')}: {(item.quantity_kg * 1000 + item.quantity_grams).toLocaleString()} g
                             </span>
                           </div>
                         </TableCell>
@@ -645,7 +645,7 @@ const Operations = () => {
                     {(!selectedBatch?.batch_items || selectedBatch.batch_items.length === 0) && (
                       <TableRow>
                         <TableCell colSpan={2} className="text-center py-4 text-muted-foreground">
-                          No raw materials recorded for this batch.
+                          {t('materialsDataUnavailable')}
                         </TableCell>
                       </TableRow>
                     )}
@@ -656,7 +656,7 @@ const Operations = () => {
           </div>
 
           <DialogFooter>
-            <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
+            <Button onClick={() => setShowDetailsDialog(false)}>{t('close')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -674,13 +674,13 @@ const Operations = () => {
             </div>
 
             <AlertDialogTitle className="text-center text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent">
-              Confirm Order Log
+              {t('confirmOrderLog')}
             </AlertDialogTitle>
 
             <AlertDialogDescription className="text-center space-y-3 text-base">
               <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-green-100 shadow-sm">
                 <p className="text-gray-700">
-                  You are about to log an order for:
+                  {t('confirmOrderLogMessage')}
                 </p>
                 <p className="text-lg font-semibold text-green-700 mt-2 flex items-center justify-center gap-2">
                   <Package className="h-5 w-5 text-green-600" />
@@ -690,18 +690,18 @@ const Operations = () => {
 
               <p className="text-sm text-gray-600 flex items-center justify-center gap-2">
                 <Clock className="h-4 w-4 text-gray-500" />
-                This will create a permanent record with the current timestamp
+                {t('permanentRecordWarning')}
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter className="relative flex-col sm:flex-row gap-2 sm:gap-2">
             <AlertDialogCancel className="mt-0 border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all">
-              Cancel
+              {t('cancel')}
             </AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmOrder} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
               <ClipboardList className="h-4 w-4 mr-2" />
-              Confirm Order
+              {t('confirmOrder')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -713,14 +713,14 @@ const Operations = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the batch
+              {t('thisActionCannotBeUndone')} This will permanently delete the batch
               "{selectedBatch?.batch_name}" and its associated records.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -732,10 +732,10 @@ const Operations = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Package className="h-5 w-5 text-blue-600" />
-              Materials Used in Order
+              {t('materialsUsedInOrder')}
             </DialogTitle>
             <DialogDescription>
-              Raw materials used in <strong>{selectedOrderLog?.batch_name}</strong> at the time of ordering
+              {t('rawMaterials')} used in <strong>{selectedOrderLog?.batch_name}</strong> at the time of ordering
             </DialogDescription>
           </DialogHeader>
 
@@ -745,8 +745,8 @@ const Operations = () => {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">
-                      <TableHead>Material Name</TableHead>
-                      <TableHead className="text-right">Quantity Used</TableHead>
+                      <TableHead>{t('name')}</TableHead>
+                      <TableHead className="text-right">{t('quantityUsed')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -763,7 +763,7 @@ const Operations = () => {
                               {item.quantity_grams > 0 && `${item.quantity_grams} g`}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              Total: {(item.quantity_kg * 1000 + item.quantity_grams).toLocaleString()} g
+                              {t('total')}: {(item.quantity_kg * 1000 + item.quantity_grams).toLocaleString()} g
                             </span>
                           </div>
                         </TableCell>
@@ -775,13 +775,13 @@ const Operations = () => {
             ) : (
               <div className="text-center py-8 border rounded-lg bg-muted/5">
                 <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground">No materials data available</p>
+                <p className="text-muted-foreground">{t('materialsDataUnavailable')}</p>
               </div>
             )}
           </div>
 
           <DialogFooter>
-            <Button onClick={() => setShowOrderMaterialsDialog(false)}>Close</Button>
+            <Button onClick={() => setShowOrderMaterialsDialog(false)}>{t('close')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

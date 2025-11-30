@@ -14,13 +14,12 @@ const Settings = () => {
   const { signOut } = useAuth();
 
   const navigationOptions = [
-    { name: 'dashboard', href: '/', icon: BarChart3, description: 'View business overview and analytics' },
-    { name: 'parties', href: '/suppliers', icon: Truck, description: 'Manage suppliers and customers' },
-    { name: 'products', href: '/products', icon: Package, description: 'Manage your product catalog' },
-    { name: 'inventory', href: '/inventory', icon: BarChart, description: 'Track stock and inventory levels' },
-    { name: 'createInvoice', href: '/create-invoice', icon: FileText, description: 'Create new bills and invoices' },
-    { name: 'invoices', href: '/invoices', icon: Receipt, description: 'View and manage all invoices' },
-    { name: 'reports', href: '/reports', icon: BarChart3, description: 'Generate business reports' },
+    { name: 'dashboard', href: '/', icon: BarChart3, description: 'viewBusinessOverview' },
+    { name: 'parties', href: '/suppliers', icon: Truck, description: 'manageSuppliersAndCustomers' },
+    { name: 'products', href: '/products', icon: Package, description: 'manageYourProductCatalog' },
+    { name: 'inventory', href: '/inventory', icon: BarChart, description: 'trackStockAndInventoryLevels' },
+    { name: 'createInvoice', href: '/create-invoice', icon: FileText, description: 'createNewBillsAndInvoices' },
+    { name: 'invoices', href: '/invoices', icon: Receipt, description: 'viewAndManageAllInvoices' },
   ];
 
   const handleLogout = async () => {
@@ -28,40 +27,35 @@ const Settings = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-3 glass-card bg-primary-glass">
-            <SettingsIcon className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">{t('settings')}</h1>
-            <p className="text-muted-foreground mt-2">{t('manageYourApplicationSettings')}</p>
-          </div>
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-primary/10">
+          <SettingsIcon className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">{t('settings')}</h1>
+          <p className="text-sm text-muted-foreground">{t('manageYourApplicationSettings')}</p>
         </div>
       </div>
 
       {/* Navigation Options */}
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="text-card-foreground">{t('quickNavigation')}</CardTitle>
-          <p className="text-muted-foreground text-sm">{t('accessDifferentSections')}</p>
+      <Card className="border">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base text-card-foreground">{t('quickNavigation')}</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="mobile-grid">
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
             {navigationOptions.map((item) => {
               const Icon = item.icon;
               return (
                 <Link key={item.name} to={item.href}>
-                  <Card className="glass-card hover:bg-accent/50 transition-all duration-200 cursor-pointer border-2 hover:border-primary/20">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
+                  <Card className="hover:bg-accent/50 transition-all duration-200 cursor-pointer border hover:border-primary/20">
+                    <CardContent className="p-3">
+                      <div className="flex flex-col items-center gap-2 text-center">
                         <div className="p-2 bg-primary/10 rounded-lg">
-                          <Icon className="h-5 w-5 text-primary" />
+                          <Icon className="h-4 w-4 text-primary" />
                         </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-card-foreground">{t(item.name)}</h3>
-                        </div>
+                        <h3 className="text-xs font-medium text-card-foreground">{t(item.name)}</h3>
                       </div>
                     </CardContent>
                   </Card>
@@ -73,42 +67,30 @@ const Settings = () => {
       </Card>
 
       {/* Application Settings */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Admin Panel */}
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="text-card-foreground flex items-center gap-2">
-              <Shield className="h-5 w-5" />
+        <Card className="border">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base text-card-foreground flex items-center gap-2">
+              <Shield className="h-4 w-4" />
               {t('adminPanel')}
             </CardTitle>
-            <p className="text-muted-foreground text-sm">{t('accessAdministrativeFunctions')}</p>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                {t('manageUsersRolesDepartments')}
-              </p>
-              <AdminPanelButton />
-            </div>
+          <CardContent className="pt-0">
+            <AdminPanelButton />
           </CardContent>
         </Card>
 
         {/* Language Settings */}
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="text-card-foreground flex items-center gap-2">
-              <Globe className="h-5 w-5" />
+        <Card className="border">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base text-card-foreground flex items-center gap-2">
+              <Globe className="h-4 w-4" />
               {t('languageAndLocalization')}
             </CardTitle>
-            <p className="text-muted-foreground text-sm">{t('changeApplicationLanguage')}</p>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                {t('selectPreferredLanguage')}
-              </p>
-              <LanguageSelector />
-            </div>
+          <CardContent className="pt-0">
+            <LanguageSelector />
           </CardContent>
         </Card>
 
@@ -119,28 +101,23 @@ const Settings = () => {
         <BluetoothDevicesSettings />
 
         {/* Account Actions */}
-        <Card className="glass-card border-destructive/20">
-          <CardHeader>
-            <CardTitle className="text-card-foreground flex items-center gap-2">
-              <LogOut className="h-5 w-5 text-destructive" />
-              Account Actions
+        <Card className="border border-destructive/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base text-card-foreground flex items-center gap-2">
+              <LogOut className="h-4 w-4 text-destructive" />
+              {t('accountActions')}
             </CardTitle>
-            <p className="text-muted-foreground text-sm">Manage your account and session</p>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Sign out of your account to end your current session
-              </p>
-              <Button
-                onClick={handleLogout}
-                variant="destructive"
-                className="w-full sm:w-auto"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </Button>
-            </div>
+          <CardContent className="pt-0">
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="w-full"
+              size="sm"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              {t('signOut')}
+            </Button>
           </CardContent>
         </Card>
       </div>

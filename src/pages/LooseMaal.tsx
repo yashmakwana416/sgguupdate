@@ -77,21 +77,21 @@ export default function LooseMaal() {
         <div>
           <h1 className="text-3xl font-bold text-foreground">{t('looseMaal')}</h1>
           <p className="text-muted-foreground mt-1">
-            Track and manage bulk product inventory
+            {t('looseStockDescription')}
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Add Stock
+              {t('addStock')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add Loose Maal Stock</DialogTitle>
+              <DialogTitle>{t('addLooseMaalStock')}</DialogTitle>
               <DialogDescription>
-                Add or update bulk product inventory
+                {t('addOrUpdateBulkInventory')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -99,7 +99,7 @@ export default function LooseMaal() {
                 <Label>{t('product')}</Label>
                 <Select value={selectedProduct} onValueChange={setSelectedProduct}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select product..." />
+                    <SelectValue placeholder={t('selectProductPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     {products.map(product => (
@@ -137,7 +137,7 @@ export default function LooseMaal() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Min {t('kg')}</Label>
+                  <Label>{t('min')} {t('kg')}</Label>
                   <Input
                     type="number"
                     value={minKg}
@@ -147,7 +147,7 @@ export default function LooseMaal() {
                   />
                 </div>
                 <div>
-                  <Label>Min {t('grams')}</Label>
+                  <Label>{t('min')} {t('grams')}</Label>
                   <Input
                     type="number"
                     value={minGrams}
@@ -171,7 +171,7 @@ export default function LooseMaal() {
               </div>
 
               <Button onClick={handleAddStock} disabled={addStock.isPending} className="w-full">
-                {addStock.isPending ? 'Adding...' : 'Add Stock'}
+                {addStock.isPending ? t('saving') : t('addStock')}
               </Button>
             </div>
           </DialogContent>
@@ -182,23 +182,23 @@ export default function LooseMaal() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalProducts')}</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalProducts}</div>
-            <p className="text-xs text-muted-foreground">Products with loose stock</p>
+            <p className="text-xs text-muted-foreground">{t('productsWithLooseStock')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('lowStockItems')}</CardTitle>
             <AlertTriangle className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{lowStockCount}</div>
-            <p className="text-xs text-muted-foreground">Items below minimum level</p>
+            <p className="text-xs text-muted-foreground">{t('itemsBelowMinimumLevel')}</p>
           </CardContent>
         </Card>
 
@@ -209,7 +209,7 @@ export default function LooseMaal() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{totalValue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">Total inventory value</p>
+            <p className="text-xs text-muted-foreground">{t('totalInventoryValue')}</p>
           </CardContent>
         </Card>
       </div>
@@ -217,9 +217,9 @@ export default function LooseMaal() {
       {/* Stock Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Loose Stock Inventory</CardTitle>
+          <CardTitle>{t('looseStockInventory')}</CardTitle>
           <CardDescription>
-            Real-time bulk product stock levels - automatically deducted during packaging
+            {t('looseStockDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -234,11 +234,11 @@ export default function LooseMaal() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Product Name</TableHead>
-                    <TableHead>Current Stock</TableHead>
-                    <TableHead>Minimum Stock</TableHead>
-                    <TableHead>Unit Cost</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>{t('productName')}</TableHead>
+                    <TableHead>{t('currentStock')}</TableHead>
+                    <TableHead>{t('minimumStock')}</TableHead>
+                    <TableHead>{t('unitCost')}</TableHead>
+                    <TableHead>{t('status')}</TableHead>
                     <TableHead className="text-right">{t('actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -257,9 +257,9 @@ export default function LooseMaal() {
                         <TableCell>₹{stock.unit_cost_per_kg}/kg</TableCell>
                         <TableCell>
                           {lowStock ? (
-                            <Badge variant="destructive">Low Stock</Badge>
+                            <Badge variant="destructive">{t('lowStock')}</Badge>
                           ) : (
-                            <Badge variant="default">In Stock</Badge>
+                            <Badge variant="default">{t('inStock')}</Badge>
                           )}
                         </TableCell>
                         <TableCell className="text-right">
@@ -285,13 +285,13 @@ export default function LooseMaal() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Stock Record</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteStockRecord')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this stock record? This action cannot be undone.
+              {t('deleteStockConfirmation')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (deleteId) {
@@ -300,7 +300,7 @@ export default function LooseMaal() {
                 }
               }}
             >
-              Delete
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

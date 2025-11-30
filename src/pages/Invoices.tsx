@@ -130,7 +130,7 @@ const Invoices = () => {
     try {
       setIsPrinting(true);
       const party = getPartyForInvoice(invoice);
-      
+
       // Fetch distributor settings for company details
       const { data: { user } } = await supabase.auth.getUser();
       let companyDetails;
@@ -140,7 +140,7 @@ const Invoices = () => {
           .select('*')
           .eq('user_id', user.id)
           .single();
-        
+
         if (data) {
           companyDetails = {
             name: data.company_name,
@@ -149,7 +149,7 @@ const Invoices = () => {
           };
         }
       }
-      
+
       await printThermalReceipt(
         invoice,
         party?.name,

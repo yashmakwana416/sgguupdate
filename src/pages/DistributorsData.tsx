@@ -5,6 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { Search, Filter, Receipt, TrendingUp, DollarSign, FileText, Download, ArrowLeft, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
@@ -30,6 +39,8 @@ export default function DistributorsData() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [distributorInvoicesData, setDistributorInvoicesData] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // Fetch distributors
   const { data: distributors, isLoading: distributorsLoading } = useQuery({
@@ -126,6 +137,11 @@ export default function DistributorsData() {
     fetchDistributorInvoices();
   }, [selectedDistributor]);
 
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, selectedDistributor]);
+
   // Use the fetched distributor invoices
   const distributorInvoices = distributorInvoicesData;
 
@@ -139,6 +155,11 @@ export default function DistributorsData() {
 
     return matchesSearch && matchesStatus;
   });
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredInvoices.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedInvoices = filteredInvoices.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   // Download invoice data as Excel
   const downloadInvoiceData = () => {
@@ -453,12 +474,12 @@ export default function DistributorsData() {
 
           {/* Mobile Card View */}
           <div className="block sm:hidden space-y-3">
-            {filteredInvoices.length === 0 ? (
+            {paginatedInvoices.length === 0 ? (
               <div className="text-center text-muted-foreground py-8 text-sm">
                 {t('noInvoicesFound')}
               </div>
             ) : (
-              filteredInvoices.map((invoice: any) => (
+              paginatedInvoices.map((invoice: any) => (
                 <Card key={invoice.id} className="glass-card p-4">
                   <div className="space-y-2">
                     <div className="flex items-start justify-between gap-2">
@@ -495,14 +516,14 @@ export default function DistributorsData() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredInvoices.length === 0 ? (
+                {paginatedInvoices.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-8 text-sm">
                       {t('noInvoicesFound')}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredInvoices.map((invoice: any) => (
+                  paginatedInvoices.map((invoice: any) => (
                     <TableRow key={invoice.id}>
                       <TableCell className="font-medium text-xs sm:text-sm">
                         {invoice.invoice_number}
@@ -523,6 +544,67 @@ export default function DistributorsData() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-4">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(p => Math.max(1, p - 1));
+                      }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    // Show first, last, current, and neighbors
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            href="#"
+                            isActive={page === currentPage}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setCurrentPage(page);
+                            }}
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    } else if (
+                      page === currentPage - 2 ||
+                      page === currentPage + 2
+                    ) {
+                      return <PaginationItem key={page}><PaginationEllipsis /></PaginationItem>
+                    }
+                    return null;
+                  })}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(p => Math.min(totalPages, p + 1));
+                      }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

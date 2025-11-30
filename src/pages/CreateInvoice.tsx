@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { SalesInvoice } from '@/types/billing';
 import { printThermalReceipt } from '@/utils/thermalPrint';
+import { useUserRole } from '@/hooks/useUserRole';
 
 import { supabase } from '@/integrations/supabase/client';
 interface InvoiceItem {
@@ -65,6 +66,9 @@ const CreateInvoice = () => {
   const [createdInvoice, setCreatedInvoice] = useState<SalesInvoice | null>(null);
   const [createdInvoiceParty, setCreatedInvoiceParty] = useState<any>(null);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [distributorDetails, setDistributorDetails] = useState<any>(null);
+
+  const { isDistributor } = useUserRole();
 
   const {
     products
@@ -80,6 +84,48 @@ const CreateInvoice = () => {
   const {
     toast
   } = useToast();
+
+  // Fetch distributor details on component mount
+  useEffect(() => {
+    const fetchDistributorDetails = async () => {
+      if (isDistributor()) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          const { data, error } = await supabase
+            .from('distributor_settings')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+
+          if (error && error.code !== 'PGRST116') {
+            console.error('Error fetching distributor settings:', error);
+            return;
+          }
+
+          if (data) {
+            setDistributorDetails({
+              name: data.company_name || "શ્રી ગણેશ ગૃહ ઉદ્યોગ",
+              address: data.address || "150FI RING ROAD, RAMAPUR",
+              landmark: "",
+              city: "",
+              state: "Gujarat",
+              pincode: "",
+              mobile: data.mobile_number || "9624985555",
+              tagline: data.tagline || "આપણો વિશ્વાસુ",
+              signature_name: data.signature_name || "પ્રજાપતિ મહેશ"
+            });
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      }
+    };
+
+    fetchDistributorDetails();
+  }, [isDistributor]);
+
   const addItem = () => {
     if (!selectedProductId) return;
     const product = products?.find(p => p.id === selectedProductId);
@@ -161,7 +207,7 @@ const CreateInvoice = () => {
     setPartySearchValue(party.name);
     setPartySearchOpen(false);
     setShowNewPartyForm(false);
-    
+
     // Calculate previous balance for this party
     if (invoices && party.id) {
       const unpaidInvoices = invoices.filter(
@@ -560,7 +606,7 @@ const CreateInvoice = () => {
 
     try {
       setIsPrinting(true);
-      
+
       // Fetch distributor settings for company details
       const { data: { user } } = await supabase.auth.getUser();
       let companyDetails;
@@ -570,7 +616,7 @@ const CreateInvoice = () => {
           .select('*')
           .eq('user_id', user.id)
           .single();
-        
+
         if (data) {
           companyDetails = {
             name: data.company_name,
@@ -579,7 +625,7 @@ const CreateInvoice = () => {
           };
         }
       }
-      
+
       await printThermalReceipt(
         createdInvoice,
         createdInvoiceParty?.name,
@@ -964,7 +1010,7 @@ const CreateInvoice = () => {
                 placeholder="Enter cheque number"
                 className="bg-white"
               />
-            </div> 
+            </div>
           )}
 
           {/* Online Payment Method Display */}
@@ -1386,7 +1432,11 @@ const CreateInvoice = () => {
 
           {/* Invoice Preview */}
           <div className="bg-background rounded-xl shadow-lg border-2 glass-border p-4 sm:p-8">
-            <BillOfSupply invoice={createdInvoice} party={createdInvoiceParty} />
+            <BillOfSupply
+              invoice={createdInvoice}
+              party={createdInvoiceParty}
+              {...(distributorDetails && { companyDetails: distributorDetails })}
+            />
           </div>
 
           {/* Mobile Summary Bar */}

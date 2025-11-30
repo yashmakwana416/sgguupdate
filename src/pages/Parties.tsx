@@ -211,8 +211,8 @@ export default function Parties() {
 
     if (!file.name.endsWith('.csv')) {
       toast({
-        title: "Error",
-        description: "Please select a CSV file",
+        title: t('error'),
+        description: t('selectCsvFile'),
         variant: "destructive",
       });
       return;
@@ -234,8 +234,8 @@ export default function Parties() {
 
       if (nameIndex === -1) {
         toast({
-          title: "Error",
-          description: "CSV must contain a 'name' column",
+          title: t('error'),
+          description: t('csvNameColumnError'),
           variant: "destructive",
         });
         return;
@@ -289,13 +289,13 @@ export default function Parties() {
       }
 
       toast({
-        title: "Success",
-        description: `Imported ${validParties.length} parties successfully`,
+        title: t('success'),
+        description: t('importSuccess', { count: validParties.length }),
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to import parties",
+        title: t('error'),
+        description: t('importError'),
         variant: "destructive",
       });
     } finally {
@@ -310,13 +310,13 @@ export default function Parties() {
     try {
       await navigator.clipboard.writeText(name);
       toast({
-        title: "Copied!",
-        description: `"${name}" copied to clipboard`,
+        title: t('copied'),
+        description: t('copiedToClipboard', { name }),
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to copy to clipboard",
+        title: t('error'),
+        description: t('copyError'),
         variant: "destructive",
       });
     }
@@ -325,8 +325,8 @@ export default function Parties() {
   const handleExportToExcel = () => {
     if (!parties || parties.length === 0) {
       toast({
-        title: "No Data",
-        description: "No parties data available to export",
+        title: t('noData'),
+        description: t('noDataExport'),
         variant: "destructive",
       });
       return;
@@ -335,13 +335,13 @@ export default function Parties() {
     try {
       // Prepare data for Excel export
       const exportData = parties.map(party => ({
-        'Name': party.name,
-        'Phone': party.phone || '',
-        'Address': party.address || '',
-        'GSTIN': party.gstin || '',
-        'Status': party.is_active ? 'Active' : 'Inactive',
-        'Created Date': new Date(party.created_at).toLocaleDateString(),
-        'Updated Date': new Date(party.updated_at).toLocaleDateString()
+        [t('name')]: party.name,
+        [t('phone')]: party.phone || '',
+        [t('address')]: party.address || '',
+        [t('gstin')]: party.gstin || '',
+        [t('status')]: party.is_active ? 'Active' : 'Inactive',
+        [t('createdDate')]: new Date(party.created_at).toLocaleDateString(),
+        [t('updatedDate')]: new Date(party.updated_at).toLocaleDateString()
       }));
 
       // Create workbook and worksheet
@@ -371,14 +371,14 @@ export default function Parties() {
       XLSX.writeFile(workbook, filename);
 
       toast({
-        title: "Success",
-        description: `Exported ${parties.length} parties to ${filename}`,
+        title: t('success'),
+        description: t('exportSuccess', { count: parties.length, filename }),
       });
     } catch (error) {
       console.error('Export error:', error);
       toast({
-        title: "Error",
-        description: "Failed to export parties data",
+        title: t('error'),
+        description: t('exportError'),
         variant: "destructive",
       });
     }
@@ -406,7 +406,7 @@ export default function Parties() {
           className="text-xs sm:text-sm flex-1 sm:flex-none min-w-[80px]"
         >
           <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-          <span className="hidden xs:inline">Export</span>
+          <span className="hidden xs:inline">{t('export')}</span>
           <span className="xs:hidden">Exp</span>
         </Button>
 
@@ -514,12 +514,12 @@ export default function Parties() {
         <CardContent className="p-3 sm:p-4 lg:p-6">
           <div className="space-y-2 sm:space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs sm:text-sm font-medium">Importing parties...</p>
+              <p className="text-xs sm:text-sm font-medium">{t('importingProgress')}</p>
               <p className="text-xs sm:text-sm text-muted-foreground">{importProgress}%</p>
             </div>
             <Progress value={importProgress} className="w-full h-2 sm:h-3" />
             <p className="text-xs text-muted-foreground">
-              Processing {totalRecords} records from CSV file
+              {t('processingRecords', { count: totalRecords })}
             </p>
           </div>
         </CardContent>
@@ -603,7 +603,7 @@ export default function Parties() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-2 py-2 bg-white border rounded-lg shadow-sm mt-3">
           <div className="text-xs text-muted-foreground flex-1 min-w-0">
-            <span className="truncate">{startIndex + 1}-{Math.min(endIndex, filteredParties.length)} of {filteredParties.length}</span>
+            <span className="truncate">{t('showingRange', { start: startIndex + 1, end: Math.min(endIndex, filteredParties.length), total: filteredParties.length })}</span>
           </div>
           <div className="flex items-center gap-1 ml-2">
             <Button
@@ -703,8 +703,8 @@ export default function Parties() {
     {filteredParties.length > 0 && (
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-white border rounded-lg shadow-sm">
         <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-          <span className="font-medium">Showing {startIndex + 1} to {Math.min(endIndex, filteredParties.length)} of {filteredParties.length} parties</span>
-          {totalPages > 1 && <span className="hidden sm:inline text-xs bg-primary/10 text-primary px-2 py-1 rounded">Page {currentPage} of {totalPages}</span>}
+          <span className="font-medium">{t('showingRange', { start: startIndex + 1, end: Math.min(endIndex, filteredParties.length), total: filteredParties.length })}</span>
+          {totalPages > 1 && <span className="hidden sm:inline text-xs bg-primary/10 text-primary px-2 py-1 rounded">{t('pageInfo', { current: currentPage, total: totalPages })}</span>}
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -714,7 +714,7 @@ export default function Parties() {
             disabled={currentPage === 1 || totalPages <= 1}
             className="text-xs"
           >
-            Previous
+            {t('previous')}
           </Button>
 
           {/* Page numbers */}
@@ -745,7 +745,7 @@ export default function Parties() {
             disabled={currentPage === totalPages || totalPages <= 1}
             className="text-xs"
           >
-            Next
+            {t('next')}
           </Button>
         </div>
       </div>

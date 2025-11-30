@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, Package, FileText, CreditCard, TrendingUp, DollarSign, Loader2, ArrowUpRight, ChevronRight, AlertTriangle, Eye, ChefHat } from 'lucide-react';
+import { Users, Package, FileText, CreditCard, TrendingUp, DollarSign, Loader2, ArrowUpRight, ChevronRight, AlertTriangle, Eye, ChefHat, PlusCircle, Warehouse, RotateCcw, Truck, Activity, Box, ShoppingBag, Settings, Shield } from 'lucide-react';
 import { useParties } from '@/hooks/useParties';
 import { useProducts } from '@/hooks/useProducts';
 import { useInvoices } from '@/hooks/useInvoices';
@@ -9,6 +9,8 @@ import { useRawMaterials } from '@/hooks/useRawMaterials';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import { useUserRole } from '@/hooks/useUserRole';
+
 export default function Dashboard() {
   const {
     t
@@ -31,6 +33,7 @@ export default function Dashboard() {
     isLoading: rawMaterialsLoading
   } = useRawMaterials();
   const isLoading = partiesLoading || productsLoading || invoicesLoading || rawMaterialsLoading;
+  const { isSuperAdmin } = useUserRole();
 
   // Calculate real metrics from invoices
   const totalSales = invoices?.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + inv.total, 0) || 0;
@@ -83,7 +86,7 @@ export default function Dashboard() {
   // Get recent invoices (last 5)
   const recentInvoices = invoices?.slice(0, 5) || [];
   // Filter products where current stock is less than or equal to 10 (low stock threshold)
-  const lowStockProducts = products?.filter(product => product.stock_quantity <= 10 && product.stock_quantity >= 0).sort((a, b) => a.stock_quantity - b.stock_quantity).slice(0, 3) || [];
+  const lowStockProducts = products?.filter(product => (product.stock_quantity ?? 0) <= 10).sort((a, b) => (a.stock_quantity ?? 0) - (b.stock_quantity ?? 0)).slice(0, 3) || [];
 
   // Filter raw materials where current stock is less than minimum stock
   const lowStockRawMaterials = rawMaterials?.filter(material => {
@@ -94,190 +97,98 @@ export default function Dashboard() {
 
   // Loading spinner removed as per request
 
-  return <div className="space-y-4 sm:space-y-6">
+  return <div className="space-y-4">
     <div>
-      <h1 className="text-responsive-lg font-bold text-foreground">{t('dashboard')}</h1>
-      <p className="text-responsive-sm text-muted-foreground mt-2">
+      <h1 className="text-2xl font-bold text-foreground">{t('dashboard')}</h1>
+      <p className="text-sm text-muted-foreground mt-1">
         Welcome to your billing software dashboard
       </p>
     </div>
 
     {/* Quick Actions Section - Moved to Top */}
-    <Card className="mobile-card bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-      <CardHeader>
-        <CardTitle className="text-responsive-base text-card-foreground">Quick Actions</CardTitle>
+    <Card className="border bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base text-card-foreground">Quick Actions</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Button variant="outline" onClick={() => navigate('/create-invoice')} className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-primary/10 hover:border-primary/30">
-            <FileText className="h-5 w-5" />
-            <span className="text-xs">{t('createInvoice')}</span>
+      <CardContent className="pt-0">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
+          {/* Always visible actions */}
+          <Button variant="outline" onClick={() => navigate('/create-invoice')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+            <PlusCircle className="h-4 w-4" />
+            <span className="text-xs text-center">{t('createInvoice')}</span>
           </Button>
-          <Button variant="outline" onClick={() => navigate('/parties')} className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-primary/10 hover:border-primary/30">
-            <Users className="h-5 w-5" />
-            <span className="text-xs">{t('addParty')}</span>
+          <Button variant="outline" onClick={() => navigate('/parties')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+            <Users className="h-4 w-4" />
+            <span className="text-xs text-center">{t('parties')}</span>
           </Button>
-          <Button variant="outline" onClick={() => navigate('/products')} className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-primary/10 hover:border-primary/30">
-            <Package className="h-5 w-5" />
-            <span className="text-xs">{t('addProduct')}</span>
+          <Button variant="outline" onClick={() => navigate('/products')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+            <Package className="h-4 w-4" />
+            <span className="text-xs text-center">{t('products')}</span>
           </Button>
-          <Button variant="outline" onClick={() => navigate('/invoices')} className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-primary/10 hover:border-primary/30">
-            <FileText className="h-5 w-5" />
-            <span className="text-xs">{t('invoices')}</span>
+          <Button variant="outline" onClick={() => navigate('/invoices')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+            <FileText className="h-4 w-4" />
+            <span className="text-xs text-center">{t('invoices')}</span>
+          </Button>
+          <Button variant="outline" onClick={() => navigate('/inventory')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+            <Warehouse className="h-4 w-4" />
+            <span className="text-xs text-center">{t('inventory')}</span>
+          </Button>
+          <Button variant="outline" onClick={() => navigate('/returns')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+            <RotateCcw className="h-4 w-4" />
+            <span className="text-xs text-center">{t('returns')}</span>
+          </Button>
+
+          {/* SuperAdmin only actions */}
+          {isSuperAdmin() && (
+            <>
+              <Button variant="outline" onClick={() => navigate('/distributors-data')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+                <Truck className="h-4 w-4" />
+                <span className="text-xs text-center">{t('distributorsData')}</span>
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/operations')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+                <Activity className="h-4 w-4" />
+                <span className="text-xs text-center">{t('operations')}</span>
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/packaging')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+                <Box className="h-4 w-4" />
+                <span className="text-xs text-center">{t('packaging')}</span>
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/loose-maal')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+                <ShoppingBag className="h-4 w-4" />
+                <span className="text-xs text-center">{t('looseMaal')}</span>
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/admin-panel')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+                <Shield className="h-4 w-4" />
+                <span className="text-xs text-center">{t('adminPanel')}</span>
+              </Button>
+            </>
+          )}
+
+          {/* Settings - always visible */}
+          <Button variant="outline" onClick={() => navigate('/settings')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
+            <Settings className="h-4 w-4" />
+            <span className="text-xs text-center">{t('settings')}</span>
           </Button>
         </div>
       </CardContent>
     </Card>
 
+
     {/* Stats Grid */}
-    <div className="mobile-stats-grid">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6">
       {stats.map(stat => {
         const Icon = stat.icon;
-        return <Card key={stat.title} className="mobile-card hover:shadow-lg transition-all duration-200 cursor-pointer group" onClick={() => navigate(stat.route)}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-responsive-sm font-medium text-card-foreground">
-              {stat.title}
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+        return <Card key={stat.title} className="hover:shadow-md transition-all duration-200 cursor-pointer group border" onClick={() => navigate(stat.route)}>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Icon className="h-4 w-4 text-primary" />
+              <ArrowUpRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl sm:text-2xl font-bold text-card-foreground">{stat.value}</div>
-
-            <p className="text-xs text-muted-foreground mt-1 truncate">{stat.description}</p>
-            <Button variant="ghost" size="sm" className="mt-2 h-6 px-2 text-xs w-full">
-              View Details <ChevronRight className="h-3 w-3 ml-1" />
-            </Button>
+            <div className="text-lg font-bold text-card-foreground mb-1">{stat.value}</div>
+            <p className="text-xs text-muted-foreground">{stat.title}</p>
           </CardContent>
         </Card>;
       })}
-    </div>
-
-    {/* Recent Activity */}
-    <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {/* Recent Invoices */}
-      <Card className="mobile-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-responsive-base text-card-foreground">{t('invoices')}</CardTitle>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/invoices')} className="text-xs">
-            View All <ChevronRight className="h-3 w-3 ml-1" />
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 sm:space-y-4">
-            {recentInvoices.length > 0 ? recentInvoices.map(invoice => <div key={invoice.id} className="flex items-center justify-between p-3 glass-card hover:bg-accent/5 transition-colors">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-responsive-sm font-medium text-card-foreground">{invoice.invoiceNumber}</p>
-                  <Badge variant={invoice.status === 'paid' ? 'default' : invoice.status === 'overdue' ? 'destructive' : 'outline'} className="text-xs">
-                    {t(invoice.status)}
-                  </Badge>
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground">{invoice.customerName}</p>
-                <p className="text-xs text-muted-foreground">{format(new Date(invoice.date), 'MMM dd, yyyy')}</p>
-              </div>
-              <div className="text-right ml-4 flex flex-col items-end gap-1">
-                <p className="text-responsive-sm font-medium text-card-foreground">₹{invoice.total.toLocaleString()}</p>
-                <Button variant="ghost" size="sm" onClick={() => navigate('/invoices')} className="h-6 px-2 text-xs">
-                  <Eye className="h-3 w-3 mr-1" />
-                  View
-                </Button>
-              </div>
-            </div>) : <div className="text-center py-6 sm:py-4">
-              <FileText className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-responsive-sm text-muted-foreground">{t('noInvoicesFound')}</p>
-              <Button variant="outline" size="sm" onClick={() => navigate('/create-invoice')} className="mt-2">
-                {t('createInvoice')}
-              </Button>
-            </div>}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Low Stock Products Alert */}
-      <Card className="mobile-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-responsive-base text-card-foreground flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-destructive" />
-            {t('lowStock')} - Products
-          </CardTitle>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/products')} className="text-xs">
-            View All <ChevronRight className="h-3 w-3 ml-1" />
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 sm:space-y-4">
-            {lowStockProducts.length > 0 ? lowStockProducts.map(product => <div key={product.id} className="flex items-center justify-between p-3 glass-card border-l-4 border-l-destructive hover:bg-accent/5 transition-colors">
-              <div className="min-w-0 flex-1">
-                <p className="text-responsive-sm font-medium text-card-foreground">{product.name}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">SKU: {product.sku}</p>
-                <p className="text-xs text-muted-foreground">Unit: {product.unit}</p>
-              </div>
-              <div className="text-right ml-4 flex flex-col items-end gap-1">
-                <p className="text-responsive-sm font-medium text-destructive">{product.stock_quantity} {product.unit}</p>
-                <p className="text-xs text-muted-foreground">{t('lowStock')}</p>
-                <Button variant="outline" size="sm" onClick={() => navigate('/products')} className="h-6 px-2 text-xs">
-                  Update Stock
-                </Button>
-              </div>
-            </div>) : <div className="text-center py-6 sm:py-4">
-              <Package className="h-8 w-8 text-accent mx-auto mb-2" />
-              <p className="text-responsive-sm text-muted-foreground">All products well stocked</p>
-              <Button variant="outline" size="sm" onClick={() => navigate('/products')} className="mt-2">
-                Manage Products
-              </Button>
-            </div>}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Low Stock Raw Materials Alert */}
-      <Card className="mobile-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-responsive-base text-card-foreground flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-destructive" />
-            {t('lowStock')} - Raw Materials
-          </CardTitle>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/inventory')} className="text-xs">
-            View All <ChevronRight className="h-3 w-3 ml-1" />
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 sm:space-y-4">
-            {lowStockRawMaterials.length > 0 ? lowStockRawMaterials.map(material => {
-              const currentKg = material.current_stock_kg;
-              const currentGrams = material.current_stock_grams;
-              const minKg = material.minimum_stock_kg;
-              const minGrams = material.minimum_stock_grams;
-              return <div key={material.id} className="flex items-center justify-between p-3 glass-card border-l-4 border-l-destructive hover:bg-accent/5 transition-colors">
-                <div className="min-w-0 flex-1">
-                  <p className="text-responsive-sm font-medium text-card-foreground">{material.name}</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Min: {minKg}kg {minGrams}g
-                  </p>
-                </div>
-                <div className="text-right ml-4 flex flex-col items-end gap-1">
-                  <p className="text-responsive-sm font-medium text-destructive">
-                    {currentKg}kg {currentGrams}g
-                  </p>
-                  <p className="text-xs text-muted-foreground">{t('lowStock')}</p>
-                  <Button variant="outline" size="sm" onClick={() => navigate('/inventory')} className="h-6 px-2 text-xs">
-                    Update Stock
-                  </Button>
-                </div>
-              </div>;
-            }) : <div className="text-center py-6 sm:py-4">
-              <ChefHat className="h-8 w-8 text-accent mx-auto mb-2" />
-              <p className="text-responsive-sm text-muted-foreground">All raw materials well stocked</p>
-              <Button variant="outline" size="sm" onClick={() => navigate('/inventory')} className="mt-2">
-                Manage Inventory
-              </Button>
-            </div>}
-          </div>
-        </CardContent>
-      </Card>
     </div>
 
   </div>;

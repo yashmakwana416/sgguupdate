@@ -80,17 +80,17 @@ export const BluetoothDevicesSettings = () => {
 
   if (!isSupported) {
     return (
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="text-card-foreground flex items-center gap-2">
-            <Bluetooth className="h-5 w-5" />
+      <Card className="border">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base text-card-foreground flex items-center gap-2">
+            <Bluetooth className="h-4 w-4" />
             {t('bluetoothDevices')}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <Alert>
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
+            <AlertDescription className="text-xs">
               {t('browserNotSupported')}. {t('bluetoothRequiresModernBrowser')}
             </AlertDescription>
           </Alert>
@@ -101,24 +101,21 @@ export const BluetoothDevicesSettings = () => {
 
   return (
     <>
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="text-card-foreground flex items-center gap-2">
-            <Bluetooth className="h-5 w-5" />
+      <Card className="border">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base text-card-foreground flex items-center gap-2">
+            <Bluetooth className="h-4 w-4" />
             {t('bluetoothDevices')}
           </CardTitle>
-          <p className="text-muted-foreground text-sm">
-            {t('managePrinterConnections')}
-          </p>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="pt-0 space-y-4">
           {/* Current Connection Status */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-card-foreground">
+          <div className="space-y-2">
+            <h3 className="text-xs font-semibold text-card-foreground">
               {t('currentConnection')}
             </h3>
 
-            <div className="flex items-start gap-3 p-4 bg-accent/20 rounded-lg border border-border">
+            <div className="flex items-start gap-3 p-3 bg-accent/20 rounded-lg border border-border">
               {isConnected && currentPrinter ? (
                 <>
                   <div className="relative">
@@ -127,19 +124,19 @@ export const BluetoothDevicesSettings = () => {
                       <Wifi className="h-3 w-3 text-green-500" />
                     </div>
                   </div>
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-card-foreground">
                         {currentPrinter.name}
                       </p>
-                      <Badge variant="default" className="bg-green-500">
+                      <Badge variant="default" className="bg-green-500 text-xs">
                         {t('connected')}
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {t('autoReconnectEnabled')}
                     </p>
-                    <div className="flex gap-2 mt-3">
+                    <div className="flex gap-2 mt-2">
                       <Button
                         size="sm"
                         variant="outline"
@@ -182,7 +179,7 @@ export const BluetoothDevicesSettings = () => {
                     </p>
                     <Button
                       size="sm"
-                      className="mt-3"
+                      className="mt-2"
                       onClick={handleConnect}
                       disabled={isConnecting}
                     >

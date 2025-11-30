@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,6 +45,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 
 const Packaging = () => {
+  const { t } = useTranslation();
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [kgPacked, setKgPacked] = useState<string>('');
   const [editRecipeProductId, setEditRecipeProductId] = useState<string>('');
@@ -146,8 +148,8 @@ const Packaging = () => {
 
     if (materials.length === 0) {
       toast({
-        title: 'No materials selected',
-        description: 'Please select at least one raw material with a quantity greater than 0.',
+        title: t('error'),
+        description: t('selectRawMaterialsInstruction'),
         variant: 'destructive',
       });
       return;
@@ -166,33 +168,33 @@ const Packaging = () => {
     <div className="container mx-auto py-4 sm:py-8 px-4 sm:px-6 space-y-4 sm:space-y-8">
       <div className="flex items-center gap-2 sm:gap-3">
         <Package className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">Packaging Module</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">{t('packagingModule')}</h1>
       </div>
 
       <Tabs defaultValue="entry" className="space-y-4 sm:space-y-6">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="entry" className="text-xs sm:text-sm">Daily Entry</TabsTrigger>
-          <TabsTrigger value="history" className="text-xs sm:text-sm">History</TabsTrigger>
-          <TabsTrigger value="products" className="text-xs sm:text-sm">Products</TabsTrigger>
+          <TabsTrigger value="entry" className="text-xs sm:text-sm">{t('dailyEntry')}</TabsTrigger>
+          <TabsTrigger value="history" className="text-xs sm:text-sm">{t('history')}</TabsTrigger>
+          <TabsTrigger value="products" className="text-xs sm:text-sm">{t('products')}</TabsTrigger>
         </TabsList>
 
         {/* Daily Packaging Entry */}
         <TabsContent value="entry" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Record Daily Packaging</CardTitle>
+              <CardTitle>{t('recordDailyPackaging')}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="product">Select Product</Label>
+                    <Label htmlFor="product">{t('selectProduct')}</Label>
                     <Select
                       value={selectedProductId}
                       onValueChange={setSelectedProductId}
                     >
                       <SelectTrigger id="product">
-                        <SelectValue placeholder="Choose a product" />
+                        <SelectValue placeholder={t('selectProductPlaceholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {products?.map((product) => (
@@ -205,13 +207,13 @@ const Packaging = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="kg">KG Packed Today</Label>
+                    <Label htmlFor="kg">{t('kgPackedToday')}</Label>
                     <Input
                       id="kg"
                       type="number"
                       step="0.001"
                       min="0.001"
-                      placeholder="Enter quantity in KG"
+                      placeholder={t('enterQuantityInKg')}
                       value={kgPacked}
                       onChange={(e) => setKgPacked(e.target.value)}
                     />
@@ -223,7 +225,7 @@ const Packaging = () => {
                   disabled={!selectedProductId || !kgPacked || createEntry.isPending}
                   className="w-full md:w-auto"
                 >
-                  {createEntry.isPending ? 'Saving...' : 'Save Packaging Entry'}
+                  {createEntry.isPending ? t('saving') : t('savePackagingEntry')}
                 </Button>
               </form>
             </CardContent>
@@ -234,23 +236,23 @@ const Packaging = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <History className="h-5 w-5" />
-                Recent Packaging Logs (Today)
+                {t('recentPackagingLogsToday')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               {!packagingLogs || packagingLogs.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">
-                  No packaging entries recorded yet today
+                  {t('noPackagingEntriesToday')}
                 </p>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date & Time</TableHead>
-                        <TableHead>Product</TableHead>
-                        <TableHead>KG Packed</TableHead>
-                        <TableHead>Raw Materials Deducted</TableHead>
+                        <TableHead>{t('date')}</TableHead>
+                        <TableHead>{t('product')}</TableHead>
+                        <TableHead>{t('kgPacked')}</TableHead>
+                        <TableHead>{t('rawMaterialsDeducted')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -300,7 +302,7 @@ const Packaging = () => {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <CardTitle className="flex items-center gap-2">
                   <History className="h-5 w-5" />
-                  Packaging History
+                  {t('packagingHistory')}
                 </CardTitle>
                 <div className="flex flex-col sm:flex-row gap-2">
                   {/* Start Date Picker */}
@@ -311,7 +313,7 @@ const Packaging = () => {
                         className={`w-full sm:w-[240px] justify-start text-left font-normal glass-card hover:bg-accent/50 transition-all ${!filterStartDate && "text-muted-foreground"}`}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {filterStartDate ? format(filterStartDate, 'PPP') : <span>Start date</span>}
+                        {filterStartDate ? format(filterStartDate, 'PPP') : <span>{t('startDate')}</span>}
                         {filterStartDate && (
                           <X
                             className="ml-auto h-4 w-4 opacity-50 hover:opacity-100"
@@ -344,7 +346,7 @@ const Packaging = () => {
                         className={`w-full sm:w-[240px] justify-start text-left font-normal glass-card hover:bg-accent/50 transition-all ${!filterEndDate && "text-muted-foreground"}`}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {filterEndDate ? format(filterEndDate, 'PPP') : <span>End date</span>}
+                        {filterEndDate ? format(filterEndDate, 'PPP') : <span>{t('endDate')}</span>}
                         {filterEndDate && (
                           <X
                             className="ml-auto h-4 w-4 opacity-50 hover:opacity-100"
@@ -377,17 +379,17 @@ const Packaging = () => {
             <CardContent>
               {!packagingLogs || packagingLogs.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">
-                  No packaging history found
+                  {t('noPackagingHistoryFound')}
                 </p>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date & Time</TableHead>
-                        <TableHead>Product</TableHead>
-                        <TableHead>KG Packed</TableHead>
-                        <TableHead>Raw Materials Used</TableHead>
+                        <TableHead>{t('date')}</TableHead>
+                        <TableHead>{t('product')}</TableHead>
+                        <TableHead>{t('kgPacked')}</TableHead>
+                        <TableHead>{t('rawMaterialsDeducted')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -425,7 +427,7 @@ const Packaging = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
-                Product Raw Materials
+                {t('productRawMaterials')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -433,9 +435,9 @@ const Packaging = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Product Name</TableHead>
-                      <TableHead>SKU</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead>{t('productName')}</TableHead>
+                      <TableHead>{t('sku')}</TableHead>
+                      <TableHead>{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -450,7 +452,7 @@ const Packaging = () => {
                             onClick={() => handleEditRecipe(product.id)}
                           >
                             <Edit className="h-4 w-4 mr-2" />
-                            Edit Recipe
+                            {t('editRecipe')}
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -468,17 +470,17 @@ const Packaging = () => {
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto mx-4 sm:mx-0">
           <DialogHeader>
             <DialogTitle>
-              Edit Recipe: {products?.find((p) => p.id === editRecipeProductId)?.name}
+              {t('editRecipeTitle', { productName: products?.find((p) => p.id === editRecipeProductId)?.name })}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Select raw materials and enter the quantity (in grams) required for 1 KG of this product.
+              {t('selectRawMaterialsInstruction')}
             </p>
 
             {!allRawMaterials || allRawMaterials.length === 0 ? (
               <p className="text-muted-foreground text-center py-4">
-                No raw materials found in inventory.
+                {t('noRawMaterialsInInventory')}
               </p>
             ) : (
               <div className="space-y-3">
@@ -512,7 +514,7 @@ const Packaging = () => {
                           onChange={(e) => handleQuantityChange(material.id, e.target.value)}
                           className="w-32"
                         />
-                        <span className="text-sm text-muted-foreground">grams</span>
+                        <span className="text-sm text-muted-foreground">{t('grams')}</span>
                       </div>
                     )}
                   </div>
@@ -528,13 +530,13 @@ const Packaging = () => {
                   setSelectedMaterials({});
                 }}
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 onClick={handleSaveRecipe}
                 disabled={saveRecipe.isPending || Object.keys(selectedMaterials).length === 0}
               >
-                {saveRecipe.isPending ? 'Saving...' : 'Save Recipe'}
+                {saveRecipe.isPending ? t('saving') : t('saveRecipe')}
               </Button>
             </div>
           </div>
