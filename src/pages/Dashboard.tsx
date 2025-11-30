@@ -108,7 +108,7 @@ export default function Dashboard() {
     {/* Quick Actions Section - Moved to Top */}
     <Card className="border bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base text-card-foreground">Quick Actions</CardTitle>
+        <CardTitle className="text-base text-card-foreground">Quick Actions.</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
