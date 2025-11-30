@@ -111,7 +111,7 @@ export default function Dashboard() {
         <CardTitle className="text-base text-card-foreground">Quick Actions.</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
           {/* Always visible actions */}
           <Button variant="outline" onClick={() => navigate('/create-invoice')} className="flex flex-col items-center gap-1 h-auto py-3 hover:bg-primary/10 hover:border-primary/30">
             <PlusCircle className="h-4 w-4" />
