@@ -53,6 +53,8 @@ const Operations = () => {
   // Batch Order Log State
   const [orderLogs, setOrderLogs] = useState<any[]>([]);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+  const [orderLogsPage, setOrderLogsPage] = useState(1);
+  const ORDER_LOGS_PAGE_SIZE = 10;
   const {
     data: groupedMaterials,
     isLoading: materialsLoading
@@ -448,7 +450,9 @@ const Operations = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orderLogs.map(log => (
+                {orderLogs
+                  .slice((orderLogsPage - 1) * ORDER_LOGS_PAGE_SIZE, orderLogsPage * ORDER_LOGS_PAGE_SIZE)
+                  .map(log => (
                   <TableRow key={log.id}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
@@ -479,6 +483,31 @@ const Operations = () => {
                 ))}
               </TableBody>
             </Table>
+            
+            {/* Pagination */}
+            {orderLogs.length > ORDER_LOGS_PAGE_SIZE && (
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOrderLogsPage(p => Math.max(1, p - 1))}
+                  disabled={orderLogsPage === 1}
+                >
+                  {t('previous')}
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  {orderLogsPage} / {Math.ceil(orderLogs.length / ORDER_LOGS_PAGE_SIZE)}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOrderLogsPage(p => Math.min(Math.ceil(orderLogs.length / ORDER_LOGS_PAGE_SIZE), p + 1))}
+                  disabled={orderLogsPage >= Math.ceil(orderLogs.length / ORDER_LOGS_PAGE_SIZE)}
+                >
+                  {t('next')}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>

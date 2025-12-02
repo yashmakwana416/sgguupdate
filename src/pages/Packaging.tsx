@@ -55,6 +55,8 @@ const Packaging = () => {
   const [filterEndDate, setFilterEndDate] = useState<Date | undefined>();
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
+  const [historyPage, setHistoryPage] = useState(1);
+  const HISTORY_PAGE_SIZE = 10;
 
   const { products, isLoading: productsLoading } = useProducts();
   const { data: packagingLogs, isLoading: logsLoading } = usePackagingLogs({
@@ -382,39 +384,68 @@ const Packaging = () => {
                   {t('noPackagingHistoryFound')}
                 </p>
               ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t('date')}</TableHead>
-                        <TableHead>{t('product')}</TableHead>
-                        <TableHead>{t('kgPacked')}</TableHead>
-                        <TableHead>{t('rawMaterialsDeducted')}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {packagingLogs.map((log) => (
-                        <TableRow key={log.id}>
-                          <TableCell>
-                            {format(new Date(log.created_at), 'PPP p')}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {log.product_name}
-                          </TableCell>
-                          <TableCell>{log.kg_packed} kg</TableCell>
-                          <TableCell>
-                            <div className="flex flex-wrap gap-1">
-                              {log.raw_materials_used.map((rm: any, idx: number) => (
-                                <Badge key={idx} variant="outline">
-                                  {rm.raw_material_name}: {rm.quantity_deducted_kg.toFixed(3)} kg
-                                </Badge>
-                              ))}
-                            </div>
-                          </TableCell>
+                <div className="space-y-4">
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t('date')}</TableHead>
+                          <TableHead>{t('product')}</TableHead>
+                          <TableHead>{t('kgPacked')}</TableHead>
+                          <TableHead>{t('rawMaterialsDeducted')}</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {packagingLogs
+                          .slice((historyPage - 1) * HISTORY_PAGE_SIZE, historyPage * HISTORY_PAGE_SIZE)
+                          .map((log) => (
+                          <TableRow key={log.id}>
+                            <TableCell>
+                              {format(new Date(log.created_at), 'PPP p')}
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {log.product_name}
+                            </TableCell>
+                            <TableCell>{log.kg_packed} kg</TableCell>
+                            <TableCell>
+                              <div className="flex flex-wrap gap-1">
+                                {log.raw_materials_used.map((rm: any, idx: number) => (
+                                  <Badge key={idx} variant="outline">
+                                    {rm.raw_material_name}: {rm.quantity_deducted_kg.toFixed(3)} kg
+                                  </Badge>
+                                ))}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  
+                  {/* Pagination */}
+                  {packagingLogs.length > HISTORY_PAGE_SIZE && (
+                    <div className="flex items-center justify-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setHistoryPage(p => Math.max(1, p - 1))}
+                        disabled={historyPage === 1}
+                      >
+                        {t('previous')}
+                      </Button>
+                      <span className="text-sm text-muted-foreground">
+                        {historyPage} / {Math.ceil(packagingLogs.length / HISTORY_PAGE_SIZE)}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setHistoryPage(p => Math.min(Math.ceil(packagingLogs.length / HISTORY_PAGE_SIZE), p + 1))}
+                        disabled={historyPage >= Math.ceil(packagingLogs.length / HISTORY_PAGE_SIZE)}
+                      >
+                        {t('next')}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
