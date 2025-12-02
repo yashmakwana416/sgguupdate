@@ -787,5 +787,9 @@
   "languageAndLocalization": "भाषा और स्थानीयकरण",
   "changeApplicationLanguage": "एप्लिकेशन भाषा और क्षेत्रीय सेटिंग्स बदलें",
   "viewAndManageAllInvoices": "सभी चालान देखें और प्रबंधित करें",
-  "generateBusinessReports": "व्यापार रिपोर्ट उत्पन्न करें"
+  "generateBusinessReports": "व्यापार रिपोर्ट उत्पन्न करें",
+  "showing": "दिखा रहा है",
+  "of": "में से",
+  "previous": "पिछला",
+  "next": "अगला"
 }

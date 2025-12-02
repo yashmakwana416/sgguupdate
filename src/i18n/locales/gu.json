@@ -408,5 +408,9 @@
   "permanentRecordWarning": "આ વર્તમાન સમય સાથે કાયમી રેકોર્ડ બનાવશે",
   "confirmOrder": "ઓર્ડર કન્ફર્મ કરો",
   "materialsUsedInOrder": "ઓર્ડરમાં વપરાયેલ મટિરિયલ્સ",
-  "materialsDataUnavailable": "કોઈ મટિરિયલ્સ ડેટા ઉપલબ્ધ નથી"
+  "materialsDataUnavailable": "કોઈ મટિરિયલ્સ ડેટા ઉપલબ્ધ નથી",
+  "showing": "બતાવી રહ્યું છે",
+  "of": "માંથી",
+  "previous": "પહેલાનું",
+  "next": "આગળ"
 }

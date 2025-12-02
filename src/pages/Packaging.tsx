@@ -424,26 +424,35 @@ const Packaging = () => {
                   
                   {/* Pagination */}
                   {packagingLogs.length > HISTORY_PAGE_SIZE && (
-                    <div className="flex items-center justify-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setHistoryPage(p => Math.max(1, p - 1))}
-                        disabled={historyPage === 1}
-                      >
-                        {t('previous')}
-                      </Button>
-                      <span className="text-sm text-muted-foreground">
-                        {historyPage} / {Math.ceil(packagingLogs.length / HISTORY_PAGE_SIZE)}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setHistoryPage(p => Math.min(Math.ceil(packagingLogs.length / HISTORY_PAGE_SIZE), p + 1))}
-                        disabled={historyPage >= Math.ceil(packagingLogs.length / HISTORY_PAGE_SIZE)}
-                      >
-                        {t('next')}
-                      </Button>
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t">
+                      <p className="text-sm text-muted-foreground order-2 sm:order-1">
+                        {t('showing')} {((historyPage - 1) * HISTORY_PAGE_SIZE) + 1}-{Math.min(historyPage * HISTORY_PAGE_SIZE, packagingLogs.length)} {t('of')} {packagingLogs.length}
+                      </p>
+                      <div className="flex items-center gap-2 order-1 sm:order-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setHistoryPage(p => Math.max(1, p - 1))}
+                          disabled={historyPage === 1}
+                          className="h-9 px-3"
+                        >
+                          {t('previous')}
+                        </Button>
+                        <div className="flex items-center justify-center min-w-[80px] h-9 px-3 rounded-md border bg-muted/30">
+                          <span className="text-sm font-medium">
+                            {historyPage} / {Math.ceil(packagingLogs.length / HISTORY_PAGE_SIZE)}
+                          </span>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setHistoryPage(p => Math.min(Math.ceil(packagingLogs.length / HISTORY_PAGE_SIZE), p + 1))}
+                          disabled={historyPage >= Math.ceil(packagingLogs.length / HISTORY_PAGE_SIZE)}
+                          className="h-9 px-3"
+                        >
+                          {t('next')}
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
