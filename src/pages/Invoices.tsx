@@ -820,19 +820,45 @@ const Invoices = () => {
                         )}
                       </div>
 
-                      {/* Desktop: Show all pages */}
+                      {/* Desktop: Show limited pages */}
                       <div className="hidden sm:flex gap-2">
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                          <PaginationItem key={page}>
+                        {currentPage > 2 && (
+                          <PaginationItem>
                             <PaginationLink
-                              onClick={() => setCurrentPage(page)}
-                              isActive={currentPage === page}
+                              onClick={() => setCurrentPage(1)}
                               className="cursor-pointer"
                             >
-                              {page}
+                              1
                             </PaginationLink>
                           </PaginationItem>
-                        ))}
+                        )}
+                        {currentPage > 3 && <span className="flex items-center px-2 text-muted-foreground">...</span>}
+                        
+                        {Array.from({ length: totalPages }, (_, i) => i + 1)
+                          .filter(page => Math.abs(page - currentPage) <= 1)
+                          .map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(page)}
+                                isActive={currentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                        
+                        {currentPage < totalPages - 2 && <span className="flex items-center px-2 text-muted-foreground">...</span>}
+                        {currentPage < totalPages - 1 && (
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(totalPages)}
+                              className="cursor-pointer"
+                            >
+                              {totalPages}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
                       </div>
 
                       <PaginationItem>
