@@ -486,26 +486,35 @@ const Operations = () => {
             
             {/* Pagination */}
             {orderLogs.length > ORDER_LOGS_PAGE_SIZE && (
-              <div className="flex items-center justify-center gap-2 mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOrderLogsPage(p => Math.max(1, p - 1))}
-                  disabled={orderLogsPage === 1}
-                >
-                  {t('previous')}
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  {orderLogsPage} / {Math.ceil(orderLogs.length / ORDER_LOGS_PAGE_SIZE)}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOrderLogsPage(p => Math.min(Math.ceil(orderLogs.length / ORDER_LOGS_PAGE_SIZE), p + 1))}
-                  disabled={orderLogsPage >= Math.ceil(orderLogs.length / ORDER_LOGS_PAGE_SIZE)}
-                >
-                  {t('next')}
-                </Button>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t">
+                <p className="text-sm text-muted-foreground order-2 sm:order-1">
+                  {t('showing')} {((orderLogsPage - 1) * ORDER_LOGS_PAGE_SIZE) + 1}-{Math.min(orderLogsPage * ORDER_LOGS_PAGE_SIZE, orderLogs.length)} {t('of')} {orderLogs.length}
+                </p>
+                <div className="flex items-center gap-2 order-1 sm:order-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setOrderLogsPage(p => Math.max(1, p - 1))}
+                    disabled={orderLogsPage === 1}
+                    className="h-9 px-3"
+                  >
+                    {t('previous')}
+                  </Button>
+                  <div className="flex items-center justify-center min-w-[80px] h-9 px-3 rounded-md border bg-muted/30">
+                    <span className="text-sm font-medium">
+                      {orderLogsPage} / {Math.ceil(orderLogs.length / ORDER_LOGS_PAGE_SIZE)}
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setOrderLogsPage(p => Math.min(Math.ceil(orderLogs.length / ORDER_LOGS_PAGE_SIZE), p + 1))}
+                    disabled={orderLogsPage >= Math.ceil(orderLogs.length / ORDER_LOGS_PAGE_SIZE)}
+                    className="h-9 px-3"
+                  >
+                    {t('next')}
+                  </Button>
+                </div>
               </div>
             )}
           </div>

@@ -863,5 +863,7 @@
   "optionalGrams": "Optional (0-999)",
   "unitCostPerKg": "Unit Cost Per KG (₹)",
   "inventoryAddedSuccess": "Inventory item added successfully",
-  "inventorySaveError": "Failed to save inventory item"
+  "inventorySaveError": "Failed to save inventory item",
+  "showing": "Showing",
+  "of": "of"
 }
