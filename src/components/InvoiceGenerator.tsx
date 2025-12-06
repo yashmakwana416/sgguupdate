@@ -674,7 +674,7 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
 
       const pdfFile = new File([pdfBlob], `Invoice-${invoice.invoiceNumber}.pdf`, { type: 'application/pdf' });
 
-      // Check if Web Share API supports file sharing
+      // Check if Web Share API supports file sharing (works on mobile)
       if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
         await navigator.share({
           files: [pdfFile],
@@ -683,10 +683,10 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
         });
         toast({
           title: "Shared Successfully",
-          description: "Invoice PDF shared via WhatsApp."
+          description: "Invoice PDF shared successfully."
         });
       } else {
-        // Fallback: Download PDF and show instructions
+        // Desktop fallback: Download PDF and open WhatsApp chat with party's phone
         const url = URL.createObjectURL(pdfBlob);
         const a = document.createElement('a');
         a.href = url;
@@ -696,10 +696,24 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        toast({
-          title: "PDF Downloaded",
-          description: "Please share the downloaded PDF manually via WhatsApp.",
-        });
+        // Get party phone number and open WhatsApp chat
+        const phoneNumber = party?.phone?.replace(/\D/g, ''); // Remove non-digits
+        if (phoneNumber) {
+          // Open WhatsApp chat with the party
+          const whatsappUrl = `https://wa.me/${phoneNumber.startsWith('91') ? phoneNumber : '91' + phoneNumber}`;
+          window.open(whatsappUrl, '_blank');
+          toast({
+            title: "PDF Downloaded",
+            description: "WhatsApp chat opened. Please attach the downloaded PDF.",
+          });
+        } else {
+          // No phone number, just open WhatsApp
+          window.open('https://wa.me/', '_blank');
+          toast({
+            title: "PDF Downloaded",
+            description: "Please select a contact in WhatsApp and attach the PDF.",
+          });
+        }
       }
     } catch (error) {
       console.error('WhatsApp share error:', error);
